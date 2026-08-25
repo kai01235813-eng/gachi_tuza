@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>같이투자 (Gachi Tuza) - 소셜 트레이딩 게임 플랫폼</title>
+    <title>같이투자 (Gachi Tuza) - 포춘빌리지 소셜 가치투자</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React 18 & ReactDOM -->
@@ -17,722 +17,1954 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #0f172a; }
-        .font-jua { font-family: 'Jua', sans-serif; }
-        .white-card { background: #ffffff; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); }
-        .prompt-shadow { box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.15); }
-        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); }
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap');
+        body {
+            font-family: 'Jua', 'Gowun Dodum', sans-serif;
+            margin: 0; padding: 0;
+            background-color: #fdf6e9;
+            background-image: radial-gradient(#f0e2c8 1.3px, transparent 1.3px);
+            background-size: 24px 24px;
+            color: #5b4432;
+        }
+        .font-body { font-family: 'Gowun Dodum', sans-serif; }
+
+        .card-cute { background: #fffdf7; border: 2px solid #ecd9b8; box-shadow: 0 5px 0 #f0e4cb; border-radius: 26px; }
+        .card-deep { background: #fffdf7; border: 2.5px solid #e3cda4; box-shadow: 0 7px 0 #ecdcbd; border-radius: 28px; }
+
+        .btn3d { border: 2.5px solid #5b4432; box-shadow: 0 4px 0 #5b4432; transition: transform .08s ease, box-shadow .08s ease; }
+        .btn3d:active { transform: translateY(4px); box-shadow: 0 0 0 #5b4432; }
+
+        @keyframes floaty { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+        .floaty { animation: floaty 3.2s ease-in-out infinite; }
+        .floaty-slow { animation: floaty 4.6s ease-in-out infinite; }
+
+        @keyframes wiggle { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+        .wiggle { animation: wiggle 1.4s ease-in-out infinite; transform-origin: 50% 75%; }
+
+        @keyframes popIn { 0%{transform:scale(0.4);opacity:0} 70%{transform:scale(1.06)} 100%{transform:scale(1);opacity:1} }
+        .pop-in { animation: popIn 0.45s cubic-bezier(.34,1.56,.64,1) both; }
+
+        @keyframes rainfall { 0%{transform:translateY(-12px);opacity:0} 15%{opacity:0.9} 100%{transform:translateY(150px);opacity:0} }
+        .raindrop { position:absolute; top:0; width:4px; height:11px; border-radius:999px; background:#6fb7e8; animation: rainfall 1.6s linear infinite; pointer-events:none; }
+
+        @keyframes dropfall { 0%{transform:translateY(0);opacity:0} 30%{opacity:1} 100%{transform:translateY(24px);opacity:0} }
+        .svg-drop { transform-box: fill-box; transform-origin: center; animation: dropfall 1.4s ease-in infinite; }
+
+        @keyframes twinkle { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:0.25; transform:scale(0.8)} }
+        .twinkle { position:absolute; animation: twinkle 1.8s ease-in-out infinite; pointer-events:none; }
+
+        @keyframes drift { 0%{transform:translateX(0)} 50%{transform:translateX(24px)} 100%{transform:translateX(0)} }
+        .cloud-drift { animation: drift 9s ease-in-out infinite; }
+
+        @keyframes walkAcross { 0%{left:-18%} 100%{left:112%} }
+        .merchant { position:absolute; bottom:6px; animation: walkAcross 16s linear infinite; font-size:22px; pointer-events:none; white-space:nowrap; }
+
+        @keyframes barGrow { from{width:0} }
+        .bar-grow { animation: barGrow 0.8s ease-out both; }
+
+        @keyframes toastUp { 0%{transform:translateY(18px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+        .toast-up { animation: toastUp 0.3s ease-out both; }
+
+        .badge-locked { filter: grayscale(1); opacity: 0.38; }
+        ::selection { background:#fde68a; }
+        input, select, textarea { outline: none; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] min-h-screen selection:bg-indigo-900 selection:text-white">
+<body class="min-h-screen">
 
-    <!-- React App Root Container -->
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
+        const INK = '#5b4432';
 
-        // --- Clean Real Data Social Trading Platform Application ---
+        // ================= 귀여운 SVG 게임 에셋 =================
+        const Face = ({ x = 0, y = 0, scale = 1, mood = 'happy' }) => (
+            <g transform={`translate(${x},${y}) scale(${scale})`}>
+                <circle cx="-7" cy="0" r="2.1" fill={INK}/>
+                <circle cx="7" cy="0" r="2.1" fill={INK}/>
+                {mood === 'happy'
+                    ? <path d="M -4 4.5 Q 0 8.5 4 4.5" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round"/>
+                    : <path d="M -4 8 Q 0 4.5 4 8" stroke={INK} strokeWidth="1.9" fill="none" strokeLinecap="round"/>}
+                <circle cx="-12" cy="3.5" r="2.8" fill="#f7a6b9" opacity="0.55"/>
+                <circle cx="12" cy="3.5" r="2.8" fill="#f7a6b9" opacity="0.55"/>
+            </g>
+        );
+
+        const SproutArt = () => (
+            <g>
+                <ellipse cx="50" cy="80" rx="24" ry="11" fill="#cfa06b" stroke={INK} strokeWidth="2.5"/>
+                <path d="M50 72 Q49 58 50 50" stroke="#4c8a3f" strokeWidth="4.5" fill="none" strokeLinecap="round"/>
+                <path d="M50 58 Q34 54 31 38 Q49 40 51 56 Z" fill="#7cc576" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <path d="M50 52 Q66 48 69 32 Q51 34 49 50 Z" fill="#9ad584" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <Face x={50} y={80} scale={0.75}/>
+            </g>
+        );
+
+        const SaplingArt = () => (
+            <g>
+                <ellipse cx="50" cy="85" rx="19" ry="8" fill="#cfa06b" stroke={INK} strokeWidth="2.5"/>
+                <path d="M50 82 L50 62" stroke="#8a6238" strokeWidth="5.5" strokeLinecap="round"/>
+                <g fill="#7cc576" stroke={INK} strokeWidth="2.5">
+                    <circle cx="36" cy="52" r="12"/><circle cx="64" cy="52" r="12"/><circle cx="50" cy="42" r="17"/>
+                </g>
+                <g fill="#7cc576">
+                    <circle cx="36" cy="52" r="12"/><circle cx="64" cy="52" r="12"/><circle cx="50" cy="42" r="17"/>
+                </g>
+                <circle cx="42" cy="35" r="4.5" fill="#a5dd8d"/>
+                <Face x={50} y={48} scale={0.85}/>
+            </g>
+        );
+
+        const TreeArt = () => (
+            <g>
+                <rect x="44" y="58" width="12" height="27" rx="5" fill="#a97e4f" stroke={INK} strokeWidth="2.5"/>
+                <g fill="#7cc576" stroke={INK} strokeWidth="2.5">
+                    <circle cx="32" cy="46" r="15"/><circle cx="68" cy="46" r="15"/><circle cx="50" cy="31" r="18"/>
+                </g>
+                <g fill="#7cc576">
+                    <circle cx="32" cy="46" r="15"/><circle cx="68" cy="46" r="15"/><circle cx="50" cy="31" r="18"/>
+                </g>
+                <circle cx="33" cy="40" r="3.2" fill="#f2645a"/>
+                <circle cx="65" cy="50" r="3.2" fill="#f2645a"/>
+                <circle cx="55" cy="24" r="3.2" fill="#f2645a"/>
+                <circle cx="42" cy="24" r="4.5" fill="#a5dd8d"/>
+                <Face x={50} y={44} scale={0.9}/>
+            </g>
+        );
+
+        const HouseArt = () => (
+            <g>
+                <rect x="24" y="46" width="52" height="36" rx="7" fill="#fff4e0" stroke={INK} strokeWidth="2.5"/>
+                <rect x="61" y="26" width="9" height="16" rx="3" fill="#cfa06b" stroke={INK} strokeWidth="2.5"/>
+                <path d="M17 51 Q50 15 83 51 Z" fill="#f4977c" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <circle cx="38" cy="60" r="6" fill="#bfe3f7" stroke={INK} strokeWidth="2.5"/>
+                <circle cx="62" cy="60" r="6" fill="#bfe3f7" stroke={INK} strokeWidth="2.5"/>
+                <path d="M44 82 L44 75 Q50 68 56 75 L56 82 Z" fill="#8a6238" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <circle cx="29" cy="70" r="3" fill="#f7a6b9" opacity="0.6"/>
+                <circle cx="71" cy="70" r="3" fill="#f7a6b9" opacity="0.6"/>
+                <circle cx="21" cy="84" r="3.2" fill="#f7b733"/>
+                <circle cx="79" cy="84" r="3.2" fill="#f79ab6"/>
+            </g>
+        );
+
+        const ShopArt = () => (
+            <g>
+                <rect x="20" y="42" width="60" height="40" rx="7" fill="#fff4e0" stroke={INK} strokeWidth="2.5"/>
+                <rect x="30" y="21" width="40" height="14" rx="7" fill="#f7b733" stroke={INK} strokeWidth="2.5"/>
+                <circle cx="50" cy="28" r="3.4" fill="#fffdf7" stroke={INK} strokeWidth="1.8"/>
+                <rect x="17" y="36" width="66" height="9" rx="4.5" fill="#f79ab6" stroke={INK} strokeWidth="2.5"/>
+                {[0,1,2,3,4].map(i => (
+                    <path key={i} d={`M${22 + i * 11.5} 45 a5.7 6.2 0 0 0 11.4 0 Z`} fill={i % 2 ? '#fffdf7' : '#f79ab6'} stroke={INK} strokeWidth="2"/>
+                ))}
+                <circle cx="36" cy="62" r="5.5" fill="#bfe3f7" stroke={INK} strokeWidth="2.5"/>
+                <circle cx="64" cy="62" r="5.5" fill="#bfe3f7" stroke={INK} strokeWidth="2.5"/>
+                <path d="M45 82 L45 76 Q50 71 55 76 L55 82 Z" fill="#8a6238" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <circle cx="28" cy="70" r="2.8" fill="#f7a6b9" opacity="0.6"/>
+                <circle cx="72" cy="70" r="2.8" fill="#f7a6b9" opacity="0.6"/>
+            </g>
+        );
+
+        const CastleArt = () => (
+            <g>
+                <rect x="20" y="40" width="15" height="42" rx="4" fill="#efe9fb" stroke={INK} strokeWidth="2.5"/>
+                <rect x="65" y="40" width="15" height="42" rx="4" fill="#efe9fb" stroke={INK} strokeWidth="2.5"/>
+                <path d="M16 42 L27.5 26 L39 42 Z" fill="#9b8bd9" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <path d="M61 42 L72.5 26 L84 42 Z" fill="#9b8bd9" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <rect x="44" y="30" width="12" height="24" rx="3" fill="#efe9fb" stroke={INK} strokeWidth="2.5"/>
+                <path d="M50 30 L50 17" stroke={INK} strokeWidth="2.5" strokeLinecap="round"/>
+                <path d="M50 17 L63 21 L50 26 Z" fill="#f2645a" stroke={INK} strokeWidth="2" strokeLinejoin="round"/>
+                <rect x="34" y="50" width="32" height="32" rx="5" fill="#fff4e0" stroke={INK} strokeWidth="2.5"/>
+                <circle cx="42" cy="61" r="4.6" fill="#bfe3f7" stroke={INK} strokeWidth="2.3"/>
+                <circle cx="58" cy="61" r="4.6" fill="#bfe3f7" stroke={INK} strokeWidth="2.3"/>
+                <path d="M45 82 L45 76 Q50 71 55 76 L55 82 Z" fill="#8a6238" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <circle cx="27" cy="60" r="2.6" fill="#f7a6b9" opacity="0.6"/>
+                <circle cx="73" cy="60" r="2.6" fill="#f7a6b9" opacity="0.6"/>
+            </g>
+        );
+
+        const SunArt = () => (
+            <g>
+                <g stroke="#f0a92d" strokeWidth="5" strokeLinecap="round">
+                    {[0,1,2,3,4,5,6,7].map(i => {
+                        const a = i * 45 * Math.PI / 180;
+                        return <line key={i} x1={50 + Math.cos(a) * 27} y1={50 + Math.sin(a) * 27} x2={50 + Math.cos(a) * 35} y2={50 + Math.sin(a) * 35}/>;
+                    })}
+                </g>
+                <circle cx="50" cy="50" r="20" fill="#ffd93d" stroke="#f0a92d" strokeWidth="3"/>
+                <Face x={50} y={50} scale={0.8}/>
+            </g>
+        );
+
+        const CloudArt = ({ tint = '#ffffff', line = '#cfdde8' }) => (
+            <g>
+                <g fill={tint} stroke={line} strokeWidth="2.5">
+                    <circle cx="30" cy="60" r="13"/><circle cx="52" cy="50" r="17"/><circle cx="72" cy="60" r="12"/>
+                    <rect x="22" y="56" width="58" height="16" rx="8"/>
+                </g>
+                <g fill={tint}>
+                    <circle cx="30" cy="60" r="13"/><circle cx="52" cy="50" r="17"/><circle cx="72" cy="60" r="12"/>
+                    <rect x="22" y="56" width="58" height="16" rx="8"/>
+                </g>
+            </g>
+        );
+
+        const RainCloudArt = () => (
+            <g>
+                <CloudArt tint="#c6d2dc" line="#9fb0bf"/>
+                <Face x={51} y={58} scale={0.8} mood="sad"/>
+                {[32, 50, 68].map((x, i) => (
+                    <ellipse key={x} className="svg-drop" style={{ animationDelay: `${i * 0.35}s` }} cx={x} cy="80" rx="2.6" ry="4.2" fill="#6fb7e8"/>
+                ))}
+            </g>
+        );
+
+        const CookieArt = () => (
+            <g>
+                <path d="M50 24 C 27 24 13 43 16 62 C 33 53 43 57 50 72 C 57 57 67 53 84 62 C 87 43 73 24 50 24 Z" fill="#f2b04e" stroke={INK} strokeWidth="2.5" strokeLinejoin="round"/>
+                <path d="M50 28 C 50 42 50 56 50 66" stroke="#c98a2e" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6"/>
+                <Face x={50} y={44} scale={0.95}/>
+            </g>
+        );
+
+        const CookieOpenArt = () => (
+            <g>
+                <rect x="28" y="40" width="44" height="15" rx="4" fill="#fffdf7" stroke={INK} strokeWidth="2" transform="rotate(-6 50 47)"/>
+                <path d="M35 48 h30" stroke="#f2645a" strokeWidth="2" strokeDasharray="3 3" transform="rotate(-6 50 47)"/>
+                <path d="M36 64 C 18 60 10 46 14 32 C 26 38 34 46 39 58 Z" fill="#f2b04e" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" transform="rotate(12 28 48)"/>
+                <path d="M64 64 C 82 60 90 46 86 32 C 74 38 66 46 61 58 Z" fill="#f2b04e" stroke={INK} strokeWidth="2.5" strokeLinejoin="round" transform="rotate(-12 72 48)"/>
+                <path d="M24 24 l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5 Z" fill="#f7b733"/>
+                <path d="M74 20 l2 4 4 2 -4 2 -2 4 -2 -4 -4 -2 4 -2 Z" fill="#f79ab6"/>
+            </g>
+        );
+
+        const Sprite = ({ art: Art, size = 64, className = '', style }) => (
+            <svg viewBox="0 0 100 100" width={size} height={size} className={className} style={style} aria-hidden="true"><Art/></svg>
+        );
+
+        const VillageScene = () => (
+            <svg viewBox="0 0 440 215" className="w-full max-w-2xl mx-auto block" aria-hidden="true">
+                <g transform="translate(325,-4) scale(0.75)"><SunArt/></g>
+                <g transform="translate(20,6) scale(0.62)" className="cloud-drift"><CloudArt/></g>
+                <g transform="translate(140,-6) scale(0.5)" className="cloud-drift" style={{animationDelay:'2s'}}><CloudArt/></g>
+                <path d="M0 152 Q110 102 220 142 T440 134 L440 215 L0 215 Z" fill="#b3dd8b"/>
+                <path d="M0 182 Q150 152 300 177 T440 170 L440 215 L0 215 Z" fill="#8fce74"/>
+                <path d="M55 205 Q160 172 235 188 T410 176" stroke="#fffdf7" strokeWidth="5" strokeDasharray="0.5 12" strokeLinecap="round" fill="none" opacity="0.9"/>
+                <g transform="translate(18,98) scale(0.72)"><TreeArt/></g>
+                <g transform="translate(110,82) scale(0.88)"><HouseArt/></g>
+                <g transform="translate(228,88) scale(0.8)"><ShopArt/></g>
+                <g transform="translate(330,74) scale(0.95)"><CastleArt/></g>
+                <g transform="translate(195,148) scale(0.45)"><SproutArt/></g>
+            </svg>
+        );
+
+        const Bunting = () => (
+            <svg viewBox="0 0 400 26" preserveAspectRatio="none" className="w-full h-6 absolute top-0 left-0" aria-hidden="true">
+                <path d="M0 3 Q200 13 400 3" stroke={INK} strokeWidth="1.6" fill="none"/>
+                {[...Array(9)].map((_, i) => {
+                    const x = 20 + i * 44;
+                    const y = 3 + Math.sin((i + 0.5) / 9 * Math.PI) * 9;
+                    const colors = ['#f2645a', '#f7b733', '#7cc576', '#6fb7e8', '#f79ab6'];
+                    return <path key={i} d={`M${x} ${y} L${x + 14} ${y} L${x + 7} ${y + 13} Z`} fill={colors[i % 5]} stroke={INK} strokeWidth="1.2"/>;
+                })}
+            </svg>
+        );
+
+        // ================= 게임 상수 데이터 =================
+        const FORTUNES = [
+            { text: "주식을 사는 것이 아니라, 기업의 일부를 사는 것이다.", author: "워런 버핏" },
+            { text: "10년 보유할 주식이 아니라면 10분도 보유하지 마라.", author: "워런 버핏" },
+            { text: "가격은 당신이 지불하는 것이고, 가치는 당신이 얻는 것이다.", author: "워런 버핏" },
+            { text: "시장이 두려움에 떨 때 욕심을 내고, 욕심을 부릴 때 두려워하라.", author: "워런 버핏" },
+            { text: "투자의 제1원칙은 돈을 잃지 않는 것. 제2원칙은 제1원칙을 잊지 않는 것.", author: "워런 버핏" },
+            { text: "안전마진(Margin of Safety)이야말로 성공 투자의 핵심이다.", author: "벤저민 그레이엄" },
+            { text: "시장은 단기적으로 인기투표기계, 장기적으로는 저울이다.", author: "벤저민 그레이엄" },
+            { text: "현명한 투자자는 비관주의자에게 사서 낙관주의자에게 판다.", author: "벤저민 그레이엄" },
+            { text: "자신이 무엇을 소유하고 있는지, 왜 소유하고 있는지 알아야 한다.", author: "피터 린치" },
+            { text: "당신이 아는 것에 투자하라. 일상 속에 10루타 종목이 숨어 있다.", author: "피터 린치" },
+            { text: "주식시장에서 중요한 장기는 머리가 아니라 배짱이다.", author: "피터 린치" },
+            { text: "큰 돈은 사고파는 데 있지 않고, 기다리는 데 있다.", author: "찰리 멍거" },
+            { text: "훌륭한 기업을 적당한 가격에 사는 것이, 적당한 기업을 훌륭한 가격에 사는 것보다 낫다.", author: "찰리 멍거" },
+            { text: "뒤집어서 생각하라. 항상 뒤집어서 생각하라.", author: "찰리 멍거" },
+            { text: "복리는 세계 8대 불가사의다. 아는 자는 벌고, 모르는 자는 낸다.", author: "알베르트 아인슈타인" },
+            { text: "가격이 움직인 이유를 설명하지 못하면, 아직 그 자산을 아는 것이 아니다.", author: "포춘빌리지 촌장" },
+            { text: "뉴스에 놀라기 전에 원인을 분석하라. 브릿지 문제인지, 프로젝트 문제인지.", author: "포춘빌리지 촌장" },
+            { text: "비 오는 날에도 씨앗은 자란다. 하락장은 공부의 계절이다.", author: "포춘빌리지 촌장" },
+            { text: "기록하지 않은 매매는 배움이 없는 매매다.", author: "포춘빌리지 촌장" },
+            { text: "이웃의 수익률이 아니라 이웃의 '생각'을 배워라.", author: "포춘빌리지 촌장" },
+            { text: "시간은 훌륭한 기업의 친구이고, 평범한 기업의 적이다.", author: "워런 버핏" },
+            { text: "위험은 자신이 무엇을 하는지 모르는 데서 온다.", author: "워런 버핏" },
+            { text: "떨어지는 칼날을 잡지 말고, 땅에 꽂힌 뒤 원인을 분석하고 주워라.", author: "월가 격언" },
+            { text: "계란을 한 바구니에 담지 마라. 마을에도 여러 건물이 필요하다.", author: "월가 격언" },
+        ];
+
+        const LEVELS = [
+            { lv: 1, title: "새싹 개미", icon: "🐜", minXp: 0 },
+            { lv: 2, title: "성실한 꿀벌", icon: "🐝", minXp: 200 },
+            { lv: 3, title: "알뜰 다람쥐", icon: "🐿️", minXp: 500 },
+            { lv: 4, title: "지혜로운 부엉이", icon: "🦉", minXp: 1000 },
+            { lv: 5, title: "가치투자 여우", icon: "🦊", minXp: 2000 },
+            { lv: 6, title: "마을 촌장 곰", icon: "🐻", minXp: 3500 },
+            { lv: 7, title: "투자 현인 거북", icon: "🐢", minXp: 5500 },
+        ];
+
+        const BADGE_DEFS = [
+            { id: "first_holding", icon: "🌱", name: "첫 씨앗", desc: "첫 보유 종목 등록" },
+            { id: "first_journal", icon: "✏️", name: "첫 일기", desc: "첫 매매일지 작성" },
+            { id: "first_note", icon: "🕵️", name: "원인 탐정", desc: "첫 사건 분석노트 작성" },
+            { id: "philosopher", icon: "📜", name: "나의 철학", desc: "투자 철학 작성" },
+            { id: "first_cookie", icon: "🥠", name: "첫 쿠키", desc: "포춘쿠키 첫 개봉" },
+            { id: "streak3", icon: "🔥", name: "3일 불꽃", desc: "3일 연속 활동" },
+            { id: "streak7", icon: "🌈", name: "7일 무지개", desc: "7일 연속 활동" },
+            { id: "team", icon: "🤝", name: "같이의 가치", desc: "팀에 참여하기" },
+            { id: "note5", icon: "🔬", name: "리서치 학자", desc: "분석노트 5건 작성" },
+            { id: "journal10", icon: "📚", name: "기록의 달인", desc: "매매일지 10건 작성" },
+            { id: "rich_village", icon: "🏰", name: "번영하는 마을", desc: "총 자산 1,000만원 달성" },
+        ];
+
+        const EVENT_TYPES = [
+            { id: 'surge', label: '🚀 급등' },
+            { id: 'crash', label: '📉 급락' },
+            { id: 'hack', label: '🏴‍☠️ 해킹·보안' },
+            { id: 'news', label: '📰 뉴스·규제' },
+            { id: 'tokenomics', label: '🧮 토크노믹스' },
+            { id: 'etc', label: '🔬 기타' },
+        ];
+        const CAUSE_TYPES = [
+            { id: 'dev', label: '🧑‍💻 프로젝트 개발' },
+            { id: 'governance', label: '🏛️ 거버넌스' },
+            { id: 'bridge', label: '🌉 브릿지·인프라' },
+            { id: 'macro', label: '🌍 거시·시장' },
+            { id: 'flow', label: '📊 수급·유동성' },
+            { id: 'unknown', label: '❓ 아직 모름' },
+        ];
+
+        const CATEGORY_OPTS = [
+            { id: "stock", label: "📈 주식" },
+            { id: "coin", label: "🪙 코인" },
+            { id: "etf", label: "📦 ETF / 펀드" },
+            { id: "etc", label: "💰 기타 자산" },
+        ];
+
+        const AVATARS = ['🐜','🐝','🐿️','🦊','🐻','🐰','🐱','🦉'];
+
+        // ================= 헬퍼 함수 =================
+        const fmtDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const todayStr = () => fmtDate(new Date());
+        const yesterdayStr = () => fmtDate(new Date(Date.now() - 86400000));
+
+        const getLevel = (xp) => { let cur = LEVELS[0]; for (const l of LEVELS) if (xp >= l.minXp) cur = l; return cur; };
+        const getNextLevel = (xp) => LEVELS.find(l => l.minXp > xp) || null;
+
+        const fortuneOfToday = () => {
+            const t = todayStr();
+            let h = 0;
+            for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) % 100000;
+            return FORTUNES[h % FORTUNES.length];
+        };
+
+        const buildingFor = (amt) => {
+            if (amt >= 20000000) return { key: 'castle', name: "반짝이는 성" };
+            if (amt >= 5000000)  return { key: 'shop', name: "큰 상점" };
+            if (amt >= 1000000)  return { key: 'house', name: "아늑한 집" };
+            if (amt >= 500000)   return { key: 'tree', name: "튼튼한 나무" };
+            if (amt >= 100000)   return { key: 'sapling', name: "자라는 묘목" };
+            return { key: 'seed', name: "새싹" };
+        };
+        const BUILDING_ART = { seed: SproutArt, sapling: SaplingArt, tree: TreeArt, house: HouseArt, shop: ShopArt, castle: CastleArt };
+
+        const loadLS = (key, fallback) => {
+            const saved = localStorage.getItem(key);
+            if (saved) { try { return JSON.parse(saved); } catch(e) {} }
+            return fallback;
+        };
+
+        // 증권사/거래소에서 복사한 텍스트를 관대하게 파싱
+        function parsePastedTrades(text) {
+            const rows = [];
+            text.split(/\r?\n/).forEach(raw => {
+                const line = raw.trim();
+                if (!line) return;
+                const side = /매도|SELL/i.test(line) ? 'SELL' : (/매수|BUY/i.test(line) ? 'BUY' : null);
+                if (!side) return;
+                const dm = line.match(/(20\d{2})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/);
+                const date = dm ? `${dm[1]}-${String(dm[2]).padStart(2, '0')}-${String(dm[3]).padStart(2, '0')}` : todayStr();
+                const cleaned = (dm ? line.replace(dm[0], ' ') : line).replace(/매수|매도|BUY|SELL/gi, ' ');
+                const name = (cleaned.match(/[가-힣A-Za-z][가-힣A-Za-z0-9.]{0,19}/g) || [])
+                    .map(s => s.trim())
+                    .filter(s => s && !/^(체결|주문|현금|신용|보통|완료|정정|취소|KRW|USDT|원|주|개)$/i.test(s))[0] || '';
+                const nums = (cleaned.match(/\d[\d,]*(?:\.\d+)?/g) || []).map(s => Number(s.replace(/,/g, ''))).filter(n => n > 0);
+                const price = nums.length ? Math.max(...nums) : 0;
+                const qty = nums.length > 1 ? Math.min(...nums) : 0;
+                if (name) rows.push({ date, name, side, qty, price });
+            });
+            return rows.slice(0, 100);
+        }
+
+        // ================= 메인 앱 =================
         function App() {
-            // User Session (Defaults to EMPTY / Not Logged In, saved in LocalStorage)
-            const [user, setUser] = useState(() => {
-                const saved = localStorage.getItem('gachi_user_clean');
-                if (saved) {
-                    try { return JSON.parse(saved); } catch(e) {}
-                }
-                return {
-                    isLoggedIn: false,
-                    provider: '',
-                    nickname: '',
-                    avatar: '🎩',
-                    totalCapitalKrw: 0,
-                    totalProfitKrw: 0,
-                    returnPct: 0,
-                    xp: 0,
-                    streak: 0
-                };
-            });
+            // ---- 유저 세션 (기존 키 호환) ----
+            const [user, setUser] = useState(() => loadLS('gachi_user_clean', {
+                isLoggedIn: false, provider: '', nickname: '', avatar: '🐜', philosophy: '',
+            }));
+            useEffect(() => { localStorage.setItem('gachi_user_clean', JSON.stringify(user)); }, [user]);
 
+            // ---- 보유 종목 / 매매일지 / 분석노트 / 팀 ----
+            const [holdings, setHoldings] = useState(() => loadLS('gachi_holdings_clean', []));
+            useEffect(() => { localStorage.setItem('gachi_holdings_clean', JSON.stringify(holdings)); }, [holdings]);
+
+            const [tradeLogs, setTradeLogs] = useState(() => loadLS('gachi_tradelogs_clean', []));
+            useEffect(() => { localStorage.setItem('gachi_tradelogs_clean', JSON.stringify(tradeLogs)); }, [tradeLogs]);
+
+            const [notes, setNotes] = useState(() => loadLS('gachi_notes_v1', []));
+            useEffect(() => { localStorage.setItem('gachi_notes_v1', JSON.stringify(notes)); }, [notes]);
+
+            const [team, setTeam] = useState(() => loadLS('gachi_team_clean', null));
             useEffect(() => {
-                localStorage.setItem('gachi_user_clean', JSON.stringify(user));
-            }, [user]);
-
-            // Holdings List (Defaults to COMPLETELY EMPTY Array [])
-            const [holdings, setHoldings] = useState(() => {
-                const saved = localStorage.getItem('gachi_holdings_clean');
-                if (saved) {
-                    try { return JSON.parse(saved); } catch(e) {}
-                }
-                return [];
-            });
-
-            useEffect(() => {
-                localStorage.setItem('gachi_holdings_clean', JSON.stringify(holdings));
-            }, [holdings]);
-
-            // Trade Logs List (Defaults to COMPLETELY EMPTY Array [])
-            const [tradeLogs, setTradeLogs] = useState(() => {
-                const saved = localStorage.getItem('gachi_tradelogs_clean');
-                if (saved) {
-                    try { return JSON.parse(saved); } catch(e) {}
-                }
-                return [];
-            });
-
-            useEffect(() => {
-                localStorage.setItem('gachi_tradelogs_clean', JSON.stringify(tradeLogs));
-            }, [tradeLogs]);
-
-            // Team State (Defaults to NULL / Empty)
-            const [team, setTeam] = useState(() => {
-                const saved = localStorage.getItem('gachi_team_clean');
-                if (saved) {
-                    try { return JSON.parse(saved); } catch(e) {}
-                }
-                return null;
-            });
-
-            useEffect(() => {
-                if (team) {
-                    localStorage.setItem('gachi_team_clean', JSON.stringify(team));
-                } else {
-                    localStorage.removeItem('gachi_team_clean');
-                }
+                if (team) localStorage.setItem('gachi_team_clean', JSON.stringify(team));
+                else localStorage.removeItem('gachi_team_clean');
             }, [team]);
 
-            // UI Tabs & Modals
-            const [activeTab, setActiveTab] = useState('portfolio');
+            // ---- 게임 상태 ----
+            const [game, setGame] = useState(() => loadLS('gachi_game_v1', {
+                xp: 0, streak: 0, lastActiveDate: null,
+                lastCookieDate: null, lastPriceCheckDate: null,
+                badges: {},
+            }));
+            useEffect(() => { localStorage.setItem('gachi_game_v1', JSON.stringify(game)); }, [game]);
+
+            // ---- 업비트 연동 키 (브라우저에만 저장) ----
+            const [upbitKeys, setUpbitKeys] = useState(() => loadLS('gachi_upbit_v1', { accessKey: '', secretKey: '' }));
+            useEffect(() => { localStorage.setItem('gachi_upbit_v1', JSON.stringify(upbitKeys)); }, [upbitKeys]);
+
+            // ---- UI 상태 ----
+            const [activeTab, setActiveTab] = useState(() => {
+                const t = new URLSearchParams(window.location.search).get('tab');
+                return ['village', 'portfolio', 'journal', 'cookie', 'social'].includes(t) ? t : 'village';
+            });
+            const [journalView, setJournalView] = useState('trades');
             const [showGuideModal, setShowGuideModal] = useState(false);
             const [loginModalOpen, setLoginModalOpen] = useState(false);
             const [addHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
+            const [priceModalTarget, setPriceModalTarget] = useState(null);
             const [journalFormOpen, setJournalFormOpen] = useState(false);
+            const [noteFormOpen, setNoteFormOpen] = useState(false);
+            const [importModalOpen, setImportModalOpen] = useState(false);
+            const [importMode, setImportMode] = useState('paste');
             const [createTeamModalOpen, setCreateTeamModalOpen] = useState(false);
             const [joinTeamModalOpen, setJoinTeamModalOpen] = useState(false);
             const [inviteModalOpen, setInviteModalOpen] = useState(false);
+            const [cookieCracked, setCookieCracked] = useState(false);
+            const [toasts, setToasts] = useState([]);
+            const [copiedNotice, setCopiedNotice] = useState(false);
 
-            // Form Input States
+            // ---- 폼 입력 ----
             const [inputNickname, setInputNickname] = useState('');
             const [selectedProvider, setSelectedProvider] = useState('kakao');
+            const [selectedAvatar, setSelectedAvatar] = useState('🐜');
             const [newHoldingName, setNewHoldingName] = useState('');
             const [newHoldingPrice, setNewHoldingPrice] = useState('');
             const [newHoldingQty, setNewHoldingQty] = useState('');
+            const [newHoldingCat, setNewHoldingCat] = useState('stock');
+            const [priceInput, setPriceInput] = useState('');
             const [promptText, setPromptText] = useState('');
             const [manualSymbol, setManualSymbol] = useState('');
             const [manualSide, setManualSide] = useState('BUY');
-            const [manualAmount, setManualAmount] = useState('');
             const [manualPrice, setManualPrice] = useState('');
             const [manualPnl, setManualPnl] = useState('0');
             const [manualStrategy, setManualStrategy] = useState('');
+            const [manualMemo, setManualMemo] = useState('');
+            const [noteAsset, setNoteAsset] = useState('');
+            const [noteEvent, setNoteEvent] = useState('crash');
+            const [noteCause, setNoteCause] = useState('unknown');
+            const [noteWhat, setNoteWhat] = useState('');
+            const [noteAnalysis, setNoteAnalysis] = useState('');
+            const [noteConclusion, setNoteConclusion] = useState('');
             const [newTeamNameInput, setNewTeamNameInput] = useState('');
             const [joinCodeInput, setJoinCodeInput] = useState('');
-            const [copiedNotice, setCopiedNotice] = useState(false);
+            const [philosophyInput, setPhilosophyInput] = useState('');
+            const [importText, setImportText] = useState('');
+            const [upbitBusy, setUpbitBusy] = useState(false);
+            const [upbitMsg, setUpbitMsg] = useState(null);
+            const [thermo, setThermo] = useState(null);
+            const [thermoBusy, setThermoBusy] = useState(false);
+            const [thermoErr, setThermoErr] = useState(null);
 
-            // Real Login Handler
+            // ---- 파생 값 ----
+            const totalInvest = holdings.reduce((a, h) => a + (h.avgPrice * h.qty), 0);
+            const totalEval = holdings.reduce((a, h) => a + ((h.currentPrice || h.avgPrice) * h.qty), 0);
+            const totalPnl = totalEval - totalInvest;
+            const totalPnlPct = totalInvest > 0 ? (totalPnl / totalInvest) * 100 : 0;
+            const weather = holdings.length === 0 ? 'clear' : (totalPnlPct >= 3 ? 'festival' : totalPnlPct >= 0 ? 'sunny' : 'rain');
+            const level = getLevel(game.xp);
+            const nextLevel = getNextLevel(game.xp);
+            const today = todayStr();
+            const fortune = fortuneOfToday();
+            const cookieOpenedToday = game.lastCookieDate === today;
+            const importPreview = importText.trim() ? parsePastedTrades(importText) : [];
+
+            // ---- 토스트 ----
+            const pushToast = (msg, icon = '🎉') => {
+                const id = Date.now() + Math.random();
+                setToasts(t => [...t, { id, msg, icon }]);
+                setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 3200);
+            };
+
+            // ---- XP + 스트릭 ----
+            const gainXp = (amount, reason) => {
+                setGame(prev => {
+                    let streak = prev.streak;
+                    if (prev.lastActiveDate !== today) {
+                        streak = prev.lastActiveDate === yesterdayStr() ? prev.streak + 1 : 1;
+                    }
+                    return { ...prev, xp: prev.xp + amount, streak, lastActiveDate: today };
+                });
+                pushToast(`+${amount} XP · ${reason}`, '⭐');
+            };
+
+            // ---- 레벨업 감지 ----
+            const prevLevelRef = useRef(level.lv);
+            useEffect(() => {
+                if (level.lv > prevLevelRef.current) {
+                    pushToast(`레벨업! Lv.${level.lv} ${level.icon} ${level.title}`, '🎊');
+                }
+                prevLevelRef.current = level.lv;
+            }, [level.lv]);
+
+            // ---- 배지 자동 지급 ----
+            useEffect(() => {
+                const earned = {
+                    first_holding: holdings.length >= 1,
+                    first_journal: tradeLogs.length >= 1,
+                    first_note: notes.length >= 1,
+                    philosopher: !!(user.philosophy && user.philosophy.trim()),
+                    first_cookie: !!game.lastCookieDate,
+                    streak3: game.streak >= 3,
+                    streak7: game.streak >= 7,
+                    team: !!team,
+                    note5: notes.length >= 5,
+                    journal10: tradeLogs.length >= 10,
+                    rich_village: totalEval >= 10000000,
+                };
+                const missing = BADGE_DEFS.filter(b => earned[b.id] && !game.badges[b.id]);
+                if (missing.length > 0) {
+                    setGame(prev => {
+                        const badges = { ...prev.badges };
+                        missing.forEach(b => { badges[b.id] = today; });
+                        return { ...prev, badges };
+                    });
+                    missing.forEach(b => pushToast(`배지 획득! ${b.icon} ${b.name}`, '🏅'));
+                }
+            }, [holdings.length, tradeLogs.length, notes.length, user.philosophy, game.lastCookieDate, game.streak, team, totalEval]);
+
+            // ---- 로그인 / 로그아웃 ----
             const handleExecuteLogin = (e) => {
                 e.preventDefault();
                 if (!inputNickname.trim()) return;
-
-                const name = inputNickname.trim();
-                setUser({
+                setUser(prev => ({
+                    ...prev,
                     isLoggedIn: true,
                     provider: selectedProvider,
-                    nickname: name,
-                    avatar: selectedProvider === 'kakao' ? '🟡' : selectedProvider === 'naver' ? '🟢' : '🔵',
-                    totalCapitalKrw: holdings.reduce((acc, h) => acc + h.evalAmount, 0),
-                    totalProfitKrw: 0,
-                    returnPct: 0,
-                    xp: 100,
-                    streak: 1
-                });
+                    nickname: inputNickname.trim(),
+                    avatar: selectedAvatar,
+                }));
                 setLoginModalOpen(false);
                 setInputNickname('');
-                setActiveTab('portfolio');
+                setActiveTab('village');
+                gainXp(30, '마을에 오신 것을 환영해요!');
             };
-
             const handleLogout = () => {
-                setUser({
-                    isLoggedIn: false,
-                    provider: '',
-                    nickname: '',
-                    avatar: '🎩',
-                    totalCapitalKrw: 0,
-                    totalProfitKrw: 0,
-                    returnPct: 0,
-                    xp: 0,
-                    streak: 0
-                });
-                localStorage.removeItem('gachi_user_clean');
+                setUser(prev => ({ ...prev, isLoggedIn: false }));
             };
 
-            // Add Real Holding Entry
+            // ---- 종목 ----
             const handleAddHoldingSubmit = (e) => {
                 e.preventDefault();
                 if (!newHoldingName.trim() || !newHoldingPrice || !newHoldingQty) return;
-
                 const price = Number(newHoldingPrice);
                 const qty = Number(newHoldingQty);
-                const evalAmt = price * qty;
-
+                const cat = CATEGORY_OPTS.find(c => c.id === newHoldingCat) || CATEGORY_OPTS[0];
                 const newH = {
                     id: Date.now(),
                     name: newHoldingName.trim(),
                     symbol: `$${newHoldingName.trim()}`,
-                    category: '📈 실전 보유 자산',
-                    qty: qty,
-                    avgPrice: price,
-                    currentPrice: price,
-                    evalAmount: evalAmt,
-                    pnlRate: 0.0
+                    category: cat.label,
+                    qty, avgPrice: price, currentPrice: price,
+                    evalAmount: price * qty,
+                    pnlRate: 0,
                 };
-
-                const updatedHoldings = [...holdings, newH];
-                setHoldings(updatedHoldings);
-
-                // Update Total Capital
-                const totalCap = updatedHoldings.reduce((acc, h) => acc + h.evalAmount, 0);
-                setUser(prev => ({ ...prev, totalCapitalKrw: totalCap }));
-
-                setNewHoldingName('');
-                setNewHoldingPrice('');
-                setNewHoldingQty('');
+                setHoldings(prev => [...prev, newH]);
+                setNewHoldingName(''); setNewHoldingPrice(''); setNewHoldingQty('');
                 setAddHoldingModalOpen(false);
-                alert(`🎉 [${newH.name}] 종목 ${evalAmt.toLocaleString()}원이 포트폴리오에 등록 저장되었습니다!`);
+                gainXp(50, `${newH.name} 씨앗을 심었어요!`);
             };
 
-            // Remove Holding Entry
             const handleRemoveHolding = (id) => {
-                const updated = holdings.filter(h => h.id !== id);
-                setHoldings(updated);
-                const totalCap = updated.reduce((acc, h) => acc + h.evalAmount, 0);
-                setUser(prev => ({ ...prev, totalCapitalKrw: totalCap }));
+                const h = holdings.find(x => x.id === id);
+                if (h && !confirm(`'${h.name}' 건물을 마을에서 철거할까요?`)) return;
+                setHoldings(prev => prev.filter(x => x.id !== id));
             };
 
-            // Prompt Submit
+            const handleUpdatePrice = (e) => {
+                e.preventDefault();
+                if (!priceModalTarget || !priceInput) return;
+                const newPrice = Number(priceInput);
+                setHoldings(prev => prev.map(h => {
+                    if (h.id !== priceModalTarget.id) return h;
+                    return {
+                        ...h, currentPrice: newPrice,
+                        evalAmount: newPrice * h.qty,
+                        pnlRate: h.avgPrice > 0 ? ((newPrice - h.avgPrice) / h.avgPrice) * 100 : 0,
+                    };
+                }));
+                if (game.lastPriceCheckDate !== today) {
+                    setGame(prev => ({ ...prev, lastPriceCheckDate: today }));
+                    gainXp(15, '오늘의 시세 점검 완료!');
+                } else {
+                    pushToast('시세가 갱신되었어요!', '📊');
+                }
+                setPriceModalTarget(null);
+                setPriceInput('');
+            };
+
+            // ---- 매매일지 ----
+            const addTradeLog = (log, xpReason = '매매일지를 기록했어요!') => {
+                setTradeLogs(prev => [{ id: Date.now() + Math.random(), date: today, ...log }, ...prev]);
+                gainXp(30, xpReason);
+            };
+
             const handlePromptSubmit = (e) => {
                 e.preventDefault();
                 if (!promptText.trim()) return;
-
                 const text = promptText.trim();
-                const newTrade = {
-                    id: Date.now(),
-                    date: new Date().toISOString().split('T')[0],
+                addTradeLog({
                     symbol: text.startsWith('$') ? text.split(' ')[0] : `$${text.split(' ')[0]}`,
                     side: text.includes('매도') ? 'SELL' : 'BUY',
-                    price: 0,
-                    amountKrw: 0,
-                    pnlRate: 0.0,
-                    strategy: '프롬프트 입력 일지',
-                    aiAnalysis: `자연어 '${text}' 매매기록 저장 완료.`
-                };
-
-                setTradeLogs(prev => [newTrade, ...prev]);
+                    price: 0, pnlRate: 0,
+                    strategy: '빠른 기록',
+                    memo: text,
+                });
                 setPromptText('');
-                alert('🎉 매매일지가 정상 저장되었습니다!');
             };
 
-            // Manual Journal Submit
             const handleManualJournalSubmit = (e) => {
                 e.preventDefault();
                 if (!manualSymbol.trim()) return;
-
-                const newTrade = {
-                    id: Date.now(),
-                    date: new Date().toISOString().split('T')[0],
+                addTradeLog({
                     symbol: `$${manualSymbol.trim()}`,
                     side: manualSide,
                     price: Number(manualPrice) || 0,
-                    amountKrw: Number(manualAmount) || 0,
                     pnlRate: Number(manualPnl) || 0,
                     strategy: manualStrategy.trim() || '직접 작성 일지',
-                    aiAnalysis: '상세 매매일지 등록 완료.'
-                };
-
-                setTradeLogs(prev => [newTrade, ...prev]);
-                setManualSymbol('');
-                setManualAmount('');
-                setManualPrice('');
-                setManualPnl('0');
-                setManualStrategy('');
+                    memo: manualMemo.trim(),
+                });
+                setManualSymbol(''); setManualPrice(''); setManualPnl('0');
+                setManualStrategy(''); setManualMemo('');
                 setJournalFormOpen(false);
-                alert('🎉 상세 매매일지가 정상 저장되었습니다!');
             };
 
-            // Create Team
+            // ---- 분석노트 (원인 분석 = 최고 XP!) ----
+            const handleNoteSubmit = (e) => {
+                e.preventDefault();
+                if (!noteAsset.trim() || !noteWhat.trim()) return;
+                const newNote = {
+                    id: Date.now(),
+                    date: today,
+                    asset: noteAsset.trim(),
+                    eventType: noteEvent,
+                    causeType: noteCause,
+                    what: noteWhat.trim(),
+                    analysis: noteAnalysis.trim(),
+                    conclusion: noteConclusion.trim(),
+                };
+                setNotes(prev => [newNote, ...prev]);
+                setNoteAsset(''); setNoteWhat(''); setNoteAnalysis(''); setNoteConclusion('');
+                setNoteEvent('crash'); setNoteCause('unknown');
+                setNoteFormOpen(false);
+                gainXp(50, '사건 원인 분석노트 완성! 진짜 공부예요');
+            };
+
+            // ---- 붙여넣기 가져오기 ----
+            const handlePasteImport = () => {
+                const rows = importPreview.filter(r => r.name && r.side);
+                if (!rows.length) return;
+                setTradeLogs(prev => [
+                    ...rows.map((r, i) => ({
+                        id: Date.now() + i,
+                        date: r.date, symbol: `$${r.name}`, side: r.side,
+                        price: r.price, pnlRate: 0,
+                        strategy: '증권사 내역 가져오기',
+                        memo: `수량 ${r.qty || '-'} · 단가 ${r.price ? r.price.toLocaleString() : '-'}원`,
+                    })),
+                    ...prev,
+                ]);
+                gainXp(30, `거래내역 ${rows.length}건을 가져왔어요!`);
+                setImportText('');
+                setImportModalOpen(false);
+            };
+
+            // ---- 업비트 연동 ----
+            const friendlyUpbitError = (e) => {
+                const m = String(e && e.message || '');
+                if (m === 'NETWORK' || m === 'NOPROXY') return '프록시 서버에 연결할 수 없어요. 이 기능은 Vercel에 배포된 주소(또는 `vercel dev` 로컬 서버)에서만 동작해요. 정적 파일로 열면 사용할 수 없답니다.';
+                if (/invalid_access_key|jwt_verification|invalid_query_payload/i.test(m)) return 'API 키가 올바르지 않아요. 업비트 마이페이지에서 발급한 키를 다시 확인해주세요.';
+                if (/no_authorization_ip|out_of_scope|allowed_ip/i.test(m)) return '이 IP 또는 권한으로는 조회가 안 돼요. 업비트 API 키 설정에서 자산조회·주문조회 권한과 접속 IP 등록을 확인해주세요.';
+                return `업비트 연동 실패: ${m}`;
+            };
+
+            const upbitCall = async (endpoint, extra = {}) => {
+                let res;
+                try {
+                    res = await fetch(`/api/upbit/${endpoint}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ accessKey: upbitKeys.accessKey.trim(), secretKey: upbitKeys.secretKey.trim(), ...extra }),
+                    });
+                } catch (err) { throw new Error('NETWORK'); }
+                let data = null;
+                try { data = await res.json(); } catch (err) { throw new Error('NOPROXY'); }
+                if (!res.ok) throw new Error((data && data.error && data.error.message) || (data && data.message) || `HTTP_${res.status}`);
+                return data;
+            };
+
+            const handleUpbitBalances = async () => {
+                if (!upbitKeys.accessKey.trim() || !upbitKeys.secretKey.trim()) { setUpbitMsg({ ok: false, text: '업비트 Access Key와 Secret Key를 먼저 입력해주세요.' }); return; }
+                setUpbitBusy(true); setUpbitMsg(null);
+                try {
+                    const accounts = await upbitCall('accounts');
+                    const coins = (Array.isArray(accounts) ? accounts : []).filter(a => a.currency !== 'KRW' && Number(a.balance) > 0);
+                    if (!coins.length) { setUpbitMsg({ ok: false, text: '가져올 코인 잔고가 없어요.' }); return; }
+                    let tickers = {};
+                    try {
+                        const ms = coins.map(c => `KRW-${c.currency}`).join(',');
+                        const t = await fetch(`/api/upbit/ticker?markets=${ms}`).then(r => r.json());
+                        (Array.isArray(t) ? t : []).forEach(x => { tickers[x.market] = x.trade_price; });
+                    } catch (err) {}
+                    setHoldings(prev => {
+                        const next = [...prev];
+                        coins.forEach((c, i) => {
+                            const qty = Number(c.balance);
+                            const avg = Number(c.avg_buy_price) || 0;
+                            const cur = tickers[`KRW-${c.currency}`] || avg;
+                            const h = {
+                                id: Date.now() + i,
+                                name: c.currency, symbol: `$${c.currency}`, category: '🪙 코인',
+                                qty, avgPrice: avg, currentPrice: cur,
+                                evalAmount: cur * qty,
+                                pnlRate: avg > 0 ? ((cur - avg) / avg) * 100 : 0,
+                            };
+                            const idx = next.findIndex(x => x.name === c.currency);
+                            if (idx >= 0) next[idx] = { ...next[idx], ...h, id: next[idx].id };
+                            else next.push(h);
+                        });
+                        return next;
+                    });
+                    gainXp(30, `업비트 잔고 ${coins.length}종목을 마을에 심었어요!`);
+                    setUpbitMsg({ ok: true, text: `✅ 코인 ${coins.length}개 잔고를 실시간 시세와 함께 가져왔어요!` });
+                } catch (e) { setUpbitMsg({ ok: false, text: friendlyUpbitError(e) }); }
+                finally { setUpbitBusy(false); }
+            };
+
+            const handleUpbitOrders = async () => {
+                if (!upbitKeys.accessKey.trim() || !upbitKeys.secretKey.trim()) { setUpbitMsg({ ok: false, text: '업비트 Access Key와 Secret Key를 먼저 입력해주세요.' }); return; }
+                setUpbitBusy(true); setUpbitMsg(null);
+                try {
+                    const orders = await upbitCall('orders');
+                    const done = (Array.isArray(orders) ? orders : []).filter(o => Number(o.executed_volume) > 0);
+                    const fresh = done.filter(o => !tradeLogs.some(l => l.extId === o.uuid));
+                    if (!fresh.length) { setUpbitMsg({ ok: true, text: '새로 가져올 체결내역이 없어요. (이미 다 들어와 있어요!)' }); return; }
+                    setTradeLogs(prev => [
+                        ...fresh.map((o, i) => ({
+                            id: Date.now() + i,
+                            extId: o.uuid,
+                            date: (o.created_at || '').slice(0, 10) || today,
+                            symbol: `$${(o.market || '').replace('KRW-', '').replace('USDT-', '').replace('BTC-', '')}`,
+                            side: o.side === 'bid' ? 'BUY' : 'SELL',
+                            price: Number(o.price || o.avg_price || 0),
+                            pnlRate: 0,
+                            strategy: '업비트 자동 연동',
+                            memo: `${o.market} · 체결수량 ${o.executed_volume}`,
+                        })),
+                        ...prev,
+                    ]);
+                    gainXp(30, `업비트 체결내역 ${fresh.length}건을 가져왔어요!`);
+                    setUpbitMsg({ ok: true, text: `✅ 체결내역 ${fresh.length}건을 매매일지에 저장했어요!` });
+                } catch (e) { setUpbitMsg({ ok: false, text: friendlyUpbitError(e) }); }
+                finally { setUpbitBusy(false); }
+            };
+
+            // ---- 시장 온도계 (퀀트 미니 위젯) ----
+            const handleThermo = async () => {
+                setThermoBusy(true); setThermoErr(null);
+                try {
+                    const res = await fetch('/api/upbit/ticker?markets=KRW-BTC,USDT-BTC,KRW-USDT');
+                    const t = await res.json();
+                    if (!Array.isArray(t)) throw new Error((t && t.error && t.error.message) || 'NOPROXY');
+                    const find = (m) => t.find(x => x.market === m);
+                    const krwBtc = find('KRW-BTC'), usdtBtc = find('USDT-BTC'), krwUsdt = find('KRW-USDT');
+                    if (!krwBtc || !usdtBtc || !krwUsdt) throw new Error('시세 데이터가 부족해요');
+                    const implied = usdtBtc.trade_price * krwUsdt.trade_price;
+                    const spread = (krwBtc.trade_price / implied - 1) * 100;
+                    setThermo({
+                        krwBtc: krwBtc.trade_price,
+                        implied, spread,
+                        vol: krwBtc.acc_trade_price_24h,
+                        at: new Date().toLocaleTimeString('ko-KR'),
+                    });
+                } catch (e) {
+                    const m = String(e && e.message || '');
+                    setThermoErr(m.includes('NOPROXY') || m.includes('fetch') || m.includes('JSON')
+                        ? '온도계는 Vercel 배포 주소(프록시 서버)에서만 작동해요.'
+                        : `측정 실패: ${m}`);
+                } finally { setThermoBusy(false); }
+            };
+
+            // ---- 포춘쿠키 ----
+            const handleCrackCookie = () => {
+                if (cookieOpenedToday) return;
+                setCookieCracked(true);
+                setGame(prev => ({ ...prev, lastCookieDate: today }));
+                gainXp(20, '오늘의 포춘쿠키 개봉!');
+            };
+
+            // ---- 투자 철학 ----
+            const handleSavePhilosophy = (e) => {
+                e.preventDefault();
+                if (!philosophyInput.trim()) return;
+                const isFirst = !(user.philosophy && user.philosophy.trim());
+                setUser(prev => ({ ...prev, philosophy: philosophyInput.trim() }));
+                setPhilosophyInput('');
+                if (isFirst) gainXp(20, '나의 투자 철학을 새겼어요!');
+                else pushToast('투자 철학을 다듬었어요!', '📜');
+            };
+
+            // ---- 팀 ----
             const handleCreateTeamSubmit = (e) => {
                 e.preventDefault();
                 if (!newTeamNameInput.trim()) return;
-
                 const randomCode = 'TEAM' + Math.floor(100 + Math.random() * 900);
-                setTeam({
-                    name: newTeamNameInput.trim(),
-                    code: randomCode,
-                    membersCount: 1,
-                    leader: user.nickname || '나'
-                });
-
+                setTeam({ name: newTeamNameInput.trim(), code: randomCode, membersCount: 1, leader: user.nickname || '나' });
                 setNewTeamNameInput('');
                 setCreateTeamModalOpen(false);
-                alert(`🎉 팀 '${newTeamNameInput.trim()}'이 생성되었습니다! (초대코드: ${randomCode})`);
+                gainXp(40, '마을 연합을 결성했어요!');
             };
-
-            // Join Team
             const handleJoinTeamSubmit = (e) => {
                 e.preventDefault();
                 if (!joinCodeInput.trim()) return;
-
                 const code = joinCodeInput.trim().toUpperCase();
-                setTeam({
-                    name: `초대 팀 (${code})`,
-                    code: code,
-                    membersCount: 2,
-                    leader: '팀장'
-                });
-
+                setTeam({ name: `초대 팀 (${code})`, code, membersCount: 2, leader: '팀장' });
                 setJoinCodeInput('');
                 setJoinTeamModalOpen(false);
-                alert(`🎉 팀 초대코드 '${code}' 팀에 정상 조인되었습니다!`);
+                gainXp(40, '이웃 마을과 연결되었어요!');
             };
-
             const handleCopyLink = () => {
                 navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?invite=${team ? team.code : ''}`);
                 setCopiedNotice(true);
                 setTimeout(() => setCopiedNotice(false), 3000);
             };
 
+            // ---- 오늘의 퀘스트 (분석이 최고 보상!) ----
+            const quests = [
+                { id: 'note', icon: '🕵️', label: '사건 원인 분석노트 쓰기', xp: 50, done: notes.some(n => n.date === today), go: () => { setActiveTab('journal'); setJournalView('notes'); } },
+                { id: 'journal', icon: '📝', label: '매매일지 1건 기록하기', xp: 30, done: tradeLogs.some(l => l.date === today), go: () => setActiveTab('journal') },
+                { id: 'cookie', icon: '🥠', label: '오늘의 포춘쿠키 열기', xp: 20, done: cookieOpenedToday, go: () => setActiveTab('cookie') },
+                { id: 'price', icon: '📊', label: '보유 종목 시세 점검하기', xp: 15, done: game.lastPriceCheckDate === today, go: () => setActiveTab('portfolio') },
+            ];
+            const questsDone = quests.filter(q => q.done).length;
+
+            const eventLabel = (id) => (EVENT_TYPES.find(x => x.id === id) || {}).label || id;
+            const causeLabel = (id) => (CAUSE_TYPES.find(x => x.id === id) || {}).label || id;
+
+            // ================= 렌더링 =================
+            const TABS = [
+                { id: 'village', icon: '🏡', label: '마을' },
+                { id: 'portfolio', icon: '📊', label: '투자종목' },
+                { id: 'journal', icon: '📝', label: '기록·분석' },
+                { id: 'cookie', icon: '🥠', label: '포춘쿠키' },
+                { id: 'social', icon: '👥', label: '같이하기' },
+            ];
+
+            const inputCls = "w-full bg-[#fdf6e9] border-2 border-[#ecd9b8] p-3 rounded-xl focus:border-amber-400 text-sm";
+
             return (
                 <div className="min-h-screen">
-                    {/* Header */}
-                    <header className="bg-slate-900 text-white px-4 md:px-8 py-3.5 sticky top-0 z-40 shadow-md border-b border-slate-800 flex justify-between items-center font-jua">
-                        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setActiveTab('portfolio')}>
-                            <div className="bg-gradient-to-tr from-indigo-500 to-sky-400 p-2.5 rounded-2xl shadow-sm flex items-center justify-center">
-                                <i className="fa-solid fa-chart-line text-white text-lg"></i>
-                            </div>
-                            <div>
-                                <span className="font-black text-xl tracking-tight text-white">같이투자 <span className="text-xs text-sky-300 font-normal">소셜 트레이딩</span></span>
+                    {/* ===================== 헤더 ===================== */}
+                    <header className="bg-[#fffdf7]/95 backdrop-blur border-b-2 border-[#ecd9b8] px-3 md:px-8 py-2.5 sticky top-0 z-40 flex justify-between items-center">
+                        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setActiveTab('village')}>
+                            <Sprite art={HouseArt} size={40} className="floaty"/>
+                            <div className="leading-tight">
+                                <span className="font-black text-lg text-[#5b4432] block">같이투자</span>
+                                <span className="text-[10px] text-amber-600 -mt-1 block">포춘빌리지 · 같이 배우는 가치투자</span>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-2 text-xs">
-                            <button
-                                type="button"
-                                onClick={() => setShowGuideModal(true)}
-                                className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-black px-3.5 py-1.5 rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer z-50"
-                            >
-                                <i className="fa-solid fa-circle-question text-sm"></i>
-                                <span>사용방법</span>
+                            {user.isLoggedIn && (
+                                <div className="hidden sm:flex items-center gap-1.5 bg-amber-50 border-2 border-amber-200 px-3 py-1.5 rounded-2xl">
+                                    <span>{level.icon}</span>
+                                    <span className="font-black text-amber-800">Lv.{level.lv}</span>
+                                    <span className="text-amber-500">·</span>
+                                    <span className="text-amber-700">⭐ {game.xp}</span>
+                                    {game.streak > 1 && (<span className="text-orange-600">🔥 {game.streak}일</span>)}
+                                </div>
+                            )}
+                            <button type="button" onClick={() => setShowGuideModal(true)}
+                                    className="btn3d bg-amber-300 hover:bg-amber-200 text-[#5b4432] font-black px-3 py-1.5 rounded-2xl flex items-center gap-1.5">
+                                <i className="fa-solid fa-circle-question"></i>
+                                <span className="hidden sm:inline">놀이법</span>
                             </button>
-
                             {user.isLoggedIn ? (
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-slate-800 text-white font-bold px-3 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1.5">
+                                <div className="flex items-center gap-1.5">
+                                    <div className="bg-white border-2 border-[#ecd9b8] font-bold px-3 py-1.5 rounded-2xl flex items-center gap-1.5 text-[#5b4432]">
                                         <span>{user.avatar}</span>
                                         <span>{user.nickname}</span>
-                                        <span className="bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded">{user.provider.toUpperCase()}</span>
                                     </div>
-                                    <button onClick={handleLogout} className="bg-rose-950 text-rose-300 font-bold px-2.5 py-1.5 rounded-xl border border-rose-800 hover:bg-rose-900 transition">
+                                    <button onClick={handleLogout} className="text-[11px] text-stone-400 hover:text-rose-500 font-bold px-1.5 py-1.5 transition">
                                         로그아웃
                                     </button>
                                 </div>
                             ) : (
-                                <button onClick={() => setLoginModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-3.5 py-1.5 rounded-xl shadow-sm transition">
-                                    로그인 / 회원가입
+                                <button onClick={() => setLoginModalOpen(true)} className="btn3d bg-emerald-400 hover:bg-emerald-300 text-[#1e3b16] font-black px-3.5 py-1.5 rounded-2xl">
+                                    입주하기
                                 </button>
                             )}
                         </div>
                     </header>
 
-                    {/* ========================================================================= */}
-                    {/* SCREEN 1: LANDING PAGE (로그인 전 화면) */}
-                    {/* ========================================================================= */}
+                    {/* ===================== 랜딩 ===================== */}
                     {!user.isLoggedIn ? (
-                        <div className="hero-bg min-h-[92vh] text-white flex flex-col justify-center items-center px-4 py-12 text-center space-y-8 font-jua">
-                            <div className="space-y-3 max-w-2xl">
-                                <span className="bg-indigo-500/20 text-sky-300 px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-400/30">
-                                    🚀 진짜 내 포트폴리오를 기록하는 같이투자
+                        <div className="min-h-[92vh] flex flex-col justify-center items-center px-4 py-14 text-center space-y-8">
+                            <div className="space-y-4 max-w-2xl">
+                                <span className="inline-block bg-white border-2 border-amber-300 text-amber-700 px-4 py-1.5 rounded-full text-xs font-bold shadow-sm pop-in">
+                                    🥠 매일 포춘쿠키가 열리는 · 뇌동매매 없는 가치투자 마을
                                 </span>
-                                <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
-                                    같이투자 <br/>
-                                    <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-amber-300 bg-clip-text text-transparent">
-                                        주식 & 코인 트레이딩 플랫폼
-                                    </span>
+                                <h1 className="text-3xl md:text-5xl font-black text-[#5b4432] leading-tight">
+                                    감이 아니라 <span className="text-emerald-600">분석</span>으로,<br/>
+                                    혼자가 아니라 <span className="text-orange-500">같이</span> 자라는 투자 마을
                                 </h1>
-                                <p className="text-slate-300 text-sm md:text-base max-w-lg mx-auto font-normal">
-                                    가짜 예시 데이터 없이, <strong>내가 실제로 보유한 종목과 매매일지</strong>를 등록하고 관리하세요!
+                                <p className="text-stone-500 text-sm md:text-base max-w-xl mx-auto font-body">
+                                    급등·급락엔 <b>이유</b>가 있어요. 해킹이면 개발 문제인지, 거버넌스인지, 브릿지 문제인지 —
+                                    <b> 원인을 분석하는 노트</b>를 쓰면 마을이 가장 크게 자라나요.
+                                    팀원의 <b>투자 철학</b>을 배우고, 전략을 나누는 소셜 가치투자 플랫폼입니다.
                                 </p>
                             </div>
 
-                            {/* Clean Login Trigger Card */}
-                            <div className="white-card p-6 rounded-3xl max-w-md w-full text-slate-900 space-y-4 shadow-2xl border-2 border-indigo-300">
-                                <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2">🔑 내 계정 로그인 / 시작하기</h3>
-                                <button onClick={() => setLoginModalOpen(true)} className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black text-sm py-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2">
-                                    <i className="fa-solid fa-right-to-bracket text-sky-400 text-base"></i>
-                                    <span>내 닉네임으로 바로 시작하기</span>
-                                </button>
+                            <div className="card-deep p-4 md:p-6 w-full max-w-2xl pop-in">
+                                <VillageScene/>
                             </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl w-full text-left">
+                                <div className="card-cute p-4 space-y-1">
+                                    <Sprite art={TreeArt} size={40}/>
+                                    <h3 className="font-black text-sm text-[#5b4432]">투자 마을 키우기</h3>
+                                    <p className="text-[11px] text-stone-500 font-body">종목이 새싹→나무→집→성으로 자라요.</p>
+                                </div>
+                                <div className="card-cute p-4 space-y-1">
+                                    <span className="text-3xl block">🕵️</span>
+                                    <h3 className="font-black text-sm text-[#5b4432]">사건 원인 분석</h3>
+                                    <p className="text-[11px] text-stone-500 font-body">급등락·해킹의 원인을 진단하면 최고 XP!</p>
+                                </div>
+                                <div className="card-cute p-4 space-y-1">
+                                    <Sprite art={CookieArt} size={40}/>
+                                    <h3 className="font-black text-sm text-[#5b4432]">매일 포춘쿠키</h3>
+                                    <p className="text-[11px] text-stone-500 font-body">하루 한 번 대가들의 투자 지혜.</p>
+                                </div>
+                                <div className="card-cute p-4 space-y-1">
+                                    <span className="text-3xl block">🤝</span>
+                                    <h3 className="font-black text-sm text-[#5b4432]">같이 배우기</h3>
+                                    <p className="text-[11px] text-stone-500 font-body">팀원의 철학과 전략을 나눠요.</p>
+                                </div>
+                            </div>
+
+                            <button onClick={() => setLoginModalOpen(true)} className="btn3d bg-amber-300 hover:bg-amber-200 text-[#5b4432] font-black text-base px-10 py-4 rounded-3xl flex items-center gap-2 pop-in">
+                                <span className="text-xl">🔑</span>
+                                <span>우리 마을 입주하기</span>
+                            </button>
                         </div>
                     ) : (
-                        /* ========================================================================= */
-                        /* SCREEN 2: LOGGED IN MAIN DASHBOARD (DUMMY DATA FREE!) */
-                        /* ========================================================================= */
-                        <main className="max-w-3xl mx-auto px-4 pt-6 pb-16 space-y-6 font-jua">
+                        /* ===================== 메인 대시보드 ===================== */
+                        <main className="max-w-3xl mx-auto px-3 md:px-4 pt-4 pb-24 space-y-4">
 
-                            {/* Team Status Banner */}
-                            <div className="white-card p-5 rounded-3xl space-y-3 border-2 border-indigo-200">
-                                <div className="flex justify-between items-center text-xs">
-                                    {team ? (
-                                        <div className="flex items-center gap-2">
-                                            <span className="bg-slate-900 text-white px-3 py-1 rounded-full font-bold">👥 {team.name}</span>
-                                            <span className="bg-indigo-50 text-indigo-900 px-3 py-1 rounded-full font-bold border border-indigo-200 font-mono">코드: {team.code}</span>
-                                        </div>
-                                    ) : (
-                                        <span className="text-slate-400 font-bold">참여 중인 팀이 없습니다.</span>
-                                    )}
-
-                                    <div className="flex items-center gap-1.5">
-                                        {team && (
-                                            <button onClick={() => setInviteModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-xl font-bold transition flex items-center gap-1">
-                                                <i className="fa-solid fa-user-plus text-xs"></i>
-                                                <span>초대코드</span>
-                                            </button>
-                                        )}
-                                        <button onClick={() => setCreateTeamModalOpen(true)} className="bg-indigo-950 text-indigo-200 px-2.5 py-1 rounded-xl font-bold border border-indigo-700/60">
-                                            + 팀 생성
-                                        </button>
-                                        <button onClick={() => setJoinTeamModalOpen(true)} className="bg-slate-800 text-white px-2.5 py-1 rounded-xl font-bold border border-slate-700">
-                                            🔑 조인
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-between items-end pt-1">
-                                    <div>
-                                        <h2 className="text-xl font-black text-slate-900">{user.nickname}님의 실전 포트폴리오</h2>
-                                        <p className="text-xs text-slate-500">내 자산을 진짜 직접 등록하고 매매일지를 기록해보세요.</p>
-                                    </div>
-                                </div>
+                            {/* 탭 네비게이션 */}
+                            <div className="card-cute p-1.5 flex justify-around text-[11px] md:text-sm font-bold sticky top-[62px] z-30 bg-white/95">
+                                {TABS.map(t => (
+                                    <button key={t.id} onClick={() => setActiveTab(t.id)}
+                                            className={activeTab === t.id
+                                                ? 'bg-[#5b4432] text-amber-50 px-3 md:px-4 py-2.5 rounded-2xl transition shadow-sm flex items-center gap-1'
+                                                : 'text-stone-500 hover:bg-amber-50 px-3 md:px-4 py-2.5 rounded-2xl transition flex items-center gap-1'}>
+                                        <span>{t.icon}</span>
+                                        <span className="hidden sm:inline">{t.label}</span>
+                                        {t.id === 'cookie' && !cookieOpenedToday && <span className="w-1.5 h-1.5 bg-rose-500 rounded-full inline-block"></span>}
+                                    </button>
+                                ))}
                             </div>
 
-                            {/* Main Navigation Bar */}
-                            <div className="white-card p-2 rounded-2xl border border-slate-200 flex justify-around text-xs md:text-sm font-bold">
-                                <button onClick={() => setActiveTab('portfolio')} className={activeTab === 'portfolio' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition'}>
-                                    1. 나의 투자종목 ({holdings.length})
-                                </button>
-                                <button onClick={() => setActiveTab('journal')} className={activeTab === 'journal' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition'}>
-                                    2. 매매일지 ({tradeLogs.length})
-                                </button>
-                            </div>
-
-                            {/* --------------------------------------------------------------------- */}
-                            {/* TAB 1: 📊 나의 투자종목 (Clean Empty Slate or User's Real Holdings) */}
-                            {/* --------------------------------------------------------------------- */}
-                            {activeTab === 'portfolio' && (
-                                <div className="space-y-4">
-                                    <div className="white-card p-6 rounded-3xl space-y-4 border-2 border-indigo-200">
-                                        <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                                            <div>
-                                                <span className="text-slate-400 text-xs font-bold block">내 총 보유 자산 평가액</span>
-                                                <h2 className="text-2xl font-black text-slate-900 font-mono">
-                                                    {holdings.reduce((acc, h) => acc + h.evalAmount, 0).toLocaleString()}원
-                                                </h2>
+                            {/* ------------- 탭 1: 🏡 마을 ------------- */}
+                            {activeTab === 'village' && (
+                                <div className="space-y-4 pop-in">
+                                    <div className="card-deep overflow-hidden" style={{padding:0}}>
+                                        {/* 하늘 */}
+                                        <div className={`relative h-36 overflow-hidden ${
+                                            weather === 'rain' ? 'bg-gradient-to-b from-slate-400 to-slate-200'
+                                            : weather === 'festival' ? 'bg-gradient-to-b from-sky-300 via-amber-100 to-amber-50'
+                                            : 'bg-gradient-to-b from-sky-300 to-sky-100'
+                                        }`}>
+                                            {weather === 'rain' ? (
+                                                <React.Fragment>
+                                                    <Sprite art={RainCloudArt} size={92} className="absolute top-1 left-6 cloud-drift"/>
+                                                    <Sprite art={RainCloudArt} size={64} className="absolute top-3 right-10 cloud-drift" style={{animationDelay:'1.4s'}}/>
+                                                    {[...Array(13)].map((_, i) => (
+                                                        <span key={i} className="raindrop" style={{ left: `${(i * 8 + 3) % 100}%`, animationDelay: `${(i % 7) * 0.28}s` }}></span>
+                                                    ))}
+                                                </React.Fragment>
+                                            ) : (
+                                                <React.Fragment>
+                                                    <Sprite art={SunArt} size={78} className="absolute top-2 right-6 floaty"/>
+                                                    <Sprite art={CloudArt} size={60} className="absolute top-5 left-6 cloud-drift"/>
+                                                    <Sprite art={CloudArt} size={44} className="absolute top-1 left-1/2 cloud-drift" style={{animationDelay:'2s'}}/>
+                                                    {weather === 'festival' && (
+                                                        <React.Fragment>
+                                                            <Bunting/>
+                                                            {[...Array(7)].map((_, i) => (
+                                                                <span key={i} className="twinkle text-lg" style={{ left: `${(i * 14 + 6) % 92}%`, top: `${(i * 26 + 22) % 65}%`, animationDelay: `${i * 0.22}s` }}>
+                                                                    {['🎉','✨','🎈','🎊'][i % 4]}
+                                                                </span>
+                                                            ))}
+                                                        </React.Fragment>
+                                                    )}
+                                                </React.Fragment>
+                                            )}
+                                            <div className="absolute bottom-2 left-0 right-0 text-center">
+                                                <span className="bg-white/90 text-[11px] font-bold px-3 py-1 rounded-full text-stone-600 shadow-sm border border-white">
+                                                    {weather === 'rain' && `☔ 마을에 비가 내려요… (${totalPnlPct.toFixed(1)}%) 원인을 분석하는 공부의 계절!`}
+                                                    {weather === 'sunny' && `☀️ 화창한 마을이에요! (+${totalPnlPct.toFixed(1)}%)`}
+                                                    {weather === 'festival' && `🎉 수익 축제가 열렸어요! (+${totalPnlPct.toFixed(1)}%)`}
+                                                    {weather === 'clear' && '🌤️ 첫 씨앗을 심으면 마을이 깨어나요!'}
+                                                </span>
                                             </div>
-                                            <button onClick={() => setAddHoldingModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition flex items-center gap-1.5">
-                                                <i className="fa-solid fa-plus"></i>
-                                                <span>내 진짜 보유 종목 추가하기</span>
-                                            </button>
                                         </div>
 
-                                        {holdings.length === 0 ? (
-                                            /* Clean Empty Slate - No Dummy Data! */
-                                            <div className="text-center py-10 space-y-3">
-                                                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
-                                                    <i className="fa-solid fa-box-open"></i>
+                                        {/* 잔디밭 */}
+                                        <div className="relative bg-gradient-to-b from-[#c8e6a0] to-[#a8d878] px-4 pt-5 pb-8">
+                                            {holdings.length === 0 ? (
+                                                <div className="text-center py-6 space-y-3">
+                                                    <Sprite art={SproutArt} size={84} className="floaty inline-block"/>
+                                                    <p className="font-bold text-emerald-900 text-sm">아직 텅 빈 들판이에요.</p>
+                                                    <button onClick={() => setAddHoldingModalOpen(true)} className="btn3d bg-white hover:bg-amber-50 text-emerald-800 font-black px-5 py-2.5 rounded-2xl text-xs">
+                                                        🌱 첫 종목 씨앗 심기
+                                                    </button>
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-bold text-slate-700 text-base">아직 등록된 보유 종목이 없습니다.</h3>
-                                                    <p className="text-xs text-slate-400">상단의 '내 진짜 보유 종목 추가하기' 버튼을 눌러 첫 보유 자산을 등록해보세요!</p>
+                                            ) : (
+                                                <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5">
+                                                    {[...holdings].sort((a, b) => ((b.currentPrice||b.avgPrice)*b.qty) - ((a.currentPrice||a.avgPrice)*a.qty)).map(h => {
+                                                        const evalAmt = (h.currentPrice || h.avgPrice) * h.qty;
+                                                        const pnl = h.pnlRate || 0;
+                                                        const b = buildingFor(evalAmt);
+                                                        return (
+                                                            <div key={h.id}
+                                                                 className="bg-white/85 backdrop-blur rounded-2xl p-2.5 text-center space-y-0.5 shadow-sm border-2 border-white/70 hover:scale-105 hover:border-amber-300 transition cursor-pointer"
+                                                                 onClick={() => { setPriceModalTarget(h); setPriceInput(String(h.currentPrice || h.avgPrice)); }}>
+                                                                <div className="relative inline-block floaty-slow">
+                                                                    <Sprite art={BUILDING_ART[b.key]} size={58}/>
+                                                                    {pnl > 0 && <span className="absolute -top-1 -right-2 text-sm">✨</span>}
+                                                                    {pnl < 0 && <span className="absolute -top-1 -right-2 text-sm">☔</span>}
+                                                                </div>
+                                                                <p className="font-black text-[11px] text-stone-800 truncate">{h.name}</p>
+                                                                <p className="text-[10px] text-stone-500">{b.name}</p>
+                                                                <p className={`text-[10px] font-bold ${pnl > 0 ? 'text-rose-500' : pnl < 0 ? 'text-blue-500' : 'text-stone-400'}`}>
+                                                                    {pnl > 0 ? '+' : ''}{pnl.toFixed(1)}%
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                    <button onClick={() => setAddHoldingModalOpen(true)}
+                                                            className="rounded-2xl p-2.5 text-center border-2 border-dashed border-white/80 text-emerald-900/70 hover:bg-white/40 transition flex flex-col items-center justify-center gap-1 min-h-[104px]">
+                                                        <span className="text-xl">➕</span>
+                                                        <span className="text-[10px] font-bold">빈 땅에<br/>씨앗 심기</span>
+                                                    </button>
                                                 </div>
+                                            )}
+                                            {team && <span className="merchant">🐴🛒💰</span>}
+                                        </div>
+                                    </div>
+
+                                    {/* 자산 요약 */}
+                                    <div className="grid grid-cols-3 gap-2.5">
+                                        <div className="card-cute p-3.5 text-center">
+                                            <span className="text-[10px] text-stone-400 font-bold block">총 평가액</span>
+                                            <span className="font-black text-sm text-[#5b4432]">{totalEval.toLocaleString()}원</span>
+                                        </div>
+                                        <div className="card-cute p-3.5 text-center">
+                                            <span className="text-[10px] text-stone-400 font-bold block">총 손익</span>
+                                            <span className={`font-black text-sm ${totalPnl > 0 ? 'text-rose-500' : totalPnl < 0 ? 'text-blue-500' : 'text-stone-500'}`}>
+                                                {totalPnl > 0 ? '+' : ''}{totalPnl.toLocaleString()}원
+                                            </span>
+                                        </div>
+                                        <div className="card-cute p-3.5 text-center">
+                                            <span className="text-[10px] text-stone-400 font-bold block">마을 건물</span>
+                                            <span className="font-black text-sm text-[#5b4432]">{holdings.length}채</span>
+                                        </div>
+                                    </div>
+
+                                    {/* 시장 온도계 (퀀트 위젯) */}
+                                    <div className="card-cute p-4 space-y-2.5">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="font-black text-sm text-[#5b4432]">🌡️ 시장 온도계 <span className="text-[10px] text-stone-400 font-normal">KRW ↔ USDT 마켓 가격차 (퀀트)</span></h3>
+                                            <button onClick={handleThermo} disabled={thermoBusy}
+                                                    className="btn3d bg-sky-200 hover:bg-sky-100 text-sky-900 text-[11px] font-black px-3 py-1.5 rounded-xl disabled:opacity-50">
+                                                {thermoBusy ? '측정 중…' : '지금 측정'}
+                                            </button>
+                                        </div>
+                                        {thermo ? (
+                                            <div className="grid grid-cols-3 gap-2 text-center text-xs pop-in">
+                                                <div className="bg-[#fdf6e9] rounded-xl p-2.5 border border-[#ecd9b8]">
+                                                    <span className="text-[10px] text-stone-400 block">BTC (KRW마켓)</span>
+                                                    <span className="font-black text-[#5b4432]">{Math.round(thermo.krwBtc).toLocaleString()}원</span>
+                                                </div>
+                                                <div className="bg-[#fdf6e9] rounded-xl p-2.5 border border-[#ecd9b8]">
+                                                    <span className="text-[10px] text-stone-400 block">BTC (USDT환산)</span>
+                                                    <span className="font-black text-[#5b4432]">{Math.round(thermo.implied).toLocaleString()}원</span>
+                                                </div>
+                                                <div className={`rounded-xl p-2.5 border ${Math.abs(thermo.spread) >= 1 ? 'bg-rose-50 border-rose-200' : 'bg-emerald-50 border-emerald-200'}`}>
+                                                    <span className="text-[10px] text-stone-400 block">마켓 스프레드</span>
+                                                    <span className={`font-black ${Math.abs(thermo.spread) >= 1 ? 'text-rose-600' : 'text-emerald-700'}`}>
+                                                        {thermo.spread > 0 ? '+' : ''}{thermo.spread.toFixed(2)}%
+                                                    </span>
+                                                </div>
+                                                <p className="col-span-3 text-[10px] text-stone-400 font-body">
+                                                    {thermo.at} 기준 · 스프레드가 크게 벌어지면 유동성 이동이 일어나고 있다는 신호예요. 뇌동매매 말고, 원인을 분석해보세요! 🕵️
+                                                </p>
                                             </div>
                                         ) : (
-                                            /* User's Real Added Holdings */
-                                            <div className="divide-y divide-slate-100 font-mono text-xs">
-                                                {holdings.map(h => (
-                                                    <div key={h.id} className="py-3 flex justify-between items-center hover:bg-slate-50 px-2 rounded-xl font-jua">
-                                                        <div>
-                                                            <span className="font-bold text-slate-900 text-sm block">{h.name} <span className="text-xs text-indigo-900">({h.symbol})</span></span>
-                                                            <span className="text-slate-400 text-[11px]">평단가: {h.avgPrice.toLocaleString()}원 · 수량: {h.qty}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="text-right">
-                                                                <span className="font-bold text-slate-900 text-sm block font-mono">{h.evalAmount.toLocaleString()}원</span>
-                                                                <span className="text-slate-500 font-mono text-[11px]">실시간 산출 중</span>
-                                                            </div>
-                                                            <button onClick={() => handleRemoveHolding(h.id)} className="text-slate-300 hover:text-rose-600 p-1">
-                                                                <i className="fa-solid fa-trash-can"></i>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
+                                            <p className="text-[11px] text-stone-400 font-body">
+                                                {thermoErr || '같은 BTC라도 KRW마켓과 USDT마켓의 가격이 달라요. 그 차이(스프레드)는 시장 유동성의 온도계랍니다.'}
+                                            </p>
                                         )}
+                                    </div>
+
+                                    {/* 오늘의 퀘스트 */}
+                                    <div className="card-cute p-4 space-y-2.5">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="font-black text-sm text-[#5b4432]">📋 오늘의 마을 퀘스트</h3>
+                                            <span className="text-[11px] font-bold text-amber-600">{questsDone}/{quests.length} 완료</span>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            {quests.map(q => (
+                                                <button key={q.id} onClick={q.go}
+                                                        className={`w-full flex items-center justify-between px-3 py-2 rounded-2xl text-xs font-bold transition ${q.done ? 'bg-emerald-50 text-emerald-700 border-2 border-emerald-200' : 'bg-amber-50 text-stone-600 border-2 border-amber-100 hover:bg-amber-100'}`}>
+                                                    <span className="flex items-center gap-2">
+                                                        <span>{q.done ? '✅' : q.icon}</span>
+                                                        <span className={q.done ? 'line-through opacity-70' : ''}>{q.label}</span>
+                                                    </span>
+                                                    <span className="text-amber-500">+{q.xp} XP</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-[10px] text-stone-400 font-body text-center">💡 매매 횟수가 아니라 '분석'에 가장 큰 XP를 드려요. 뇌동매매는 마을을 키우지 못해요!</p>
                                     </div>
                                 </div>
                             )}
 
-                            {/* --------------------------------------------------------------------- */}
-                            {/* TAB 2: 📝 매매일지 (Clean Empty Slate or User's Real Logs) */}
-                            {/* --------------------------------------------------------------------- */}
-                            {activeTab === 'journal' && (
-                                <div className="space-y-4 text-xs">
-                                    <div className="white-card p-4 rounded-3xl prompt-shadow border-2 border-indigo-200 space-y-3">
-                                        <form onSubmit={handlePromptSubmit} className="flex items-center gap-2">
-                                            <input
-                                                type="text"
-                                                value={promptText}
-                                                onChange={(e) => setPromptText(e.target.value)}
-                                                placeholder="예: '$삼성전자 100만원 매수'..."
-                                                required
-                                                className="w-full bg-slate-50 text-slate-900 text-sm px-4 py-3 rounded-2xl border border-slate-200"
-                                            />
-                                            <button type="submit" className="bg-slate-900 text-white font-bold px-5 py-3 rounded-2xl text-xs shrink-0">
-                                                기록
-                                            </button>
-                                        </form>
-                                        <button onClick={() => setJournalFormOpen(true)} className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2 rounded-xl text-xs">
-                                            ✏️ 상세 매매일지 직접 작성하기
-                                        </button>
-                                    </div>
+                            {/* ------------- 탭 2: 📊 투자종목 ------------- */}
+                            {activeTab === 'portfolio' && (
+                                <div className="space-y-4 pop-in">
+                                    <div className="card-deep p-5 space-y-4">
+                                        <div className="flex justify-between items-center border-b-2 border-[#f5ecd9] pb-3 flex-wrap gap-2">
+                                            <div>
+                                                <span className="text-stone-400 text-[11px] font-bold block">내 총 보유 자산 평가액</span>
+                                                <h2 className="text-2xl font-black text-[#5b4432]">{totalEval.toLocaleString()}원</h2>
+                                                {totalInvest > 0 && (
+                                                    <span className={`text-xs font-bold ${totalPnl > 0 ? 'text-rose-500' : totalPnl < 0 ? 'text-blue-500' : 'text-stone-400'}`}>
+                                                        {totalPnl > 0 ? '▲' : totalPnl < 0 ? '▼' : ''} {Math.abs(totalPnl).toLocaleString()}원 ({totalPnlPct > 0 ? '+' : ''}{totalPnlPct.toFixed(2)}%)
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button onClick={() => { setImportMode('upbit'); setImportModalOpen(true); }} className="btn3d bg-sky-200 hover:bg-sky-100 text-sky-900 font-black px-3 py-2 rounded-2xl text-xs">
+                                                    🪙 업비트 연동
+                                                </button>
+                                                <button onClick={() => setAddHoldingModalOpen(true)} className="btn3d bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black px-3 py-2 rounded-2xl text-xs">
+                                                    🌱 종목 심기
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                    <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
-                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">
-                                            📝 내가 작성한 매매일지 히스토리 ({tradeLogs.length})
-                                        </h3>
-
-                                        {tradeLogs.length === 0 ? (
-                                            <div className="text-center py-10 space-y-3">
-                                                <div className="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
-                                                    <i className="fa-solid fa-pen-to-square"></i>
-                                                </div>
+                                        {holdings.length === 0 ? (
+                                            <div className="text-center py-8 space-y-3">
+                                                <Sprite art={SproutArt} size={80} className="floaty inline-block"/>
                                                 <div>
-                                                    <h3 className="font-bold text-slate-700 text-base">아직 작성된 매매일지가 없습니다.</h3>
-                                                    <p className="text-xs text-slate-400">상단 입력창에 매매를 입력하여 첫 일지를 기록하세요!</p>
+                                                    <h3 className="font-bold text-stone-600 text-base">아직 등록된 보유 종목이 없어요.</h3>
+                                                    <p className="text-xs text-stone-400 font-body">'종목 심기'로 직접 등록하거나, 업비트 연동으로 실제 잔고를 불러오세요!</p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="space-y-3">
-                                                {tradeLogs.map(log => (
-                                                    <div key={log.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
-                                                        <div className="flex justify-between items-center font-bold">
-                                                            <span>{log.symbol} {log.side}</span>
-                                                            <span className="text-slate-400 font-mono text-[11px]">{log.date}</span>
+                                            <div className="space-y-2">
+                                                {holdings.map(h => {
+                                                    const evalAmt = (h.currentPrice || h.avgPrice) * h.qty;
+                                                    const pnl = h.pnlRate || 0;
+                                                    const b = buildingFor(evalAmt);
+                                                    return (
+                                                        <div key={h.id} className="p-3 bg-[#fdf6e9] rounded-2xl border-2 border-[#f1e4cd] flex justify-between items-center hover:border-amber-300 transition">
+                                                            <div className="flex items-center gap-2.5">
+                                                                <Sprite art={BUILDING_ART[b.key]} size={44}/>
+                                                                <div>
+                                                                    <span className="font-black text-[#5b4432] text-sm block">{h.name} <span className="text-[10px] text-stone-400 font-normal">{h.category}</span></span>
+                                                                    <span className="text-stone-400 text-[11px]">평단 {h.avgPrice.toLocaleString()} × {h.qty} · 현재 {(h.currentPrice || h.avgPrice).toLocaleString()}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2.5">
+                                                                <div className="text-right">
+                                                                    <span className="font-black text-[#5b4432] text-sm block">{Math.round(evalAmt).toLocaleString()}원</span>
+                                                                    <span className={`text-[11px] font-bold ${pnl > 0 ? 'text-rose-500' : pnl < 0 ? 'text-blue-500' : 'text-stone-400'}`}>
+                                                                        {pnl > 0 ? '+' : ''}{pnl.toFixed(2)}%
+                                                                    </span>
+                                                                </div>
+                                                                <button onClick={() => { setPriceModalTarget(h); setPriceInput(String(h.currentPrice || h.avgPrice)); }}
+                                                                        className="btn3d bg-sky-100 hover:bg-sky-50 text-sky-800 text-[10px] font-black px-2.5 py-1.5 rounded-xl">
+                                                                    시세<br/>갱신
+                                                                </button>
+                                                                <button onClick={() => handleRemoveHolding(h.id)} className="text-stone-300 hover:text-rose-500 p-1 transition">
+                                                                    <i className="fa-solid fa-trash-can text-sm"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <p className="text-slate-600 text-xs">{log.strategy}</p>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                        <p className="text-[10px] text-stone-400 font-body text-center">💡 시세를 갱신하면 마을 날씨가 변해요. (매일 첫 점검 +15 XP)</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ------------- 탭 3: 📝 기록·분석 ------------- */}
+                            {activeTab === 'journal' && (
+                                <div className="space-y-4 pop-in">
+                                    {/* 서브탭 */}
+                                    <div className="card-cute p-1.5 flex text-xs font-bold">
+                                        <button onClick={() => setJournalView('trades')}
+                                                className={`flex-1 py-2.5 rounded-2xl transition ${journalView === 'trades' ? 'bg-[#5b4432] text-amber-50' : 'text-stone-500 hover:bg-amber-50'}`}>
+                                            📝 매매일지 ({tradeLogs.length})
+                                        </button>
+                                        <button onClick={() => setJournalView('notes')}
+                                                className={`flex-1 py-2.5 rounded-2xl transition ${journalView === 'notes' ? 'bg-[#5b4432] text-amber-50' : 'text-stone-500 hover:bg-amber-50'}`}>
+                                            🕵️ 사건 분석노트 ({notes.length})
+                                        </button>
+                                    </div>
+
+                                    {journalView === 'trades' ? (
+                                        <React.Fragment>
+                                            <div className="card-deep p-4 space-y-3">
+                                                <h3 className="font-black text-sm text-[#5b4432]">✏️ 오늘의 매매 남기기 <span className="text-amber-500 text-[10px]">건당 +30 XP</span></h3>
+                                                <form onSubmit={handlePromptSubmit} className="flex items-center gap-2">
+                                                    <input type="text" value={promptText} onChange={(e) => setPromptText(e.target.value)}
+                                                           placeholder="예: '삼성전자 100만원 매수, 실적 기대'" required
+                                                           className="w-full bg-[#fdf6e9] text-[#5b4432] text-sm px-4 py-3 rounded-2xl border-2 border-[#ecd9b8] focus:border-amber-400 font-body"/>
+                                                    <button type="submit" className="btn3d bg-[#5b4432] text-amber-50 font-bold px-5 py-3 rounded-2xl text-xs shrink-0" style={{borderColor:'#3a2c1f', boxShadow:'0 4px 0 #3a2c1f'}}>
+                                                        기록
+                                                    </button>
+                                                </form>
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => setJournalFormOpen(true)} className="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold py-2.5 rounded-2xl text-xs transition">
+                                                        📖 상세 일지 작성
+                                                    </button>
+                                                    <button onClick={() => { setImportMode('paste'); setImportModalOpen(true); }} className="flex-1 bg-sky-100 hover:bg-sky-200 text-sky-800 font-bold py-2.5 rounded-2xl text-xs transition">
+                                                        📥 거래내역 가져오기
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="card-cute p-5 space-y-3">
+                                                <h3 className="font-black text-[#5b4432] text-sm border-b-2 border-[#f5ecd9] pb-2">📚 나의 매매일지 책장</h3>
+                                                {tradeLogs.length === 0 ? (
+                                                    <div className="text-center py-8 space-y-2">
+                                                        <span className="text-4xl block">📖</span>
+                                                        <h3 className="font-bold text-stone-600 text-sm">아직 기록된 일지가 없어요.</h3>
+                                                        <p className="text-xs text-stone-400 font-body">기록하지 않은 매매는 배움이 없는 매매!</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-2.5">
+                                                        {tradeLogs.map(log => (
+                                                            <div key={log.id} className="p-3.5 bg-[#fdf6e9] rounded-2xl border-2 border-[#f1e4cd] space-y-1">
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="font-black text-sm text-[#5b4432] flex items-center gap-1.5">
+                                                                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${log.side === 'BUY' ? 'bg-rose-100 text-rose-600' : 'bg-blue-100 text-blue-600'}`}>
+                                                                            {log.side === 'BUY' ? '매수' : '매도'}
+                                                                        </span>
+                                                                        {log.symbol}
+                                                                        {Number(log.pnlRate) !== 0 && (
+                                                                            <span className={`text-[11px] font-bold ${log.pnlRate > 0 ? 'text-rose-500' : 'text-blue-500'}`}>
+                                                                                {log.pnlRate > 0 ? '+' : ''}{Number(log.pnlRate).toFixed(1)}%
+                                                                            </span>
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="text-stone-400 text-[10px]">{log.date}</span>
+                                                                </div>
+                                                                <p className="text-stone-600 text-xs font-bold">🧭 {log.strategy}</p>
+                                                                {log.memo && <p className="text-stone-500 text-xs font-body">{log.memo}</p>}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </React.Fragment>
+                                    ) : (
+                                        <React.Fragment>
+                                            <div className="card-deep p-4 space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <h3 className="font-black text-sm text-[#5b4432]">🕵️ 급등·급락·해킹, 왜 그랬을까? <span className="text-amber-500 text-[10px]">건당 +50 XP</span></h3>
+                                                    <button onClick={() => setNoteFormOpen(true)} className="btn3d bg-violet-200 hover:bg-violet-100 text-violet-900 font-black px-3.5 py-2 rounded-2xl text-xs">
+                                                        + 분석노트 쓰기
+                                                    </button>
+                                                </div>
+                                                <p className="text-[11px] text-stone-500 font-body">
+                                                    예) 샌드박스 해킹 → 코인 무단발행? 원인은 프로젝트가 아니라 <b>거래소 체인 브릿지</b>였고, 이더리움·폴리곤 체인은 멀쩡했다 —
+                                                    이렇게 원인을 스스로 진단하는 습관이 가치투자의 시작이에요.
+                                                </p>
+                                            </div>
+
+                                            <div className="card-cute p-5 space-y-3">
+                                                <h3 className="font-black text-[#5b4432] text-sm border-b-2 border-[#f5ecd9] pb-2">🔬 나의 리서치 서재</h3>
+                                                {notes.length === 0 ? (
+                                                    <div className="text-center py-8 space-y-2">
+                                                        <span className="text-4xl block">🕵️</span>
+                                                        <h3 className="font-bold text-stone-600 text-sm">아직 분석노트가 없어요.</h3>
+                                                        <p className="text-xs text-stone-400 font-body">가격이 움직인 이유를 설명하지 못하면, 아직 그 자산을 아는 게 아니에요.</p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-2.5">
+                                                        {notes.map(n => (
+                                                            <div key={n.id} className="p-4 bg-[#fdf6e9] rounded-2xl border-2 border-[#f1e4cd] space-y-1.5">
+                                                                <div className="flex justify-between items-center flex-wrap gap-1">
+                                                                    <span className="font-black text-sm text-[#5b4432]">{n.asset}</span>
+                                                                    <span className="text-stone-400 text-[10px]">{n.date}</span>
+                                                                </div>
+                                                                <div className="flex gap-1.5 flex-wrap text-[10px] font-bold">
+                                                                    <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">{eventLabel(n.eventType)}</span>
+                                                                    <span className="bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">원인: {causeLabel(n.causeType)}</span>
+                                                                </div>
+                                                                <p className="text-stone-600 text-xs font-body"><b>무슨 일?</b> {n.what}</p>
+                                                                {n.analysis && <p className="text-stone-600 text-xs font-body"><b>나의 분석:</b> {n.analysis}</p>}
+                                                                {n.conclusion && <p className="text-emerald-700 text-xs font-body"><b>결론·대응:</b> {n.conclusion}</p>}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </React.Fragment>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* ------------- 탭 4: 🥠 포춘쿠키 ------------- */}
+                            {activeTab === 'cookie' && (
+                                <div className="space-y-4 pop-in">
+                                    <div className="card-deep p-6 text-center space-y-4 bg-gradient-to-b from-amber-50 to-white">
+                                        <h3 className="font-black text-base text-[#5b4432]">🥠 오늘의 포춘쿠키</h3>
+                                        {!cookieOpenedToday && !cookieCracked ? (
+                                            <div className="space-y-3 py-2">
+                                                <button onClick={handleCrackCookie} className="hover:scale-110 transition cursor-pointer inline-block" title="쿠키를 눌러 열어보세요!">
+                                                    <Sprite art={CookieArt} size={130} className="wiggle"/>
+                                                </button>
+                                                <p className="text-xs text-stone-500 font-body">쿠키를 톡! 누르면 오늘의 투자 지혜가 나와요 <span className="text-amber-600 font-bold">(+20 XP)</span></p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-3 pop-in py-2">
+                                                <Sprite art={CookieOpenArt} size={110} className="inline-block"/>
+                                                <blockquote className="bg-white border-2 border-dashed border-amber-300 rounded-2xl p-5 max-w-md mx-auto">
+                                                    <p className="text-sm text-[#5b4432] font-bold leading-relaxed">"{fortune.text}"</p>
+                                                    <footer className="text-[11px] text-amber-600 font-black mt-2">— {fortune.author}</footer>
+                                                </blockquote>
+                                                <p className="text-[10px] text-stone-400 font-body">내일 자정이 지나면 새로운 쿠키가 구워져요 🍪</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="card-cute p-5 space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-4xl">{level.icon}</span>
+                                            <div className="flex-1">
+                                                <span className="font-black text-[#5b4432] text-base block">Lv.{level.lv} {level.title}</span>
+                                                <span className="text-[11px] text-stone-400">누적 ⭐ {game.xp} XP {game.streak > 1 ? `· 🔥 ${game.streak}일 연속 활동 중!` : ''}</span>
+                                            </div>
+                                        </div>
+                                        {nextLevel ? (
+                                            <div className="space-y-1">
+                                                <div className="h-4 bg-amber-100 rounded-full overflow-hidden border-2 border-amber-200">
+                                                    <div className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full bar-grow"
+                                                         style={{ width: `${Math.min(100, ((game.xp - level.minXp) / (nextLevel.minXp - level.minXp)) * 100)}%` }}></div>
+                                                </div>
+                                                <p className="text-[11px] text-stone-400 text-right font-body">
+                                                    다음 레벨 {nextLevel.icon} <b>{nextLevel.title}</b>까지 {nextLevel.minXp - game.xp} XP
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-amber-600 font-bold">🎓 최고 레벨 달성! 당신은 진정한 투자 현인입니다.</p>
+                                        )}
+                                    </div>
+
+                                    <div className="card-cute p-5 space-y-2.5">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="font-black text-sm text-[#5b4432]">📋 오늘의 퀘스트</h3>
+                                            <span className="text-[11px] font-bold text-amber-600">{questsDone}/{quests.length} 완료</span>
+                                        </div>
+                                        {quests.map(q => (
+                                            <button key={q.id} onClick={q.go}
+                                                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition ${q.done ? 'bg-emerald-50 text-emerald-700 border-2 border-emerald-200' : 'bg-amber-50 text-stone-600 border-2 border-amber-100 hover:bg-amber-100'}`}>
+                                                <span className="flex items-center gap-2">
+                                                    <span>{q.done ? '✅' : q.icon}</span>
+                                                    <span className={q.done ? 'line-through opacity-70' : ''}>{q.label}</span>
+                                                </span>
+                                                <span className="text-amber-500">+{q.xp} XP</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="card-cute p-5 space-y-3">
+                                        <h3 className="font-black text-sm text-[#5b4432]">🏅 나의 배지 콜렉션 ({Object.keys(game.badges).length}/{BADGE_DEFS.length})</h3>
+                                        <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5">
+                                            {BADGE_DEFS.map(b => {
+                                                const earnedDate = game.badges[b.id];
+                                                return (
+                                                    <div key={b.id} className={`p-3 rounded-2xl text-center space-y-0.5 border-2 ${earnedDate ? 'bg-amber-50 border-amber-200' : 'bg-stone-50 border-stone-100 badge-locked'}`}>
+                                                        <span className="text-2xl block">{b.icon}</span>
+                                                        <span className="font-black text-[11px] text-[#5b4432] block">{b.name}</span>
+                                                        <span className="text-[9px] text-stone-400 block font-body">{earnedDate ? `${earnedDate} 획득` : b.desc}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ------------- 탭 5: 👥 같이하기 ------------- */}
+                            {activeTab === 'social' && (
+                                <div className="space-y-4 pop-in">
+                                    {/* 나의 투자 철학 */}
+                                    <div className="card-deep p-5 space-y-3">
+                                        <h3 className="font-black text-sm text-[#5b4432]">📜 나의 투자 철학 <span className="text-[10px] text-stone-400 font-normal">팀원들과 나누는 나의 가치 기준</span></h3>
+                                        {user.philosophy ? (
+                                            <blockquote className="bg-[#fdf6e9] border-2 border-dashed border-amber-300 rounded-2xl p-4 text-sm font-bold text-[#5b4432]">
+                                                "{user.philosophy}"
+                                                <footer className="text-[10px] text-amber-600 mt-1">— {user.avatar} {user.nickname}</footer>
+                                            </blockquote>
+                                        ) : (
+                                            <p className="text-xs text-stone-400 font-body">아직 철학이 없어요. 예: "브릿지 리스크가 있는 체인엔 총자산 5% 이상 넣지 않는다", "토크노믹스를 이해 못하면 사지 않는다"</p>
+                                        )}
+                                        <form onSubmit={handleSavePhilosophy} className="flex gap-2">
+                                            <input type="text" value={philosophyInput} onChange={(e) => setPhilosophyInput(e.target.value)}
+                                                   placeholder={user.philosophy ? '철학 다듬기…' : '나의 투자 원칙 한 줄 (+20 XP)'}
+                                                   className="flex-1 bg-[#fdf6e9] border-2 border-[#ecd9b8] p-2.5 rounded-xl text-xs font-body focus:border-amber-400"/>
+                                            <button type="submit" className="btn3d bg-amber-300 hover:bg-amber-200 text-[#5b4432] font-black px-4 rounded-xl text-xs">새기기</button>
+                                        </form>
+                                    </div>
+
+                                    {/* 팀 */}
+                                    <div className="card-deep p-5 space-y-4">
+                                        {team ? (
+                                            <div className="space-y-3">
+                                                <div className="flex items-center justify-between flex-wrap gap-2">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <span className="text-3xl">⛺</span>
+                                                        <div>
+                                                            <span className="font-black text-base text-[#5b4432] block">{team.name}</span>
+                                                            <span className="text-[11px] text-stone-400">촌장: {team.leader} · 주민 {team.membersCount}명</span>
+                                                        </div>
+                                                    </div>
+                                                    <span className="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-2xl font-black text-xs border-2 border-amber-200">코드: {team.code}</span>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => setInviteModalOpen(true)} className="btn3d flex-1 bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] px-3 py-2.5 rounded-2xl font-black text-xs flex items-center justify-center gap-1.5">
+                                                        <span>💌</span><span>이웃 초대하기</span>
+                                                    </button>
+                                                    <button onClick={() => { if (confirm('정말 마을 연합에서 나갈까요?')) setTeam(null); }} className="bg-stone-100 hover:bg-stone-200 text-stone-500 px-3 py-2.5 rounded-2xl font-bold text-xs transition">
+                                                        연합 나가기
+                                                    </button>
+                                                </div>
+                                                <div className="relative bg-gradient-to-b from-[#c8e6a0] to-[#a8d878] rounded-2xl h-16 overflow-hidden border-2 border-[#8fce74]">
+                                                    <span className="absolute top-1 left-2"><Sprite art={HouseArt} size={34}/></span>
+                                                    <span className="absolute top-1 right-2"><Sprite art={HouseArt} size={34}/></span>
+                                                    <span className="merchant" style={{animationDuration:'8s'}}>🐴🛒💰</span>
+                                                    <span className="absolute bottom-1 left-0 right-0 text-center text-[10px] font-bold text-emerald-900/80">우리 마을과 이웃 마을 사이에 무역 마차가 오가는 중!</span>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-center space-y-3 py-2">
+                                                <span className="text-5xl inline-block floaty">⛺</span>
+                                                <div>
+                                                    <h3 className="font-black text-base text-[#5b4432]">아직 마을 연합이 없어요.</h3>
+                                                    <p className="text-xs text-stone-400 font-body">혼자 투자하면 감에 의존하게 돼요. 팀을 맺고 서로의 분석과 철학을 배워요! (+40 XP)</p>
+                                                </div>
+                                                <div className="flex gap-2 justify-center">
+                                                    <button onClick={() => setCreateTeamModalOpen(true)} className="btn3d bg-[#5b4432] text-amber-50 px-5 py-2.5 rounded-2xl font-black text-xs" style={{borderColor:'#3a2c1f', boxShadow:'0 4px 0 #3a2c1f'}}>
+                                                        👑 연합 만들기
+                                                    </button>
+                                                    <button onClick={() => setJoinTeamModalOpen(true)} className="btn3d bg-amber-200 hover:bg-amber-100 text-[#5b4432] px-5 py-2.5 rounded-2xl font-black text-xs">
+                                                        🔑 초대코드로 가입
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* 마을 소식지 */}
+                                    <div className="card-cute p-5 space-y-3">
+                                        <h3 className="font-black text-sm text-[#5b4432] border-b-2 border-[#f5ecd9] pb-2">📰 마을 소식지</h3>
+                                        {tradeLogs.length === 0 && notes.length === 0 ? (
+                                            <p className="text-xs text-stone-400 text-center py-6 font-body">아직 소식이 없어요. 일지와 분석노트를 쓰면 마을 소식지에 실려요!</p>
+                                        ) : (
+                                            <div className="space-y-2">
+                                                {notes.slice(0, 3).map(n => (
+                                                    <div key={`n${n.id}`} className="flex items-center gap-2.5 p-3 bg-violet-50 rounded-2xl border-2 border-violet-100 text-xs">
+                                                        <span className="text-lg">🕵️</span>
+                                                        <div className="flex-1">
+                                                            <span className="font-bold text-[#5b4432]">{user.nickname}님이 '{n.asset}' 사건 분석노트를 남겼어요.</span>
+                                                            <span className="text-stone-400 block text-[10px]">{n.date} · 원인 진단: {causeLabel(n.causeType)}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {tradeLogs.slice(0, 4).map(log => (
+                                                    <div key={`t${log.id}`} className="flex items-center gap-2.5 p-3 bg-[#fdf6e9] rounded-2xl border-2 border-[#f1e4cd] text-xs">
+                                                        <span className="text-lg">{log.side === 'BUY' ? '🛍️' : '💰'}</span>
+                                                        <div className="flex-1">
+                                                            <span className="font-bold text-[#5b4432]">{user.nickname}님이 {log.symbol} {log.side === 'BUY' ? '매수' : '매도'} 일지를 남겼어요.</span>
+                                                            <span className="text-stone-400 block text-[10px]">{log.date} · {log.strategy}</span>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
                                         )}
+                                        <div className="p-3 bg-sky-50 rounded-2xl border-2 border-sky-100 text-[11px] text-sky-800 font-body">
+                                            🚧 <b>다음 업데이트:</b> Supabase 연동으로 팀원들의 분석노트·철학·포트폴리오가 실시간 공유되고,
+                                            이웃 마을을 구경하며 배우는 카피 스터디(무역)가 열릴 예정이에요.
+                                        </div>
                                     </div>
                                 </div>
                             )}
                         </main>
                     )}
 
-                    {/* MODAL: 사용방법 가이드 (Z-INDEX 100 FIX) */}
+                    {/* ===================== 모달들 ===================== */}
+
+                    {/* 놀이법 */}
                     {showGuideModal && (
-                        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-[100] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-amber-400 max-h-[90vh] overflow-y-auto">
-                                <button onClick={() => setShowGuideModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl font-bold p-2 cursor-pointer">
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-md z-[100] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-4 border-amber-300 max-h-[90vh] overflow-y-auto pop-in">
+                                <button onClick={() => setShowGuideModal(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-xl font-bold p-2">
                                     <i className="fa-solid fa-xmark"></i>
                                 </button>
                                 <div>
-                                    <h3 className="text-xl font-black text-slate-900">📖 같이투자 사용방법 가이드</h3>
-                                    <p className="text-xs text-slate-500">실제 내 자산과 매매일지를 기록하고 활용하는 방법</p>
+                                    <h3 className="text-xl font-black text-[#5b4432]">📖 포춘빌리지 놀이법</h3>
+                                    <p className="text-xs text-stone-400 font-body">분석하고 기록할수록 마을이 자라나요!</p>
                                 </div>
-
-                                <div className="space-y-3 text-xs">
-                                    <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 space-y-1">
-                                        <span className="font-bold text-amber-900 text-sm block">1단계: 닉네임 생성 로그인</span>
-                                        <p className="text-slate-700">소셜 계정과 사용할 닉네임을 입력하여 나만의 실제 계정을 생성합니다.</p>
+                                <div className="space-y-2.5 text-xs">
+                                    <div className="p-3.5 bg-amber-50 rounded-2xl border-2 border-amber-200">
+                                        <span className="font-black text-amber-900 text-sm block">1. 🔑 마을 입주</span>
+                                        <p className="text-stone-600 font-body">닉네임과 동물 아바타를 고르고 나만의 투자 마을을 시작해요.</p>
                                     </div>
-                                    <div className="p-3.5 bg-sky-50 rounded-2xl border border-sky-200 space-y-1">
-                                        <span className="font-bold text-sky-900 text-sm block">2단계: 진짜 내 종목 추가</span>
-                                        <p className="text-slate-700">`내 진짜 보유 종목 추가하기` 버튼으로 보유한 실제 주식/코인의 매수가와 수량을 등록합니다.</p>
+                                    <div className="p-3.5 bg-emerald-50 rounded-2xl border-2 border-emerald-200">
+                                        <span className="font-black text-emerald-900 text-sm block">2. 🌱 종목 씨앗 심기</span>
+                                        <p className="text-stone-600 font-body">직접 등록하거나 업비트 API로 실제 잔고를 불러오면, 평가액에 따라 새싹→나무→집→성으로 자라요.</p>
                                     </div>
-                                    <div className="p-3.5 bg-indigo-50 rounded-2xl border border-indigo-200 space-y-1">
-                                        <span className="font-bold text-indigo-900 text-sm block">3단계: 매매일지 직접 기록</span>
-                                        <p className="text-slate-700">`$삼성전자 100만원 매수`처럼 일지를 입력하면 내 히스토리에 실제 기록 저장됩니다.</p>
+                                    <div className="p-3.5 bg-violet-50 rounded-2xl border-2 border-violet-200">
+                                        <span className="font-black text-violet-900 text-sm block">3. 🕵️ 사건 분석노트 = 최고 XP!</span>
+                                        <p className="text-stone-600 font-body">급등·급락·해킹의 원인(개발/거버넌스/브릿지/거시/수급)을 스스로 진단하면 +50 XP. 뇌동매매 대신 공부!</p>
+                                    </div>
+                                    <div className="p-3.5 bg-sky-50 rounded-2xl border-2 border-sky-200">
+                                        <span className="font-black text-sky-900 text-sm block">4. 📊 시세 점검 & 시장 온도계</span>
+                                        <p className="text-stone-600 font-body">시세를 갱신하면 마을 날씨가 변하고, KRW↔USDT 마켓 스프레드로 시장 유동성을 읽어요.</p>
+                                    </div>
+                                    <div className="p-3.5 bg-rose-50 rounded-2xl border-2 border-rose-200">
+                                        <span className="font-black text-rose-900 text-sm block">5. 🤝 같이 배우기</span>
+                                        <p className="text-stone-600 font-body">투자 철학을 새기고, 팀을 맺어 서로의 분석과 전략을 나눠요.</p>
                                     </div>
                                 </div>
-
-                                <button onClick={() => setShowGuideModal(false)} className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                    가이드 닫기
+                                <button onClick={() => setShowGuideModal(false)} className="btn3d w-full bg-[#5b4432] text-amber-50 font-bold py-3.5 rounded-2xl text-xs" style={{borderColor:'#3a2c1f', boxShadow:'0 4px 0 #3a2c1f'}}>
+                                    알겠어요! 마을로 갈게요 🏡
                                 </button>
                             </div>
                         </div>
                     )}
 
-                    {/* MODAL: 로그인 */}
+                    {/* 로그인 */}
                     {loginModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setLoginModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] pop-in">
+                                <button onClick={() => setLoginModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <h3 className="text-lg font-black text-slate-900">🔑 소셜 로그인 & 닉네임 설정</h3>
+                                <h3 className="text-lg font-black text-[#5b4432]">🔑 마을 입주 신청서</h3>
                                 <form onSubmit={handleExecuteLogin} className="space-y-3 text-xs">
                                     <div>
-                                        <label className="text-slate-600 block mb-1 font-bold">소셜 플랫폼 선택</label>
-                                        <select value={selectedProvider} onChange={(e) => setSelectedProvider(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl">
-                                            <option value="kakao">🟡 카카오 소셜 로그인</option>
-                                            <option value="naver">🟢 네이버 소셜 로그인</option>
-                                            <option value="google">🔵 구글 소셜 로그인</option>
-                                        </select>
+                                        <label className="text-stone-500 block mb-1 font-bold">소셜 플랫폼</label>
+                                        <div className="grid grid-cols-3 gap-1.5">
+                                            {[['kakao','🟡 카카오'],['naver','🟢 네이버'],['google','🔵 구글']].map(([id, label]) => (
+                                                <button type="button" key={id} onClick={() => setSelectedProvider(id)}
+                                                        className={`p-2.5 rounded-xl font-bold border-2 transition ${selectedProvider === id ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-[#fdf6e9] border-[#ecd9b8] text-stone-500'}`}>
+                                                    {label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div>
-                                        <label className="text-slate-600 block mb-1 font-bold">사용할 트레이더 닉네임</label>
-                                        <input
-                                            type="text"
-                                            value={inputNickname}
-                                            onChange={(e) => setInputNickname(e.target.value)}
-                                            placeholder="예: 스마트개미, 투자왕"
-                                            required
-                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500"
-                                        />
+                                        <label className="text-stone-500 block mb-1 font-bold">동물 아바타 고르기</label>
+                                        <div className="grid grid-cols-8 gap-1">
+                                            {AVATARS.map(a => (
+                                                <button type="button" key={a} onClick={() => setSelectedAvatar(a)}
+                                                        className={`text-xl p-1.5 rounded-xl border-2 transition ${selectedAvatar === a ? 'bg-amber-100 border-amber-400 scale-110' : 'bg-[#fdf6e9] border-transparent hover:border-[#ecd9b8]'}`}>
+                                                    {a}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        내 계정 생성 및 시작하기
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">마을에서 사용할 닉네임</label>
+                                        <input type="text" value={inputNickname} onChange={(e) => setInputNickname(e.target.value)}
+                                               placeholder="예: 가치농부, 브릿지탐정" required className={inputCls}/>
+                                    </div>
+                                    <button type="submit" className="btn3d w-full bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black py-3.5 rounded-2xl text-xs">
+                                        🏡 입주하고 마을 시작하기 (+30 XP)
                                     </button>
                                 </form>
                             </div>
                         </div>
                     )}
 
-                    {/* MODAL: 진짜 종목 추가 */}
+                    {/* 종목 추가 */}
                     {addHoldingModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setAddHoldingModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] pop-in max-h-[90vh] overflow-y-auto">
+                                <button onClick={() => setAddHoldingModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <h3 className="text-lg font-black text-slate-900">📦 내 진짜 보유 종목 추가</h3>
+                                <h3 className="text-lg font-black text-[#5b4432]">🌱 새 종목 씨앗 심기</h3>
                                 <form onSubmit={handleAddHoldingSubmit} className="space-y-3 text-xs">
                                     <div>
-                                        <label className="text-slate-600 block mb-1">종목명</label>
-                                        <input type="text" value={newHoldingName} onChange={(e) => setNewHoldingName(e.target.value)} placeholder="예: 삼성전자, 카카오, 비트코인" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        <label className="text-stone-500 block mb-1 font-bold">자산 종류</label>
+                                        <div className="grid grid-cols-2 gap-1.5">
+                                            {CATEGORY_OPTS.map(c => (
+                                                <button type="button" key={c.id} onClick={() => setNewHoldingCat(c.id)}
+                                                        className={`p-2.5 rounded-xl font-bold border-2 transition ${newHoldingCat === c.id ? 'bg-amber-100 border-amber-400 text-amber-900' : 'bg-[#fdf6e9] border-[#ecd9b8] text-stone-500'}`}>
+                                                    {c.label}
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
                                     <div>
-                                        <label className="text-slate-600 block mb-1">매수가 (원)</label>
-                                        <input type="number" value={newHoldingPrice} onChange={(e) => setNewHoldingPrice(e.target.value)} placeholder="예: 72000" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                    </div>
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">보유 수량</label>
-                                        <input type="number" value={newHoldingQty} onChange={(e) => setNewHoldingQty(e.target.value)} placeholder="예: 10" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                    </div>
-                                    <button type="submit" className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        내 포트폴리오에 저장하기
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* MODAL: 팀 생성 */}
-                    {createTeamModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setCreateTeamModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
-                                    <i className="fa-solid fa-xmark text-lg"></i>
-                                </button>
-                                <h3 className="text-lg font-black text-slate-900">👑 팀 새로 생성하기</h3>
-                                <form onSubmit={handleCreateTeamSubmit} className="space-y-3 text-xs">
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">팀 이름</label>
-                                        <input type="text" value={newTeamNameInput} onChange={(e) => setNewTeamNameInput(e.target.value)} placeholder="예: 가치투자 1기 팀" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                    </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        팀 생성하기
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* MODAL: 팀 조인 */}
-                    {joinTeamModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setJoinTeamModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
-                                    <i className="fa-solid fa-xmark text-lg"></i>
-                                </button>
-                                <h3 className="text-lg font-black text-slate-900">🔑 초대코드로 팀 가입</h3>
-                                <form onSubmit={handleJoinTeamSubmit} className="space-y-3 text-xs">
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">6자리 초대 코드</label>
-                                        <input type="text" value={joinCodeInput} onChange={(e) => setJoinCodeInput(e.target.value)} placeholder="예: GACHI7" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl uppercase font-mono" />
-                                    </div>
-                                    <button type="submit" className="w-full bg-indigo-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        팀 조인하기
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* MODAL: 팀원 초대 */}
-                    {inviteModalOpen && team && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center relative border border-slate-200">
-                                <button onClick={() => setInviteModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
-                                    <i className="fa-solid fa-xmark text-lg"></i>
-                                </button>
-                                <div className="text-xl font-bold text-slate-900">👥 팀 초대 코드</div>
-                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 font-mono text-2xl font-black text-slate-900">
-                                    {team.code}
-                                </div>
-                                <button onClick={handleCopyLink} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                    {copiedNotice ? '✅ 초대 링크 복사 완료!' : '팀 초대 링크 복사하기'}
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* MODAL: 상세 매매일지 */}
-                    {journalFormOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200 max-h-[90vh] overflow-y-auto">
-                                <button onClick={() => setJournalFormOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
-                                    <i className="fa-solid fa-xmark text-lg"></i>
-                                </button>
-                                <h3 className="text-lg font-black text-slate-900">✏️ 상세 매매일지 직접 작성</h3>
-                                <form onSubmit={handleManualJournalSubmit} className="space-y-3 text-xs">
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">종목명</label>
-                                        <input type="text" value={manualSymbol} onChange={(e) => setManualSymbol(e.target.value)} placeholder="예: 현대차" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        <label className="text-stone-500 block mb-1 font-bold">종목명</label>
+                                        <input type="text" value={newHoldingName} onChange={(e) => setNewHoldingName(e.target.value)} placeholder="예: 삼성전자, 비트코인" required className={inputCls}/>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                            <label className="text-slate-600 block mb-1">구분</label>
-                                            <select value={manualSide} onChange={(e) => setManualSide(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl">
-                                                <option value="BUY">매수 (BUY)</option>
-                                                <option value="SELL">매도 (SELL)</option>
-                                            </select>
+                                            <label className="text-stone-500 block mb-1 font-bold">평균 매수가 (원)</label>
+                                            <input type="number" step="any" value={newHoldingPrice} onChange={(e) => setNewHoldingPrice(e.target.value)} placeholder="72000" required className={inputCls}/>
                                         </div>
                                         <div>
-                                            <label className="text-slate-600 block mb-1">손익률 (% PnL)</label>
-                                            <input type="number" step="0.1" value={manualPnl} onChange={(e) => setManualPnl(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                            <label className="text-stone-500 block mb-1 font-bold">보유 수량</label>
+                                            <input type="number" step="any" value={newHoldingQty} onChange={(e) => setNewHoldingQty(e.target.value)} placeholder="10" required className={inputCls}/>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">투자 전략</label>
-                                        <input type="text" value={manualStrategy} onChange={(e) => setManualStrategy(e.target.value)} placeholder="예: 펀더멘털 저점 매수" required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                    </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        매매일지 저장
+                                    {newHoldingPrice && newHoldingQty && (
+                                        <div className="p-3 bg-emerald-50 rounded-xl border-2 border-emerald-200 text-center flex items-center justify-center gap-2">
+                                            <Sprite art={BUILDING_ART[buildingFor(Number(newHoldingPrice) * Number(newHoldingQty)).key]} size={40}/>
+                                            <span className="text-emerald-800 font-bold">
+                                                평가액 {(Number(newHoldingPrice) * Number(newHoldingQty)).toLocaleString()}원<br/>
+                                                → 마을에 '{buildingFor(Number(newHoldingPrice) * Number(newHoldingQty)).name}' 등장!
+                                            </span>
+                                        </div>
+                                    )}
+                                    <button type="submit" className="btn3d w-full bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black py-3.5 rounded-2xl text-xs">
+                                        마을에 심기 (+50 XP)
                                     </button>
                                 </form>
                             </div>
                         </div>
                     )}
+
+                    {/* 시세 갱신 */}
+                    {priceModalTarget && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] pop-in">
+                                <button onClick={() => { setPriceModalTarget(null); setPriceInput(''); }} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-[#5b4432]">📊 {priceModalTarget.name} 시세 갱신</h3>
+                                <p className="text-xs text-stone-400 font-body">평균 매수가 {priceModalTarget.avgPrice.toLocaleString()}원 · 보유 {priceModalTarget.qty}</p>
+                                <form onSubmit={handleUpdatePrice} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">현재가 (원)</label>
+                                        <input type="number" step="any" value={priceInput} onChange={(e) => setPriceInput(e.target.value)} required autoFocus className={inputCls + " text-base font-bold"}/>
+                                    </div>
+                                    {priceInput && Number(priceInput) > 0 && priceModalTarget.avgPrice > 0 && (
+                                        <div className={`p-3 rounded-xl border-2 text-center font-bold ${Number(priceInput) >= priceModalTarget.avgPrice ? 'bg-rose-50 border-rose-200 text-rose-600' : 'bg-blue-50 border-blue-200 text-blue-600'}`}>
+                                            수익률 {(((Number(priceInput) - priceModalTarget.avgPrice) / priceModalTarget.avgPrice) * 100).toFixed(2)}%
+                                            {Number(priceInput) >= priceModalTarget.avgPrice ? ' ☀️' : ' ☔'}
+                                        </div>
+                                    )}
+                                    <button type="submit" className="btn3d w-full bg-sky-300 hover:bg-sky-200 text-sky-950 font-black py-3.5 rounded-2xl text-xs">
+                                        시세 반영하기
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 상세 매매일지 */}
+                    {journalFormOpen && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] max-h-[90vh] overflow-y-auto pop-in">
+                                <button onClick={() => setJournalFormOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-[#5b4432]">📖 상세 매매일지 작성</h3>
+                                <form onSubmit={handleManualJournalSubmit} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">종목명</label>
+                                        <input type="text" value={manualSymbol} onChange={(e) => setManualSymbol(e.target.value)} placeholder="예: 현대차" required className={inputCls}/>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                            <label className="text-stone-500 block mb-1 font-bold">구분</label>
+                                            <select value={manualSide} onChange={(e) => setManualSide(e.target.value)} className={inputCls}>
+                                                <option value="BUY">매수</option>
+                                                <option value="SELL">매도</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-stone-500 block mb-1 font-bold">체결가 (원)</label>
+                                            <input type="number" step="any" value={manualPrice} onChange={(e) => setManualPrice(e.target.value)} placeholder="0" className={inputCls}/>
+                                        </div>
+                                        <div>
+                                            <label className="text-stone-500 block mb-1 font-bold">손익률 (%)</label>
+                                            <input type="number" step="0.1" value={manualPnl} onChange={(e) => setManualPnl(e.target.value)} className={inputCls}/>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">투자 전략</label>
+                                        <input type="text" value={manualStrategy} onChange={(e) => setManualStrategy(e.target.value)} placeholder="예: 토크노믹스 저평가 매수, 김프 차익" required className={inputCls}/>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">배운 점 / 메모 (선택)</label>
+                                        <textarea value={manualMemo} onChange={(e) => setManualMemo(e.target.value)} rows="3" placeholder="이번 매매에서 배운 점을 남겨보세요. 기록은 최고의 스승!" className={inputCls + " font-body resize-none"}></textarea>
+                                    </div>
+                                    <button type="submit" className="btn3d w-full bg-[#5b4432] text-amber-50 font-black py-3.5 rounded-2xl text-xs" style={{borderColor:'#3a2c1f', boxShadow:'0 4px 0 #3a2c1f'}}>
+                                        일지 저장하기 (+30 XP)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 사건 분석노트 */}
+                    {noteFormOpen && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-violet-200 max-h-[90vh] overflow-y-auto pop-in">
+                                <button onClick={() => setNoteFormOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <div>
+                                    <h3 className="text-lg font-black text-[#5b4432]">🕵️ 사건 원인 분석노트</h3>
+                                    <p className="text-[11px] text-stone-400 font-body">"왜 올랐지? 왜 떨어졌지?"를 스스로 진단하는 최고의 공부 (+50 XP)</p>
+                                </div>
+                                <form onSubmit={handleNoteSubmit} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">자산 / 프로젝트</label>
+                                        <input type="text" value={noteAsset} onChange={(e) => setNoteAsset(e.target.value)} placeholder="예: 샌드박스(SAND), 삼성전자" required className={inputCls}/>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">사건 유형</label>
+                                        <div className="grid grid-cols-3 gap-1.5">
+                                            {EVENT_TYPES.map(t => (
+                                                <button type="button" key={t.id} onClick={() => setNoteEvent(t.id)}
+                                                        className={`p-2 rounded-xl font-bold border-2 transition ${noteEvent === t.id ? 'bg-orange-100 border-orange-400 text-orange-900' : 'bg-[#fdf6e9] border-[#ecd9b8] text-stone-500'}`}>
+                                                    {t.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">나의 원인 진단 <span className="font-normal text-stone-400">(개발? 거버넌스? 브릿지?)</span></label>
+                                        <div className="grid grid-cols-3 gap-1.5">
+                                            {CAUSE_TYPES.map(t => (
+                                                <button type="button" key={t.id} onClick={() => setNoteCause(t.id)}
+                                                        className={`p-2 rounded-xl font-bold border-2 transition ${noteCause === t.id ? 'bg-violet-100 border-violet-400 text-violet-900' : 'bg-[#fdf6e9] border-[#ecd9b8] text-stone-500'}`}>
+                                                    {t.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">무슨 일이 있었나요?</label>
+                                        <textarea value={noteWhat} onChange={(e) => setNoteWhat(e.target.value)} rows="2" required
+                                                  placeholder="예: 해킹 이슈로 코인 무단발행 발생, 체인 동결됨" className={inputCls + " font-body resize-none"}></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">나의 원인 분석</label>
+                                        <textarea value={noteAnalysis} onChange={(e) => setNoteAnalysis(e.target.value)} rows="3"
+                                                  placeholder="예: 코인베이스·바이낸스 체인 브릿지 문제. 이더리움·폴리곤 체인은 멀쩡 → 프로젝트 자체보다 거래소 브릿지 리스크" className={inputCls + " font-body resize-none"}></textarea>
+                                    </div>
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">결론 & 나의 대응</label>
+                                        <textarea value={noteConclusion} onChange={(e) => setNoteConclusion(e.target.value)} rows="2"
+                                                  placeholder="예: 펀더멘털 훼손 아님. 브릿지 복구 공지까지 관망, 패닉셀 안 함" className={inputCls + " font-body resize-none"}></textarea>
+                                    </div>
+                                    <button type="submit" className="btn3d w-full bg-violet-300 hover:bg-violet-200 text-violet-950 font-black py-3.5 rounded-2xl text-xs">
+                                        🔬 분석노트 저장하기 (+50 XP)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 거래내역 가져오기 (붙여넣기 / 업비트) */}
+                    {importModalOpen && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] max-h-[90vh] overflow-y-auto pop-in">
+                                <button onClick={() => setImportModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-[#5b4432]">📥 실거래 데이터 가져오기</h3>
+                                <div className="flex bg-[#fdf6e9] rounded-2xl p-1 text-xs font-bold border-2 border-[#ecd9b8]">
+                                    <button onClick={() => setImportMode('paste')} className={`flex-1 py-2 rounded-xl transition ${importMode === 'paste' ? 'bg-white shadow text-[#5b4432]' : 'text-stone-400'}`}>
+                                        📋 증권사 붙여넣기
+                                    </button>
+                                    <button onClick={() => setImportMode('upbit')} className={`flex-1 py-2 rounded-xl transition ${importMode === 'upbit' ? 'bg-white shadow text-[#5b4432]' : 'text-stone-400'}`}>
+                                        🪙 업비트 API
+                                    </button>
+                                </div>
+
+                                {importMode === 'paste' ? (
+                                    <div className="space-y-3 text-xs">
+                                        <p className="text-stone-500 font-body">
+                                            HTS/MTS 체결내역 화면에서 복사해 붙여넣으세요. 한 줄에 한 건씩,
+                                            <b> 날짜 · 종목명 · 매수/매도 · 수량 · 단가</b>가 있으면 알아서 인식해요.
+                                        </p>
+                                        <textarea value={importText} onChange={(e) => setImportText(e.target.value)} rows="5"
+                                                  placeholder={"2026-08-20 삼성전자 매수 10 72,000\n2026-08-22 SAND 매도 300 450"}
+                                                  className={inputCls + " font-mono resize-none"}></textarea>
+                                        {importPreview.length > 0 && (
+                                            <div className="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3 space-y-1 max-h-36 overflow-y-auto">
+                                                <span className="font-black text-emerald-800 block">✅ {importPreview.length}건 인식됨</span>
+                                                {importPreview.map((r, i) => (
+                                                    <div key={i} className="flex justify-between text-[11px] text-stone-600">
+                                                        <span>{r.date} · <b>{r.name}</b> {r.side === 'BUY' ? '매수' : '매도'}</span>
+                                                        <span>{r.qty || '-'} × {r.price ? r.price.toLocaleString() : '-'}원</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                        <button onClick={handlePasteImport} disabled={!importPreview.length}
+                                                className="btn3d w-full bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black py-3 rounded-2xl disabled:opacity-40">
+                                            매매일지로 가져오기 (+30 XP)
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3 text-xs">
+                                        <p className="text-stone-500 font-body">
+                                            업비트 <b>마이페이지 → Open API 관리</b>에서 <b>'자산조회 · 주문조회' 권한만</b> 체크해 키를 발급하세요.
+                                            (주문/출금 권한은 절대 켜지 마세요!) 키는 <b>내 브라우저에만</b> 저장돼요.
+                                        </p>
+                                        <div>
+                                            <label className="text-stone-500 block mb-1 font-bold">Access Key</label>
+                                            <input type="text" value={upbitKeys.accessKey} onChange={(e) => setUpbitKeys(k => ({ ...k, accessKey: e.target.value }))} className={inputCls + " font-mono"}/>
+                                        </div>
+                                        <div>
+                                            <label className="text-stone-500 block mb-1 font-bold">Secret Key</label>
+                                            <input type="password" value={upbitKeys.secretKey} onChange={(e) => setUpbitKeys(k => ({ ...k, secretKey: e.target.value }))} className={inputCls + " font-mono"}/>
+                                        </div>
+                                        {upbitMsg && (
+                                            <div className={`p-3 rounded-2xl border-2 font-body ${upbitMsg.ok ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
+                                                {upbitMsg.text}
+                                            </div>
+                                        )}
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <button onClick={handleUpbitBalances} disabled={upbitBusy}
+                                                    className="btn3d bg-sky-200 hover:bg-sky-100 text-sky-900 font-black py-3 rounded-2xl disabled:opacity-40">
+                                                {upbitBusy ? '⏳' : '💰'} 코인 잔고 가져오기
+                                            </button>
+                                            <button onClick={handleUpbitOrders} disabled={upbitBusy}
+                                                    className="btn3d bg-amber-200 hover:bg-amber-100 text-amber-900 font-black py-3 rounded-2xl disabled:opacity-40">
+                                                {upbitBusy ? '⏳' : '📜'} 체결내역 가져오기
+                                            </button>
+                                        </div>
+                                        <p className="text-[10px] text-stone-400 font-body">
+                                            ⚠️ 이 기능은 CORS 때문에 Vercel 배포 주소(프록시 서버 포함)에서만 동작해요. 키 발급 시 등록한 IP에서만 조회가 허용돼요.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 팀 생성 / 조인 / 초대 */}
+                    {createTeamModalOpen && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] pop-in">
+                                <button onClick={() => setCreateTeamModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-[#5b4432]">👑 마을 연합 만들기</h3>
+                                <form onSubmit={handleCreateTeamSubmit} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">연합(팀) 이름</label>
+                                        <input type="text" value={newTeamNameInput} onChange={(e) => setNewTeamNameInput(e.target.value)} placeholder="예: 가치투자 1번지" required className={inputCls}/>
+                                    </div>
+                                    <button type="submit" className="btn3d w-full bg-[#5b4432] text-amber-50 font-black py-3.5 rounded-2xl text-xs" style={{borderColor:'#3a2c1f', boxShadow:'0 4px 0 #3a2c1f'}}>
+                                        연합 결성하기 (+40 XP)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {joinTeamModalOpen && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border-2 border-[#ecd9b8] pop-in">
+                                <button onClick={() => setJoinTeamModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-[#5b4432]">🔑 초대코드로 연합 가입</h3>
+                                <form onSubmit={handleJoinTeamSubmit} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-stone-500 block mb-1 font-bold">초대 코드</label>
+                                        <input type="text" value={joinCodeInput} onChange={(e) => setJoinCodeInput(e.target.value)} placeholder="예: TEAM777" required className={inputCls + " uppercase"}/>
+                                    </div>
+                                    <button type="submit" className="btn3d w-full bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black py-3.5 rounded-2xl text-xs">
+                                        연합 가입하기 (+40 XP)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {inviteModalOpen && team && (
+                        <div className="fixed inset-0 bg-[#5b4432]/60 backdrop-blur-sm z-[90] flex justify-center items-center p-4">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center relative border-2 border-[#ecd9b8] pop-in">
+                                <button onClick={() => setInviteModalOpen(false)} className="absolute top-4 right-4 text-stone-400 hover:text-stone-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <span className="text-3xl inline-block floaty">💌</span>
+                                <div className="text-lg font-black text-[#5b4432]">이웃 초대장</div>
+                                <div className="p-4 bg-amber-50 rounded-2xl border-2 border-dashed border-amber-300 text-2xl font-black text-[#5b4432] tracking-widest">
+                                    {team.code}
+                                </div>
+                                <button onClick={handleCopyLink} className="btn3d w-full bg-emerald-300 hover:bg-emerald-200 text-[#1e3b16] font-black py-3.5 rounded-2xl text-xs">
+                                    {copiedNotice ? '✅ 초대 링크 복사 완료!' : '📋 초대 링크 복사하기'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* 토스트 */}
+                    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[110] space-y-2 w-full max-w-xs px-3 pointer-events-none">
+                        {toasts.map(t => (
+                            <div key={t.id} className="toast-up bg-[#5b4432] text-amber-50 px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 border-2 border-[#3a2c1f]">
+                                <span className="text-base">{t.icon}</span>
+                                <span>{t.msg}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             );
         }

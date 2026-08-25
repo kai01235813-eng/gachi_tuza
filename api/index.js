@@ -1,85 +1,70 @@
-// Node.js Vercel Serverless Function for 같이투자 (Gachi Tuza)
+// 같이투자 (Gachi Tuza) - Vercel Serverless API
+// 업비트 Open API 프록시: 브라우저에서 직접 호출하면 CORS로 막히므로
+// 이 함수가 JWT 서명 + 중계를 담당한다. (조회 전용 - 주문/출금 기능 없음)
+import crypto from 'crypto'
+
+const UPBIT = 'https://api.upbit.com'
+
+const b64url = (buf) => Buffer.from(buf).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_')
+
+// 업비트 인증 JWT (HS256). 쿼리가 있으면 SHA512 query_hash를 포함해야 한다.
+function upbitToken(accessKey, secretKey, query) {
+  const payload = { access_key: accessKey, nonce: crypto.randomUUID() }
+  if (query) {
+    payload.query_hash = crypto.createHash('sha512').update(query, 'utf-8').digest('hex')
+    payload.query_hash_alg = 'SHA512'
+  }
+  const header = b64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+  const body = b64url(JSON.stringify(payload))
+  const sig = b64url(crypto.createHmac('sha256', secretKey).update(`${header}.${body}`).digest())
+  return `${header}.${body}.${sig}`
+}
+
+async function proxyUpbit(res, path, query, token) {
+  const headers = { Accept: 'application/json' }
+  if (token) headers.Authorization = `Bearer ${token}`
+  const upstream = await fetch(`${UPBIT}${path}${query ? `?${query}` : ''}`, { headers })
+  const data = await upstream.json().catch(() => ({ error: { message: '업비트 응답을 해석하지 못했어요.' } }))
+  return res.status(upstream.status).json(data)
+}
+
 export default async function handler(req, res) {
   const { url, method } = req
 
-  // Set CORS Headers
+  // CORS
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  if (method === 'OPTIONS') return res.status(200).end()
 
-  if (method === 'OPTIONS') {
-    return res.status(200).end()
+  try {
+    // ---------- 업비트 프록시 ----------
+    // 공개 시세 (인증 불필요) - 시장 온도계 / 잔고 평가용
+    if (url.includes('/api/upbit/ticker')) {
+      const markets = String((req.query && req.query.markets) || '').replace(/[^A-Z0-9\-,]/g, '')
+      if (!markets) return res.status(400).json({ error: { message: 'markets 파라미터가 필요해요.' } })
+      return await proxyUpbit(res, '/v1/ticker', `markets=${markets}`)
+    }
+
+    // 전체 계좌(잔고) 조회 - 자산조회 권한 필요
+    if (url.includes('/api/upbit/accounts') && method === 'POST') {
+      const { accessKey, secretKey } = req.body || {}
+      if (!accessKey || !secretKey) return res.status(400).json({ error: { message: 'API 키를 입력해주세요.' } })
+      return await proxyUpbit(res, '/v1/accounts', '', upbitToken(accessKey, secretKey, null))
+    }
+
+    // 종료된 주문(체결내역) 조회 - 주문조회 권한 필요
+    if (url.includes('/api/upbit/orders') && method === 'POST') {
+      const { accessKey, secretKey, market } = req.body || {}
+      if (!accessKey || !secretKey) return res.status(400).json({ error: { message: 'API 키를 입력해주세요.' } })
+      const params = new URLSearchParams({ limit: '100', order_by: 'desc' })
+      if (market) params.set('market', String(market))
+      const query = params.toString()
+      return await proxyUpbit(res, '/v1/orders/closed', query, upbitToken(accessKey, secretKey, query))
+    }
+  } catch (e) {
+    return res.status(500).json({ error: { message: e.message || '프록시 처리 중 오류가 발생했어요.' } })
   }
 
-  // 1. Natural Language Zero UI Chat Processing
-  if (url.includes('/api/chat') && method === 'POST') {
-    const { prompt, user_id } = req.body || {}
-    const promptText = (prompt || '').trim()
-
-    const isBuy = promptText.includes('매수') || promptText.includes('샀')
-    const side = isBuy ? 'BUY' : 'SELL'
-    const symbol = promptText.includes('삼성') ? '삼성전자' : promptText.includes('비트') ? 'BTC' : 'SOL'
-    const asset_type = (promptText.includes('주식') || promptText.includes('삼성')) ? '📈 주식' : '🪙 코인'
-
-    return res.status(200).json({
-      type: 'trade_created',
-      reply: `🌱 **투자자**님, [${asset_type}] '${symbol} ${side}' 매매 복기가 R3F 정원에 성공적으로 기록되었습니다!\n✨ **+150 경험치(EXP)** 획득!`,
-      new_xp: 2600
-    })
-  }
-
-  // 2. User info endpoint
-  if (url.includes('/api/user/me')) {
-    return res.status(200).json({
-      id: 1,
-      nickname: '김가치 (모임장)',
-      provider: 'kakao',
-      archetype: '💎 기업 실질가치 투자자',
-      title: '👑 가치투자 1기 모임장',
-      xp: 2450
-    })
-  }
-
-  // 3. Social feed endpoint
-  if (url.includes('/api/feed')) {
-    return res.status(200).json([
-      {
-        id: 1,
-        author: '김가치 (모임장)',
-        asset_type: '📈 주식',
-        symbol: '삼성전자',
-        side: 'BUY',
-        amount_krw: 1000000,
-        price: 72000,
-        pnl_rate: 8.5,
-        strategy: '💎 실적 개선 펀더멘털 저점 매수 전략',
-        ai_reasoning: '영업이익 반등 기대감 및 외국인 순매수 지속 수급 분석 완료.',
-        time: '방금 전'
-      },
-      {
-        id: 2,
-        author: '박비트 (가치투자가)',
-        asset_type: '🪙 코인',
-        symbol: 'BTC',
-        side: 'BUY',
-        amount_krw: 500000,
-        price: 135000000,
-        pnl_rate: 12.4,
-        strategy: '⚡ 국내외 가격차이 김프 0.04% 스캘핑 전략',
-        ai_reasoning: '업비트 프리미엄 2.1% 회복 및 현물 ETF 유입세 확인.',
-        time: '10분 전'
-      }
-    ])
-  }
-
-  // 4. Squad Rankings
-  if (url.includes('/api/squad/rankings')) {
-    return res.status(200).json([
-      { rank: 1, name: '김가치', archetype: '💎 기업 실질가치 투자자', return_pct: 14.8, xp: 2450 },
-      { rank: 2, name: '박비트', archetype: '🛡️ 위험 방어 수호자', return_pct: 11.2, xp: 1980 },
-      { rank: 3, name: '최솔라', archetype: '⚡ 가격차이 차익 투자자', return_pct: 7.6, xp: 1620 }
-    ])
-  }
-
-  return res.status(200).json({ status: 'ok', message: '같이투자 Node.js R3F API Server Running' })
+  return res.status(200).json({ status: 'ok', message: '같이투자 포춘빌리지 API 서버 작동 중 🏡' })
 }
