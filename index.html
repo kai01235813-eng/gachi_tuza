@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>같이투자 (Gachi Tuza) 3D 소셜 트레이딩 게임</title>
+    <title>같이투자 - 3D 소셜 트레이딩 게임 플랫폼</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js (r128) 3D Graphics Engine -->
@@ -40,7 +40,7 @@
             <div>
                 <div class="font-black text-xl text-white tracking-tight flex items-center gap-2 font-jua">
                     같이투자 <span class="text-sm text-pink-300">3D 소셜 트레이딩 게임</span>
-                    <span class="bg-gradient-to-r from-amber-300 via-pink-400 to-rose-400 text-slate-950 text-[11px] px-3 py-0.5 rounded-full font-bold shadow-md">3D Game 🌟</span>
+                    <span class="bg-gradient-to-r from-amber-300 via-pink-400 to-rose-400 text-slate-950 text-[11px] px-3 py-0.5 rounded-full font-bold shadow-md">소셜 투자 아레나 🌟</span>
                 </div>
                 <div class="text-[11px] text-slate-400">지인들과 함께 즐기는 3D 가치투자 소셜 플랫폼</div>
             </div>
@@ -48,15 +48,15 @@
         <div class="flex items-center gap-2">
             <button onclick="toggleAudio()" id="audioBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-2xl text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-music text-pink-400" id="audioIcon"></i>
-                <span id="audioLabel" class="font-jua">사운드 ON</span>
+                <span id="audioLabel" class="font-jua">소리 켜기</span>
             </button>
             <button onclick="openProfileModal()" class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl transition shadow-lg border border-pink-300/50 flex items-center gap-1.5 font-jua">
                 <i class="fa-solid fa-user-gear"></i>
-                <span>닉네임 & 프로필 설정</span>
+                <span>닉네임 및 투자 스타일 설정</span>
             </button>
             <button onclick="openLoginModal()" id="userAuthBtn" class="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-xs px-3.5 py-2 rounded-2xl transition shadow-lg flex items-center gap-1.5 font-jua">
                 <i class="fa-solid fa-right-to-bracket"></i>
-                <span id="userAuthLabel">게임 로그인</span>
+                <span id="userAuthLabel">소셜 로그인</span>
             </button>
         </div>
     </nav>
@@ -71,15 +71,15 @@
                     <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-16 h-16 rounded-2xl border-2 border-pink-400 bg-slate-800 p-1 shadow-lg soft-glow-pink">
                     <div>
                         <div class="text-xs text-amber-300 font-bold tracking-wider flex items-center gap-2 font-jua">
-                            <span id="userArchetype" class="bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-lg border border-pink-400/30">💎 펀더멘털 홀더</span>
+                            <span id="userArchetype" class="bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-lg border border-pink-400/30">💎 기업 실질가치 투자자</span>
                             <span class="bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded-md text-[10px]" id="userProvider">카카오 계정</span>
                         </div>
-                        <h2 class="text-2xl font-black text-white flex items-center gap-2 font-jua mt-0.5" id="userDisplayName">김가치 (스쿼드 리더) 🛡️</h2>
-                        <div class="text-xs text-pink-300 font-bold mt-0.5" id="userTitle">👑 가치투자 1기 스쿼드 리더 (Lv.4)</div>
+                        <h2 class="text-2xl font-black text-white flex items-center gap-2 font-jua mt-0.5" id="userDisplayName">김가치 (가치 모임장) 🛡️</h2>
+                        <div class="text-xs text-pink-300 font-bold mt-0.5" id="userTitle">👑 가치투자 1기 모임장 (4단계)</div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs text-slate-400 font-jua">LEVEL & EXP</span>
+                    <span class="text-xs text-slate-400 font-jua">단계 및 경험치 (EXP)</span>
                     <div class="text-lg font-black text-pink-400 font-jua" id="userXpLabel">2,450 / 3,000 EXP</div>
                 </div>
             </div>
@@ -91,31 +91,31 @@
 
             <div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-800/80 text-xs font-jua">
                 <button onclick="openProfileModal()" class="bg-pink-500/20 text-pink-300 hover:bg-pink-500/30 px-3.5 py-1.5 rounded-xl border border-pink-400/40 flex items-center gap-1.5 font-bold transition">
-                    <i class="fa-solid fa-pen-to-square"></i> 닉네임 & 칭호 변경
+                    <i class="fa-solid fa-pen-to-square"></i> 닉네임 및 칭호 변경
                 </button>
                 <span class="bg-slate-800/90 text-amber-300 px-3 py-1.5 rounded-xl border border-amber-400/30 flex items-center gap-1 font-bold">
-                    🛡️ 레버리지 도파민 방어막
+                    🛡️ 손실 방지 안전 수칙 준수
                 </span>
                 <span class="bg-slate-800/90 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-400/30 flex items-center gap-1 font-bold">
-                    💎 현물/스테이킹 마스터
+                    💎 현물 장기 투자 및 예치 이자
                 </span>
             </div>
         </div>
 
-        <!-- 🚀 Co-op Squad Quest Card (스쿼드 공동 가치투자 퀘스트) -->
+        <!-- 🚀 Co-op Squad Quest Card (모임 공동 가치투자 퀘스트) -->
         <div id="raidSection" class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 p-5 rounded-3xl border border-sky-400/40 shadow-2xl space-y-4 bouncy-shadow-cyan relative">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
                     <i class="fa-solid fa-rocket text-sky-400 text-xl animate-pulse"></i> 
-                    <span id="raidTitle">🚀 스쿼드 공동 가치투자 & 김프 0.04% 차익 퀘스트</span>
+                    <span id="raidTitle">🚀 모임 공동 목표: 1,000만원 가치투자 & 가격 차익 획득</span>
                 </h3>
-                <span class="text-xs bg-sky-400/20 text-sky-300 px-3 py-1 rounded-full border border-sky-400/40 font-bold font-jua">스쿼드 퀘스트 진행 중 🌟</span>
+                <span class="text-xs bg-sky-400/20 text-sky-300 px-3 py-1 rounded-full border border-sky-400/40 font-bold font-jua">공동 목표 진행 중 🌟</span>
             </div>
 
             <!-- Quest Progress Bar -->
             <div class="space-y-1.5">
                 <div class="flex justify-between text-xs font-bold font-jua">
-                    <span class="text-slate-300">스쿼드 공동 목표 달성률</span>
+                    <span class="text-slate-300">모임 공동 목표 달성률</span>
                     <span class="text-sky-300" id="raidPctLabel">74.5% (7,450,000원 / 10,000,000원)</span>
                 </div>
                 <div class="w-full bg-slate-950 h-4 rounded-full overflow-hidden p-0.5 border border-sky-400/40 shadow-inner">
@@ -128,28 +128,28 @@
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
                         <span class="text-pink-300 font-bold font-jua">👑 김가치</span>
-                        <span class="text-slate-400 text-[11px]">(스쿼드 리더)</span>
+                        <span class="text-slate-400 text-[11px]">(가치 모임장)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">3,500,000원</span>
                 </div>
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
                         <span class="text-sky-300 font-bold font-jua">💎 박비트</span>
-                        <span class="text-slate-400 text-[11px]">(버프 딜러)</span>
+                        <span class="text-slate-400 text-[11px]">(가치 투자자)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">2,450,000원</span>
                 </div>
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
                         <span class="text-amber-300 font-bold font-jua">⚡ 최솔라</span>
-                        <span class="text-slate-400 text-[11px]">(차익 스나이퍼)</span>
+                        <span class="text-slate-400 text-[11px]">(차익 탐색자)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">1,500,000원</span>
                 </div>
             </div>
 
             <div class="p-3 bg-sky-400/10 rounded-2xl border border-sky-400/30 text-xs text-sky-200 font-bold flex items-center justify-between font-jua">
-                <span>⚡ 스쿼드 멤버 전원 복기 작성 시 EXP 2배 버프 발동!</span>
+                <span>⚡ 모임 식구 전원 복기 작성 시 경험치 2배 보너스 혜택 발동!</span>
                 <button onclick="openJournalModal()" class="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white px-3.5 py-1.5 rounded-xl font-black text-xs transition shadow-md">
                     복기 작성하기
                 </button>
@@ -160,7 +160,7 @@
         <div id="feedSection" class="bg-slate-900/90 p-5 rounded-3xl border border-pink-400/30 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
-                    <i class="fa-solid fa-comments text-pink-400 text-lg"></i> 스쿼드 실시간 가치투자 복기 피드
+                    <i class="fa-solid fa-comments text-pink-400 text-lg"></i> 모임 식구 실시간 가치투자 복기 피드
                 </h3>
                 <button onclick="openJournalModal()" class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1 shadow-md font-jua">
                     <i class="fa-solid fa-plus"></i> 새 복기 작성
@@ -176,7 +176,7 @@
         <div id="squadSection" class="bg-slate-900/90 p-5 rounded-3xl border border-amber-400/30 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
-                    <i class="fa-solid fa-trophy text-amber-300 text-xl"></i> 스쿼드 실전 가치투자 랭킹전
+                    <i class="fa-solid fa-trophy text-amber-300 text-xl"></i> 가치투자 모임 수익률 순위전
                 </h3>
                 <span class="text-xs bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full border border-amber-400/30 font-medium font-jua">Supabase DB Sync</span>
             </div>
@@ -186,10 +186,10 @@
                     <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800 font-jua">
                         <tr>
                             <th class="py-3 px-3">순위</th>
-                            <th class="py-3 px-3">게이머 닉네임</th>
-                            <th class="py-3 px-3">투자 성향 (Archetype)</th>
+                            <th class="py-3 px-3">투자자 닉네임</th>
+                            <th class="py-3 px-3">투자 스타일</th>
                             <th class="py-3 px-3">실전 수익률</th>
-                            <th class="py-3 px-3">획득 EXP</th>
+                            <th class="py-3 px-3">획득 경험치 (EXP)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800 text-slate-200 font-mono" id="rankingsTableBody">
@@ -203,7 +203,7 @@
 
     </div>
 
-    <!-- 🎮 Gamer Profile Customization Modal (닉네임 & 프로필 설정) -->
+    <!-- 🎮 Gamer Profile Customization Modal (닉네임 및 프로필 설정) -->
     <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
         <div class="bg-slate-900 border border-pink-400/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative soft-glow-pink">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -214,38 +214,38 @@
                 <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-2xl flex justify-center items-center mx-auto border border-pink-400/40 text-xl">
                     <i class="fa-solid fa-user-pen"></i>
                 </div>
-                <h3 class="text-xl font-black text-white">게이머 닉네임 & 프로필 설정</h3>
+                <h3 class="text-xl font-black text-white">투자자 닉네임 및 프로필 설정</h3>
                 <p class="text-xs text-slate-400">소셜 트레이딩 게임 프로필을 변경하고 Supabase DB에 저장합니다</p>
             </div>
 
             <form onsubmit="submitProfileUpdate(event)" class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">🎮 게이머 닉네임</label>
-                    <input type="text" id="pNickname" placeholder="예: 김가치 (스쿼드 리더)" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">🎮 투자자 닉네임</label>
+                    <input type="text" id="pNickname" placeholder="예: 김가치 (가치 모임장)" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">💎 투자 성향 (Archetype)</label>
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">💎 투자 스타일</label>
                     <select id="pArchetype" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
-                        <option value="💎 펀더멘털 홀더">💎 펀더멘털 홀더 (장기 가치 분석가)</option>
-                        <option value="⚡ 차익거래 스캘퍼">⚡ 차익거래 스캘퍼 (김프/최저가 라우팅)</option>
-                        <option value="🛡️ 리스크 가드">🛡️ 리스크 가드 (FOMO 방어 수호자)</option>
-                        <option value="🔮 퀀트 지표 분석가">🔮 퀀트 지표 분석가 (정량 알고리즘형)</option>
+                        <option value="💎 기업 실질가치 투자자">💎 기업 실질가치 투자자 (기업 실적 및 가치 분석)</option>
+                        <option value="⚡ 가격차이 차익 투자자">⚡ 가격차이 차익 투자자 (국내외 가격차이 탐색)</option>
+                        <option value="🛡️ 위험 방어 수호자">🛡️ 위험 방어 수호자 (손실 방지 및 안전 매매)</option>
+                        <option value="🔮 정량 지표 분석가">🔮 정량 지표 분석가 (수치 및 정량 데이터 분석)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">👑 투자자 칭호 (Title)</label>
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">👑 투자자 칭호</label>
                     <select id="pTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
-                        <option value="👑 가치투자 1기 스쿼드 리더 (Lv.4)">👑 가치투자 1기 스쿼드 리더 (Lv.4)</option>
-                        <option value="🛡️ 버핏급 펀더멘털 마스터 (Lv.3)">🛡️ 버핏급 펀더멘털 마스터 (Lv.3)</option>
-                        <option value="⚖️ 최저가 라우터 스캘퍼 (Lv.2)">⚖️ 최저가 라우터 스캘퍼 (Lv.2)</option>
-                        <option value="💎 가치 탐험가 (Lv.3)">💎 가치 탐험가 (Lv.3)</option>
+                        <option value="👑 가치투자 1기 모임장 (4단계)">👑 가치투자 1기 모임장 (4단계)</option>
+                        <option value="🛡️ 장기 현물 투자 대가 (3단계)">🛡️ 장기 현물 투자 대가 (3단계)</option>
+                        <option value="⚖️ 최저가 탐색 전문가 (2단계)">⚖️ 최저가 탐색 전문가 (2단계)</option>
+                        <option value="💎 가치 탐험가 (3단계)">💎 가치 탐험가 (3단계)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">🤖 아바타 시드 (DiceBear Avatar)</label>
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">🤖 아바타 모양 (DiceBear Avatar)</label>
                     <input type="text" id="pAvatarSeed" placeholder="예: KimGachi, ParkBit, Dragon, Star" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
                 </div>
 
@@ -263,25 +263,25 @@
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <h3 class="text-base font-black text-white flex items-center gap-2 font-jua">
-                <i class="fa-solid fa-pen-to-square text-pink-400"></i> 가치투자 복기 노트 작성 (+150 EXP)
+                <i class="fa-solid fa-pen-to-square text-pink-400"></i> 가치투자 복기 노트 작성 (+150 경험치)
             </h3>
             <form onsubmit="submitJournal(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-400 mb-1 font-jua">종목코드 (Symbol)</label>
+                        <label class="block text-slate-400 mb-1 font-jua">종목코드 (예: BTC, ETH, SAND)</label>
                         <input type="text" id="jSymbol" placeholder="예: BTC, ETH, SAND" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1 font-jua">매매 구분</label>
                         <select id="jSide" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500 font-jua">
-                            <option value="BUY">BUY (매수)</option>
-                            <option value="SELL">SELL (매도)</option>
+                            <option value="BUY">매수 (사기)</option>
+                            <option value="SELL">매도 (팔기)</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-400 mb-1 font-jua">체결 금액 (KRW)</label>
+                        <label class="block text-slate-400 mb-1 font-jua">체결 금액 (원)</label>
                         <input type="number" id="jAmount" placeholder="10000" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                     </div>
                     <div>
@@ -290,19 +290,19 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-jua">🧠 AI 매수 근거 & 정량 분석</label>
+                    <label class="block text-slate-400 mb-1 font-jua">🧠 인공지능 매수 판단 근거</label>
                     <textarea id="jReasoning" rows="2" placeholder="최저가 라우팅 확인, GitHub 커밋 점수 85점..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-jua">🛡️ 리스크 점검</label>
+                    <label class="block text-slate-400 mb-1 font-jua">🛡️ 위험 점검 사항</label>
                     <input type="text" id="jRisk" placeholder="입출금 정지 유의 공지 확인 완료" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-jua">💡 가치투자 레슨</label>
+                    <label class="block text-slate-400 mb-1 font-jua">💡 가치투자 깨달음 (레슨)</label>
                     <input type="text" id="jLesson" placeholder="유의 해제 전까지 추가 매수 금지" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                 </div>
                 <button type="submit" class="w-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-black py-2.5 rounded-xl transition shadow-lg font-jua text-sm">
-                    복기 작성 완료 (+150 EXP)
+                    복기 작성 완료 (+150 경험치)
                 </button>
             </form>
         </div>
@@ -346,7 +346,7 @@
         </button>
         <button onclick="scrollToSection('raidSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-sky-300 transition">
             <i class="fa-solid fa-rocket text-base"></i>
-            <span class="mt-1 font-jua">스쿼드 퀘스트</span>
+            <span class="mt-1 font-jua">모임 목표</span>
         </button>
         <button onclick="scrollToSection('feedSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-pink-400 transition">
             <i class="fa-solid fa-comments text-base"></i>
@@ -354,7 +354,7 @@
         </button>
         <button onclick="scrollToSection('squadSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-300 transition">
             <i class="fa-solid fa-trophy text-base"></i>
-            <span class="mt-1 font-jua">스쿼드 랭킹</span>
+            <span class="mt-1 font-jua">모임 랭킹</span>
         </button>
     </div>
 
@@ -475,7 +475,7 @@
 
         function toggleAudio() {
             soundEnabled = !soundEnabled;
-            document.getElementById('audioLabel').innerText = soundEnabled ? "사운드 ON" : "사운드 OFF";
+            document.getElementById('audioLabel').innerText = soundEnabled ? "소리 켜기" : "소리 끄기";
             document.getElementById('audioIcon').className = soundEnabled ? "fa-solid fa-music text-pink-400" : "fa-solid fa-volume-xmark text-slate-500";
             if (soundEnabled) playBouncySound(659.25, 0.25, 'triangle');
         }
@@ -504,8 +504,8 @@
                     if (user && user.nickname) {
                         currentUserId = user.id;
                         document.getElementById('userDisplayName').innerText = user.nickname;
-                        document.getElementById('userArchetype').innerText = user.archetype || '💎 펀더멘털 홀더';
-                        document.getElementById('userTitle').innerText = user.title || '👑 가치투자 1기 스쿼드 리더 (Lv.4)';
+                        document.getElementById('userArchetype').innerText = user.archetype || '💎 기업 실질가치 투자자';
+                        document.getElementById('userTitle').innerText = user.title || '👑 가치투자 1기 모임장 (4단계)';
                         document.getElementById('userXpLabel').innerText = `${user.xp.toLocaleString()} / 3,000 EXP`;
                         const pct = Math.min((user.xp / 3000) * 100, 100);
                         document.getElementById('xpBar').style.width = `${pct}%`;
@@ -513,8 +513,8 @@
 
                         // Pre-fill profile modal
                         document.getElementById('pNickname').value = user.nickname;
-                        document.getElementById('pArchetype').value = user.archetype || '💎 펀더멘털 홀더';
-                        document.getElementById('pTitle').value = user.title || '👑 가치투자 1기 스쿼드 리더 (Lv.4)';
+                        document.getElementById('pArchetype').value = user.archetype || '💎 기업 실질가치 투자자';
+                        document.getElementById('pTitle').value = user.title || '👑 가치투자 1기 모임장 (4단계)';
                     }
                 });
         }
@@ -544,16 +544,16 @@
                                 <span class="text-slate-500 font-mono text-[11px]">${item.time}</span>
                             </div>
                             <div class="text-xs space-y-2 text-slate-300">
-                                <div class="font-bold text-pink-300 font-jua text-sm">🚀 체결: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)</div>
+                                <div class="font-bold text-pink-300 font-jua text-sm">🚀 체결: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수 (사기)' : '매도 (팔기)'} (${item.price.toLocaleString()}원)</div>
                                 <p class="leading-relaxed"><strong class="text-white font-bold">🧠 AI 근거:</strong> ${item.ai_reasoning}</p>
-                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>리스크 점검:</strong> ${item.risk_review}</div>` : ''}
+                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>위험 점검:</strong> ${item.risk_review}</div>` : ''}
                                 ${item.lesson ? `<div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-emerald-300 font-medium">💡 <strong>가치 레슨:</strong> ${item.lesson}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-3 pt-2 border-t border-slate-900 text-xs font-jua">
                                 <button onclick="likeFeed(${item.id})" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-bold">
                                     <i class="fa-solid fa-heart"></i> <span id="like-count-${item.id}">${item.likes}</span>
                                 </button>
-                                <span class="text-pink-300 text-[11px] ml-auto">+150 EXP 획득됨</span>
+                                <span class="text-pink-300 text-[11px] ml-auto">+150 경험치(EXP) 획득됨</span>
                             </div>
                         </div>
                     `).join('');
