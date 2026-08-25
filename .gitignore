@@ -1,3 +1,8 @@
+# Node.js
+node_modules/
+dist/
+.vite/
+
 # Python / Virtual Environment
 venv/
 .venv/
