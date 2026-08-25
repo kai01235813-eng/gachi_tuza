@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>같이투자 (Gachi Tuza) - 소셜 트레이딩 게임 플랫폼</title>
+    <title>같이투자 (Gachi Tuza) - 팀 소셜 트레이딩 게임 플랫폼</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React 18 & ReactDOM -->
@@ -34,9 +34,9 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- Professional Social Trading Platform Application ---
+        // --- Complete Team Social Trading Platform Application ---
         function App() {
-            // User Auth State (Starts at false for Landing Page, switchable)
+            // User Auth State
             const [user, setUser] = useState({
                 isLoggedIn: false,
                 provider: '',
@@ -50,46 +50,67 @@
                 streak: 5
             });
 
-            // Active Navigation Tab: 'portfolio', 'strategy', 'journal', 'social', 'city'
+            // Social Trading Team / Squad State
+            const [team, setTeam] = useState({
+                id: 1,
+                name: '같이투자 1기 챔피언 팀',
+                code: 'GACHI7',
+                leader: '스마트개미',
+                membersCount: 8,
+                totalReturnPct: 14.8,
+                targetCapitalKrw: 50000000,
+                currentCapitalKrw: 37000000
+            });
+
+            // Team Members Roster
+            const [teamMembers, setTeamMembers] = useState([
+                { id: 1, name: '스마트개미', role: '👑 팀장', provider: '카카오', pnlRate: 18.5, capitalKrw: 15000000, mainSymbol: '$삼성전자', avatar: '🎩' },
+                { id: 2, name: '박비트', role: '⚡ 에이스 트레이더', provider: '네이버', pnlRate: 12.4, capitalKrw: 8500000, mainSymbol: '$BTC', avatar: '🐱' },
+                { id: 3, name: '최솔라', role: '🛡️ 리스크 매니저', provider: '구글', pnlRate: 9.6, capitalKrw: 5200000, mainSymbol: '$SOL', avatar: '🦊' },
+                { id: 4, name: '김엔비', role: '📈 해외주식 분석가', provider: '카카오', pnlRate: 15.2, capitalKrw: 8300000, mainSymbol: '$NVDA', avatar: '🦁' }
+            ]);
+
+            // Active Navigation Tab: 'portfolio', 'team', 'strategy', 'journal', 'social'
             const [activeTab, setActiveTab] = useState('portfolio');
             const [showGuideModal, setShowGuideModal] = useState(false);
+            const [createTeamModalOpen, setCreateTeamModalOpen] = useState(false);
+            const [joinTeamModalOpen, setJoinTeamModalOpen] = useState(false);
+            const [inviteModalOpen, setInviteModalOpen] = useState(false);
             const [journalFormOpen, setJournalFormOpen] = useState(false);
 
-            // Portfolio Holdings Data
+            // Form States
+            const [newTeamNameInput, setNewTeamNameInput] = useState('');
+            const [newTeamGoalInput, setNewTeamGoalInput] = useState('50000000');
+            const [joinCodeInput, setJoinCodeInput] = useState('');
+            const [copiedNotice, setCopiedNotice] = useState(false);
+
+            // Holdings & Trade Data
             const [holdings, setHoldings] = useState([
                 { id: 1, name: '삼성전자', symbol: '$삼성전자', category: '📈 주식', qty: 150, avgPrice: 66300, currentPrice: 72000, evalAmount: 10800000, pnlRate: 8.5 },
                 { id: 2, name: '비트코인', symbol: '$BTC', category: '🪙 코인', qty: 0.025, avgPrice: 120000000, currentPrice: 135000000, evalAmount: 3375000, pnlRate: 12.4 },
                 { id: 3, name: '엔비디아', symbol: '$NVDA', category: '📈 해외주식', qty: 10, avgPrice: 160000, currentPrice: 184320, evalAmount: 1843200, pnlRate: 15.2 }
             ]);
 
-            // Investment Strategies Data
             const [strategies, setStrategies] = useState([
                 { id: 1, name: '💎 기업 실질가치 장기분석', weight: '60%', targetPnl: '+25.0%', risk: '보통', description: '영업이익 및 PBR 1.0 이하 펀더멘털 우수 종목 장기 보유' },
-                { id: 2, name: '⚡ 김프 차익 스캘핑', weight: '25%', targetPnl: '+15.0%', risk: '높음', description: '가상자산 해외 대형 거래소 차익 스캘핑 전략' },
-                { id: 3, name: '🛡️ 손실 방어 분할매수', weight: '15%', targetPnl: '+10.0%', risk: '낮음', description: '지수 조정 시 3단계 분할 매수 수호 전략' }
+                { id: 2, name: '⚡ 김프 차익 스캘핑', weight: '25%', targetPnl: '+15.0%', risk: '높음', description: '가상자산 해외 대형 거래소 차익 스캘핑 전략' }
             ]);
 
-            // Trading Journal History Logs
             const [tradeLogs, setTradeLogs] = useState([
-                { id: 1, date: '2026-08-25', symbol: '$삼성전자', side: 'BUY', price: 72000, amountKrw: 1000000, pnlRate: 8.5, strategy: '💎 기업 실질가치 장기분석', aiAnalysis: '실적 반등 및 외국인 순매수세 지속' },
-                { id: 2, date: '2026-08-24', symbol: '$BTC', side: 'BUY', price: 135000000, amountKrw: 500000, pnlRate: 12.4, strategy: '⚡ 김프 차익 스캘핑', aiAnalysis: 'ETF 자금 유입 및 프리미엄 회복' },
-                { id: 3, date: '2026-08-22', symbol: '$SOL', side: 'SELL', price: 240000, amountKrw: 300000, pnlRate: -4.2, strategy: '🛡️ 손실 방어 분할매수', aiAnalysis: '단기 저항선 도달에 따른 일부 차익 실현' }
+                { id: 1, date: '2026-08-25', symbol: '$삼성전자', side: 'BUY', price: 72000, amountKrw: 1000000, pnlRate: 8.5, strategy: '💎 기업 실질가치 장기분석', aiAnalysis: '실적 반등 및 외국인 순매수세 지속' }
             ]);
 
-            // Real Social Feed Data (StockTwits + eToro)
             const [feed, setFeed] = useState([
-                { id: 101, author: '스마트개미 (모임장)', badge: '카카오 1초 인증', symbol: '$삼성전자', side: 'BUY', amountKrw: 1000000, pnlRate: 8.5, strategy: '💎 실적 개선 펀더멘털 저점 매수', likes: 14, copiedCount: 5, time: '10분 전' },
-                { id: 102, author: '박비트 (가치투자가)', badge: '네이버 1초 인증', symbol: '$BTC', side: 'BUY', amountKrw: 500000, pnlRate: 12.4, strategy: '⚡ 김프 0.04% 스캘핑 차익', likes: 9, copiedCount: 2, time: '25분 전' }
+                { id: 101, author: '스마트개미 (팀장)', badge: '카카오 1초 인증', symbol: '$삼성전자', side: 'BUY', amountKrw: 1000000, pnlRate: 8.5, strategy: '💎 실적 개선 펀더멘털 저점 매수', likes: 14, copiedCount: 5, time: '10분 전' },
+                { id: 102, author: '박비트 (팀원)', badge: '네이버 1초 인증', symbol: '$BTC', side: 'BUY', amountKrw: 500000, pnlRate: 12.4, strategy: '⚡ 김프 0.04% 스캘핑 차익', likes: 9, copiedCount: 2, time: '25분 전' }
             ]);
 
-            // Fortune City Gamification Buildings
             const [buildings, setBuildings] = useState([
                 { id: 1, name: '삼성 주식 타워', symbol: '$삼성전자', level: 3, pnl: 8.5, iconClass: 'fa-solid fa-building-columns text-sky-600' },
-                { id: 2, name: '비트코인 뱅크', symbol: '$BTC', level: 2, pnl: 12.4, iconClass: 'fa-solid fa-coins text-amber-500' },
-                { id: 3, name: '가치 중앙 시청', symbol: '시청본부', level: 5, pnl: 18.5, iconClass: 'fa-solid fa-landmark text-emerald-600' }
+                { id: 2, name: '비트코인 뱅크', symbol: '$BTC', level: 2, pnl: 12.4, iconClass: 'fa-solid fa-coins text-amber-500' }
             ]);
 
-            // Form States
+            // Form inputs
             const [promptText, setPromptText] = useState('');
             const [selectedCategory, setSelectedCategory] = useState('📈 주식');
             const [manualSymbol, setManualSymbol] = useState('삼성전자');
@@ -120,15 +141,73 @@
                 setUser(prev => ({ ...prev, isLoggedIn: false }));
             };
 
-            // Natural Language Prompt Trade Input
+            // Team Creation Handler
+            const handleCreateTeamSubmit = (e) => {
+                e.preventDefault();
+                if (!newTeamNameInput.trim()) return;
+
+                const randomCode = 'TEAM' + Math.floor(100 + Math.random() * 900);
+                setTeam({
+                    id: Date.now(),
+                    name: newTeamNameInput.trim(),
+                    code: randomCode,
+                    leader: user.nickname || '나',
+                    membersCount: 1,
+                    totalReturnPct: user.returnPct || 18.5,
+                    targetCapitalKrw: Number(newTeamGoalInput),
+                    currentCapitalKrw: user.totalCapitalKrw || 15000000
+                });
+
+                setTeamMembers([
+                    { id: Date.now(), name: user.nickname || '나', role: '👑 팀장', provider: user.provider || '카카오', pnlRate: user.returnPct || 18.5, capitalKrw: user.totalCapitalKrw || 15000000, mainSymbol: '$삼성전자', avatar: user.avatar }
+                ]);
+
+                setNewTeamNameInput('');
+                setCreateTeamModalOpen(false);
+                alert(`🎉 새로운 소셜 트레이딩 팀 '${newTeamNameInput.trim()}'이 생성되었습니다!\n🔑 초대코드: ${randomCode}`);
+            };
+
+            // Join Team Handler
+            const handleJoinTeamSubmit = (e) => {
+                e.preventDefault();
+                if (!joinCodeInput.trim()) return;
+
+                const code = joinCodeInput.trim().toUpperCase();
+                setTeam(prev => ({ ...prev, code: code, membersCount: prev.membersCount + 1 }));
+                
+                const newMember = {
+                    id: Date.now(),
+                    name: user.nickname || '신규 팀원',
+                    role: '👥 팀원',
+                    provider: user.provider || '소셜',
+                    pnlRate: 15.0,
+                    capitalKrw: 10000000,
+                    mainSymbol: '$BTC',
+                    avatar: '🌱'
+                };
+                setTeamMembers(prev => [...prev, newMember]);
+
+                setJoinCodeInput('');
+                setJoinTeamModalOpen(false);
+                alert(`🎉 초대코드 '${code}' 팀 가입 성공! 팀원에 합류했습니다.`);
+            };
+
+            // Copy Invite Link Handler
+            const handleCopyInviteLink = () => {
+                const inviteUrl = `${window.location.origin}${window.location.pathname}?invite=${team.code}`;
+                navigator.clipboard.writeText(inviteUrl);
+                setCopiedNotice(true);
+                setTimeout(() => setCopiedNotice(false), 3000);
+            };
+
+            // Prompt Submit
             const handlePromptSubmit = (e) => {
                 e.preventDefault();
                 if (!promptText.trim()) return;
-
                 const text = promptText.trim();
                 const detectedSymbol = text.includes('삼성') ? '$삼성전자' : text.includes('비트') ? '$BTC' : '$NVDA';
 
-                const newTrade = {
+                setTradeLogs(prev => [{
                     id: Date.now(),
                     date: new Date().toISOString().split('T')[0],
                     symbol: detectedSymbol,
@@ -137,12 +216,9 @@
                     amountKrw: 1000000,
                     pnlRate: 6.8,
                     strategy: '💎 대화형 프롬프트 실시간 작성',
-                    aiAnalysis: `자연어 '${text}' 감지 및 AI 실시간 수급 분석 완료.`
-                };
+                    aiAnalysis: `자연어 '${text}' 감지 및 AI 실시간 분석 완료.`
+                }, ...prev]);
 
-                setTradeLogs(prev => [newTrade, ...prev]);
-
-                // Add Fortune City Building
                 setBuildings(prev => [{
                     id: Date.now(),
                     name: `${detectedSymbol.replace('$', '')} 타워 Lv.1`,
@@ -153,38 +229,19 @@
                 }, ...prev]);
 
                 setPromptText('');
-                alert(`🎉 [${detectedSymbol}] 매매 일지가 등록되었으며, 포춘시티 새로운 건물이 생성되었습니다! (+150 EXP)`);
-            };
-
-            // Manual Journal Form Submit
-            const handleManualJournalSubmit = (e) => {
-                e.preventDefault();
-                const newTrade = {
-                    id: Date.now(),
-                    date: new Date().toISOString().split('T')[0],
-                    symbol: `$${manualSymbol}`,
-                    side: manualSide,
-                    price: Number(manualPrice),
-                    amountKrw: Number(manualAmount),
-                    pnlRate: Number(manualPnl),
-                    strategy: manualStrategy,
-                    aiAnalysis: '상세 매매일지 등록 완료.'
-                };
-                setTradeLogs(prev => [newTrade, ...prev]);
-                setJournalFormOpen(false);
-                alert('🎉 상세 매매일지가 성공적으로 작성되었습니다! (+200 EXP)');
+                alert(`🎉 [${detectedSymbol}] 매매 일지가 팀 피드에 공유되었습니다!`);
             };
 
             return (
                 <div className="min-h-screen">
-                    {/* Top Clean Header */}
+                    {/* Header */}
                     <header className="bg-slate-900 text-white px-4 md:px-8 py-3.5 sticky top-0 z-50 shadow-md border-b border-slate-800 flex justify-between items-center font-jua">
                         <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setUser(prev => ({ ...prev, isLoggedIn: false }))}>
                             <div className="bg-gradient-to-tr from-indigo-500 to-sky-400 p-2.5 rounded-2xl shadow-sm flex items-center justify-center">
-                                <i className="fa-solid fa-chart-line text-white text-lg"></i>
+                                <i className="fa-solid fa-users-line text-white text-lg"></i>
                             </div>
                             <div>
-                                <span className="font-black text-xl tracking-tight text-white">같이투자 <span className="text-xs text-sky-300 font-normal">소셜 트레이딩</span></span>
+                                <span className="font-black text-xl tracking-tight text-white">같이투자 <span className="text-xs text-sky-300 font-normal">팀 소셜 트레이딩</span></span>
                             </div>
                         </div>
 
@@ -217,26 +274,26 @@
                     </header>
 
                     {/* ========================================================================= */}
-                    {/* SCREEN 1: LANDING PAGE (첫화면 - 깔끔한 소셜 로그인 & 서비스 설명) */}
+                    {/* SCREEN 1: LANDING PAGE (1초 소셜 로그인) */}
                     {/* ========================================================================= */}
                     {!user.isLoggedIn ? (
                         <div className="hero-bg min-h-[92vh] text-white flex flex-col justify-center items-center px-4 py-12 text-center space-y-8 font-jua">
                             <div className="space-y-3 max-w-2xl">
                                 <span className="bg-indigo-500/20 text-sky-300 px-4 py-1.5 rounded-full text-xs font-bold border border-indigo-400/30">
-                                    🚀 1초 간편 로그인으로 바로 시작하는 소셜 트레이딩
+                                    👥 팀 생성 및 친구 초대 기능 전면 탑재!
                                 </span>
                                 <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
                                     같이투자 <br/>
                                     <span className="bg-gradient-to-r from-sky-400 via-indigo-300 to-amber-300 bg-clip-text text-transparent">
-                                        주식 & 코인 소셜 트레이딩 게임 플랫폼
+                                        팀 매매일지 & 소셜 트레이딩 플랫폼
                                     </span>
                                 </h1>
                                 <p className="text-slate-300 text-sm md:text-base max-w-lg mx-auto font-normal">
-                                    나의 <strong>투자종목, 투자전략, 매매일지, 실전 손익률(% PnL)</strong>을 투명하게 기록하고 모임원들과 1클릭 카피 트레이딩하세요!
+                                    친구들과 <strong>팀을 만들어 같이투자</strong>하세요! 초대 코드로 조인하고 실전 손익률(% PnL)을 실시간 검증받으세요.
                                 </p>
                             </div>
 
-                            {/* 1-Second Social Auth Buttons */}
+                            {/* Social Auth Login Card */}
                             <div className="white-card p-6 rounded-3xl max-w-md w-full text-slate-900 space-y-4 shadow-2xl border-2 border-indigo-300">
                                 <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2">🔑 1초 간편 소셜 로그인</h3>
                                 <div className="space-y-3">
@@ -254,108 +311,102 @@
                                     </button>
                                 </div>
                             </div>
-
-                            {/* Onboarding Features Cards */}
-                            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 max-w-4xl w-full text-left pt-4">
-                                <div className="p-4 bg-slate-800/80 rounded-2xl border border-slate-700/80 space-y-1">
-                                    <span className="text-2xl">📊</span>
-                                    <h4 className="font-bold text-sky-300 text-sm">1. 나의 투자종목</h4>
-                                    <p className="text-xs text-slate-400">보유 주식/코인 실시간 평가액 및 수익률 한눈에 관리</p>
-                                </div>
-                                <div className="p-4 bg-slate-800/80 rounded-2xl border border-slate-700/80 space-y-1">
-                                    <span className="text-2xl">💡</span>
-                                    <h4 className="font-bold text-indigo-300 text-sm">2. 나의 투자전략</h4>
-                                    <p className="text-xs text-slate-400">기업 가치분석/김프 스캘핑/분할매수 등 내 전략 설정</p>
-                                </div>
-                                <div className="p-4 bg-slate-800/80 rounded-2xl border border-slate-700/80 space-y-1">
-                                    <span className="text-2xl">📝</span>
-                                    <h4 className="font-bold text-amber-300 text-sm">3. 매매일지 기록</h4>
-                                    <p className="text-xs text-slate-400">자연어 프롬프트로 체결가/수익률/AI분석 자동 기록</p>
-                                </div>
-                                <div className="p-4 bg-slate-800/80 rounded-2xl border border-slate-700/80 space-y-1">
-                                    <span className="text-2xl">📈</span>
-                                    <h4 className="font-bold text-emerald-300 text-sm">4. 카피 트레이딩</h4>
-                                    <p className="text-xs text-slate-400">검증된 고수의 매매를 1클릭으로 내 계좌로 복사</p>
-                                </div>
-                            </div>
                         </div>
                     ) : (
                         /* ========================================================================= */
-                        /* SCREEN 2: LOGGED IN MAIN PLATFORM DASHBOARD (4대 핵심 메뉴 탑재) */
+                        /* SCREEN 2: MAIN PLATFORM DASHBOARD WITH TEAM & SQUAD SYSTEM */
                         /* ========================================================================= */
                         <main className="max-w-3xl mx-auto px-4 pt-6 pb-16 space-y-6 font-jua">
 
-                            {/* Main Navigation Bar - 4대 핵심 메뉴 */}
+                            {/* Team Header Banner (팀 정보 & 초대 기능 전면 탑재) */}
+                            <div className="white-card p-5 rounded-3xl space-y-3 border-2 border-indigo-200">
+                                <div className="flex justify-between items-center text-xs">
+                                    <div className="flex items-center gap-2">
+                                        <span className="bg-slate-900 text-white px-3 py-1 rounded-full font-bold">👑 {team.name}</span>
+                                        <span className="bg-indigo-50 text-indigo-900 px-3 py-1 rounded-full font-bold border border-indigo-200 font-mono">코드: {team.code}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <button onClick={() => setInviteModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-xl font-bold transition flex items-center gap-1 shadow-sm">
+                                            <i className="fa-solid fa-user-plus text-xs"></i>
+                                            <span>팀원 초대하기</span>
+                                        </button>
+                                        <button onClick={() => setCreateTeamModalOpen(true)} className="bg-indigo-950 hover:bg-indigo-900 text-indigo-200 px-2.5 py-1 rounded-xl font-bold border border-indigo-700/60 transition">
+                                            + 팀 생성
+                                        </button>
+                                        <button onClick={() => setJoinTeamModalOpen(true)} className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1 rounded-xl font-bold border border-slate-700 transition">
+                                            🔑 조인
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between items-end pt-1">
+                                    <div className="space-y-1">
+                                        <h2 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                                            <span>👥 같이투자 팀 대시보드</span>
+                                            <span className="text-xs text-slate-500 font-normal">({team.membersCount}명 조인 중)</span>
+                                        </h2>
+                                        <p className="text-xs text-slate-500">팀원들과 함께 실전 손익률(% PnL)을 실시간으로 같이 관리합니다.</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-[10px] text-slate-400 block font-bold">팀 평균 손익률</span>
+                                        <span className="text-xl font-black text-emerald-600 font-mono">+{team.totalReturnPct}% PnL</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Main Navigation Bar */}
                             <div className="white-card p-2 rounded-2xl border border-slate-200 flex justify-around text-xs md:text-sm font-bold">
-                                <button onClick={() => setActiveTab('portfolio')} className={activeTab === 'portfolio' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5'}>
+                                <button onClick={() => setActiveTab('portfolio')} className={activeTab === 'portfolio' ? 'bg-indigo-900 text-white px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1' : 'text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition flex items-center gap-1'}>
                                     <i className="fa-solid fa-pie-chart"></i>
-                                    <span>1. 나의 투자종목</span>
+                                    <span>1. 투자종목</span>
                                 </button>
-                                <button onClick={() => setActiveTab('strategy')} className={activeTab === 'strategy' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5'}>
-                                    <i className="fa-solid fa-lightbulb"></i>
-                                    <span>2. 나의 투자전략</span>
-                                </button>
-                                <button onClick={() => setActiveTab('journal')} className={activeTab === 'journal' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5'}>
-                                    <i className="fa-solid fa-book-bookmark"></i>
-                                    <span>3. 매매기록 / 일지</span>
-                                </button>
-                                <button onClick={() => setActiveTab('social')} className={activeTab === 'social' ? 'bg-indigo-900 text-white px-4 py-2.5 rounded-xl transition shadow-sm flex items-center gap-1.5' : 'text-slate-600 hover:bg-slate-100 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5'}>
+                                <button onClick={() => setActiveTab('team')} className={activeTab === 'team' ? 'bg-indigo-900 text-white px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1' : 'text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition flex items-center gap-1'}>
                                     <i className="fa-solid fa-users text-sky-400"></i>
-                                    <span>4. 소셜 피드</span>
+                                    <span>2. 팀원 조인/목록 ({teamMembers.length})</span>
+                                </button>
+                                <button onClick={() => setActiveTab('strategy')} className={activeTab === 'strategy' ? 'bg-indigo-900 text-white px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1' : 'text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition flex items-center gap-1'}>
+                                    <i className="fa-solid fa-lightbulb"></i>
+                                    <span>3. 투자전략</span>
+                                </button>
+                                <button onClick={() => setActiveTab('journal')} className={activeTab === 'journal' ? 'bg-indigo-900 text-white px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1' : 'text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition flex items-center gap-1'}>
+                                    <i className="fa-solid fa-book-bookmark"></i>
+                                    <span>4. 매매일지</span>
+                                </button>
+                                <button onClick={() => setActiveTab('social')} className={activeTab === 'social' ? 'bg-indigo-900 text-white px-3 py-2 rounded-xl transition shadow-sm flex items-center gap-1' : 'text-slate-600 hover:bg-slate-100 px-3 py-2 rounded-xl transition flex items-center gap-1'}>
+                                    <i className="fa-solid fa-retweet text-amber-400"></i>
+                                    <span>5. 소셜피드</span>
                                 </button>
                             </div>
 
                             {/* --------------------------------------------------------------------- */}
-                            {/* TAB 1: 📊 나의 투자종목 (My Portfolio & Holdings) */}
+                            {/* TAB 1: 📊 투자종목 */}
                             {/* --------------------------------------------------------------------- */}
                             {activeTab === 'portfolio' && (
                                 <div className="space-y-4">
-                                    {/* Portfolio Summary Card */}
                                     <div className="white-card p-6 rounded-3xl space-y-4 border-2 border-indigo-200">
                                         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
                                             <div>
-                                                <span className="text-slate-400 text-xs font-bold block">총 투자 평가 자산</span>
+                                                <span className="text-slate-400 text-xs font-bold block">내 총 평가 자산</span>
                                                 <h2 className="text-2xl font-black text-slate-900 font-mono">
                                                     {user.totalCapitalKrw.toLocaleString()}원
                                                 </h2>
                                             </div>
                                             <div className="text-right">
-                                                <span className="text-slate-400 text-xs font-bold block">누적 투자 손익</span>
+                                                <span className="text-slate-400 text-xs font-bold block">누적 손익</span>
                                                 <h3 className="text-xl font-black text-emerald-600 font-mono">
                                                     +{user.totalProfitKrw.toLocaleString()}원 (+{user.returnPct}%)
                                                 </h3>
                                             </div>
                                         </div>
 
-                                        <div className="grid grid-cols-3 gap-2 text-center text-xs pt-1">
-                                            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-                                                <span className="text-slate-400 block font-bold">주식 비중</span>
-                                                <span className="text-sm font-bold text-sky-800">84.2%</span>
-                                            </div>
-                                            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-                                                <span className="text-slate-400 block font-bold">코인 비중</span>
-                                                <span className="text-sm font-bold text-amber-600">15.8%</span>
-                                            </div>
-                                            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200">
-                                                <span className="text-slate-400 block font-bold">연속 매매 일지</span>
-                                                <span className="text-sm font-bold text-rose-600">🔥 {user.streak}일</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Holdings Table */}
-                                    <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200 text-xs">
-                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">
-                                            📦 현재 보유 종목 리스트 ({holdings.length})
-                                        </h3>
-                                        <div className="divide-y divide-slate-100 font-mono">
+                                        <div className="divide-y divide-slate-100 font-mono text-xs">
                                             {holdings.map(h => (
-                                                <div key={h.id} className="py-3 flex justify-between items-center hover:bg-slate-50 px-2 rounded-xl">
+                                                <div key={h.id} className="py-3 flex justify-between items-center hover:bg-slate-50 px-2 rounded-xl font-jua">
                                                     <div>
-                                                        <span className="font-bold text-slate-900 text-sm font-jua block">{h.name} <span className="text-xs text-indigo-900 font-normal">({h.symbol})</span></span>
-                                                        <span className="text-slate-400 text-[11px] font-jua">{h.category} · 수량: {h.qty}</span>
+                                                        <span className="font-bold text-slate-900 text-sm block">{h.name} <span className="text-xs text-indigo-900">({h.symbol})</span></span>
+                                                        <span className="text-slate-400 text-[11px]">{h.category} · 수량: {h.qty}</span>
                                                     </div>
-                                                    <div className="text-right font-jua">
+                                                    <div className="text-right">
                                                         <span className="font-bold text-slate-900 text-sm block font-mono">{h.evalAmount.toLocaleString()}원</span>
                                                         <span className="text-emerald-600 font-black font-mono">+{h.pnlRate}% PnL</span>
                                                     </div>
@@ -367,27 +418,38 @@
                             )}
 
                             {/* --------------------------------------------------------------------- */}
-                            {/* TAB 2: 💡 나의 투자전략 (My Investment Strategies) */}
+                            {/* TAB 2: 👥 팀원 조인 및 목록 (Team Roster & Members) */}
                             {/* --------------------------------------------------------------------- */}
-                            {activeTab === 'strategy' && (
+                            {activeTab === 'team' && (
                                 <div className="space-y-4 text-xs">
                                     <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
                                         <div className="flex justify-between items-center border-b border-slate-100 pb-2">
-                                            <h3 className="font-black text-slate-900 text-sm">💡 나의 투자 원칙 및 비중 전략</h3>
-                                            <button className="bg-indigo-900 text-white text-xs px-3 py-1 rounded-xl font-bold">+ 전략 추가</button>
+                                            <div>
+                                                <h3 className="font-black text-slate-900 text-sm">👥 '{team.name}' 조인 팀원 명단 ({teamMembers.length}명)</h3>
+                                                <p className="text-[11px] text-slate-500">초대 코드로 참여한 팀원들의 실전 수익률 현황입니다.</p>
+                                            </div>
+                                            <button onClick={() => setInviteModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold transition flex items-center gap-1">
+                                                <i className="fa-solid fa-user-plus text-xs"></i>
+                                                <span>초대하기</span>
+                                            </button>
                                         </div>
 
                                         <div className="space-y-3 pt-1">
-                                            {strategies.map(s => (
-                                                <div key={s.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="font-bold text-slate-900 text-sm">{s.name}</span>
-                                                        <span className="bg-indigo-100 text-indigo-900 px-2.5 py-0.5 rounded-full font-bold">비중 {s.weight}</span>
+                                            {teamMembers.map(m => (
+                                                <div key={m.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex justify-between items-center">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-2xl">{m.avatar}</span>
+                                                        <div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="font-bold text-slate-900 text-sm">{m.name}</span>
+                                                                <span className="bg-indigo-950 text-indigo-200 text-[10px] px-2 py-0.5 rounded-full font-bold">{m.role}</span>
+                                                            </div>
+                                                            <span className="text-slate-400 text-[11px] block">{m.provider} 인증 · 대표 주력 종목: {m.mainSymbol}</span>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-slate-600 text-xs">{s.description}</p>
-                                                    <div className="flex justify-between items-center text-[11px] text-slate-500 border-t border-slate-200/60 pt-2 font-mono">
-                                                        <span>목표 손익률: <strong className="text-emerald-600">{s.targetPnl}</strong></span>
-                                                        <span>위험도: <strong className="text-slate-800">{s.risk}</strong></span>
+                                                    <div className="text-right">
+                                                        <span className="text-emerald-600 font-black font-mono text-sm block">+{m.pnlRate}% PnL</span>
+                                                        <span className="text-slate-400 font-mono text-[11px]">{m.capitalKrw.toLocaleString()}원</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -397,27 +459,31 @@
                             )}
 
                             {/* --------------------------------------------------------------------- */}
-                            {/* TAB 3: 📝 매매기록 / 매매일지 (Trade Journal & Zero UI Input) */}
+                            {/* TAB 3: 💡 투자전략 */}
+                            {/* --------------------------------------------------------------------- */}
+                            {activeTab === 'strategy' && (
+                                <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200 text-xs">
+                                    <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">💡 팀원 공유 투자전략</h3>
+                                    <div className="space-y-3">
+                                        {strategies.map(s => (
+                                            <div key={s.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-bold text-slate-900 text-sm">{s.name}</span>
+                                                    <span className="bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-full font-bold">비중 {s.weight}</span>
+                                                </div>
+                                                <p className="text-slate-600 text-xs">{s.description}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --------------------------------------------------------------------- */}
+                            {/* TAB 4: 📝 매매일지 */}
                             {/* --------------------------------------------------------------------- */}
                             {activeTab === 'journal' && (
                                 <div className="space-y-4 text-xs">
-                                    {/* ZERO UI Natural Language Prompt Input */}
                                     <div className="white-card p-4 rounded-3xl prompt-shadow border-2 border-indigo-200 space-y-3">
-                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-slate-400 font-bold">🎯 자산선택:</span>
-                                                <button type="button" onClick={() => setSelectedCategory('📈 주식')} className={selectedCategory === '📈 주식' ? 'bg-slate-900 text-white px-3 py-1 rounded-xl font-bold' : 'bg-slate-100 text-slate-700 px-3 py-1 rounded-xl font-bold'}>
-                                                    📈 주식
-                                                </button>
-                                                <button type="button" onClick={() => setSelectedCategory('🪙 코인')} className={selectedCategory === '🪙 코인' ? 'bg-slate-900 text-white px-3 py-1 rounded-xl font-bold' : 'bg-slate-100 text-slate-700 px-3 py-1 rounded-xl font-bold'}>
-                                                    🪙 코인
-                                                </button>
-                                            </div>
-                                            <button onClick={() => setJournalFormOpen(true)} className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl font-bold">
-                                                ✏️ 상세 매매일지 작성
-                                            </button>
-                                        </div>
-
                                         <form onSubmit={handlePromptSubmit} className="flex items-center gap-2">
                                             <input
                                                 type="text"
@@ -425,193 +491,155 @@
                                                 onChange={(e) => setPromptText(e.target.value)}
                                                 placeholder="예: '$삼성전자 100만원 매수' 또는 '$BTC 50만원 매수'..."
                                                 required
-                                                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm px-5 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-200"
+                                                className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm px-5 py-3.5 rounded-2xl focus:outline-none border border-slate-200"
                                             />
-                                            <button type="submit" className="bg-slate-900 hover:bg-slate-800 text-white font-black px-6 py-3.5 rounded-2xl transition text-sm flex items-center gap-1.5 shrink-0 shadow-md">
-                                                <span>일지 기록</span>
+                                            <button type="submit" className="bg-slate-900 text-white font-black px-6 py-3.5 rounded-2xl text-sm shrink-0">
+                                                기록
                                             </button>
                                         </form>
                                     </div>
 
-                                    {/* Trade Logs Table */}
                                     <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
-                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">
-                                            📝 과거 매매일지 히스토리 ({tradeLogs.length})
-                                        </h3>
-                                        <div className="space-y-3">
-                                            {tradeLogs.map(log => (
-                                                <div key={log.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="ticker-badge font-bold">{log.symbol}</span>
-                                                            <span className={log.side === 'BUY' ? 'bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]' : 'bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded text-[10px]'}>
-                                                                {log.side}
-                                                            </span>
-                                                            <span className="text-slate-400 font-mono text-[11px]">{log.date}</span>
-                                                        </div>
-                                                        <span className="text-emerald-600 font-black font-mono text-sm">+{log.pnlRate}% PnL</span>
-                                                    </div>
-                                                    <div className="text-slate-700 text-xs">
-                                                        💡 <strong>적용 전략:</strong> {log.strategy}
-                                                    </div>
-                                                    <div className="text-slate-500 text-[11px] bg-white p-2 rounded-xl border border-slate-200/60">
-                                                        🤖 AI 수급 분석: {log.aiAnalysis}
-                                                    </div>
+                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">📝 매매일지 히스토리</h3>
+                                        {tradeLogs.map(log => (
+                                            <div key={log.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-1">
+                                                <div className="flex justify-between items-center font-bold">
+                                                    <span>{log.symbol} {log.side}</span>
+                                                    <span className="text-emerald-600 font-mono">+{log.pnlRate}% PnL</span>
                                                 </div>
-                                            ))}
-                                        </div>
+                                                <p className="text-slate-600 text-xs">{log.strategy}</p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
 
                             {/* --------------------------------------------------------------------- */}
-                            {/* TAB 4: 📈 소셜 피드 & 1클릭 카피 트레이딩 (Social Trading & Copy) */}
+                            {/* TAB 5: 📈 소셜 피드 */}
                             {/* --------------------------------------------------------------------- */}
                             {activeTab === 'social' && (
                                 <div className="space-y-4 text-xs">
                                     <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
-                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">
-                                            📖 실시간 소셜 트레이딩 피드 & 1클릭 카피 트레이딩
-                                        </h3>
-                                        <div className="space-y-3">
-                                            {feed.map(item => (
-                                                <div key={item.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5">
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">{item.badge}</span>
-                                                            <span className="font-bold text-slate-900 text-sm">{item.author}</span>
-                                                        </div>
-                                                        <span className="text-slate-400 text-[10px] font-mono">{item.time}</span>
-                                                    </div>
-
-                                                    <div className="flex justify-between items-center">
-                                                        <div className="text-slate-900 font-bold text-sm">
-                                                            <span className="ticker-badge mr-2">{item.symbol}</span>
-                                                            <span>{item.amountKrw.toLocaleString()}원 {item.side}</span>
-                                                        </div>
-                                                        <span className="text-emerald-600 font-black font-mono text-sm">+{item.pnlRate}% PnL</span>
-                                                    </div>
-
-                                                    <div className="text-slate-700 text-xs bg-white p-2.5 rounded-xl border border-slate-200/80">
-                                                        💡 전략: {item.strategy}
-                                                    </div>
-
-                                                    <div className="flex items-center justify-between pt-1">
-                                                        <span className="text-slate-500">👍 응원 {item.likes}</span>
-                                                        <button onClick={() => alert(`🚀 ${item.author}님의 매매를 1클릭 카피 트레이딩 완료!`)} className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white px-3 py-1 rounded-xl font-bold flex items-center gap-1 shadow-sm">
-                                                            <i className="fa-solid fa-retweet text-sky-400"></i>
-                                                            <span>1클릭 카피 트레이딩 ({item.copiedCount})</span>
-                                                        </button>
-                                                    </div>
+                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">📖 팀 실시간 소셜 피드</h3>
+                                        {feed.map(item => (
+                                            <div key={item.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-bold text-slate-900 text-sm">{item.author}</span>
+                                                    <span className="text-emerald-600 font-bold font-mono">+{item.pnlRate}% PnL</span>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Fortune City Buildings Summary Card */}
-                                    <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
-                                        <h3 className="font-black text-slate-900 text-sm border-b border-slate-100 pb-2">
-                                            🏙️ 매매로 건축된 내 포춘시티 투자 건물 ({buildings.length})
-                                        </h3>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            {buildings.map(b => (
-                                                <div key={b.id} className="p-3 bg-sky-50 rounded-2xl border border-sky-200 text-center space-y-1">
-                                                    <i className={`${b.iconClass} text-2xl`}></i>
-                                                    <h4 className="font-bold text-slate-900 text-xs block">{b.name}</h4>
-                                                    <span className="text-emerald-600 font-black font-mono text-[11px] block">+{b.pnl}%</span>
-                                                </div>
-                                            ))}
-                                        </div>
+                                                <div className="text-slate-800 font-bold">{item.symbol} {item.amountKrw.toLocaleString()}원 매수</div>
+                                                <button onClick={() => alert('🚀 팀원 전략 1클릭 카피 트레이딩 완료!')} className="bg-slate-900 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1">
+                                                    <i className="fa-solid fa-retweet text-sky-400"></i>
+                                                    <span>1클릭 카피 트레이딩</span>
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
                         </main>
                     )}
 
-                    {/* 사용방법 설명 모달 (Onboarding Walkthrough Modal) */}
-                    {showGuideModal && (
+                    {/* ========================================================================= */}
+                    {/* MODAL 1: ➕ 팀 생성하기 모달 */}
+                    {/* ========================================================================= */}
+                    {createTeamModalOpen && (
                         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200 max-h-[90vh] overflow-y-auto">
-                                <button onClick={() => setShowGuideModal(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
+                                <button onClick={() => setCreateTeamModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <div>
-                                    <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
-                                        <span>📖 같이투자 이용 가이드 및 사용방법</span>
-                                    </h3>
-                                    <p className="text-xs text-slate-500">소셜 트레이딩 게임 플랫폼을 200% 활용하는 4가지 단계</p>
-                                </div>
-
-                                <div className="space-y-3 text-xs">
-                                    <div className="p-3.5 bg-indigo-50 rounded-2xl border border-indigo-200 space-y-1">
-                                        <span className="font-bold text-indigo-900 text-sm block">1단계: 1초 간편 소셜 로그인</span>
-                                        <p className="text-slate-600">카카오/네이버/구글 1초 로그인으로 내 계정을 연결하고 손익률을 안전하게 보존하세요.</p>
+                                <h3 className="text-lg font-black text-slate-900">👑 새로운 소셜 트레이딩 팀 생성</h3>
+                                <form onSubmit={handleCreateTeamSubmit} className="space-y-3 text-xs">
+                                    <div>
+                                        <label className="text-slate-600 block mb-1">팀 이름 입력</label>
+                                        <input
+                                            type="text"
+                                            value={newTeamNameInput}
+                                            onChange={(e) => setNewTeamNameInput(e.target.value)}
+                                            placeholder="예: 같이투자 2기 챔피언 팀"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                                        />
                                     </div>
-                                    <div className="p-3.5 bg-sky-50 rounded-2xl border border-sky-200 space-y-1">
-                                        <span className="font-bold text-sky-900 text-sm block">2단계: 투자종목 및 투자전략 설정</span>
-                                        <p className="text-slate-600">내가 보유한 주식/코인 자산 비중과 가치분석/스캘핑 등 내 원칙을 설정합니다.</p>
+                                    <div>
+                                        <label className="text-slate-600 block mb-1">팀 목표 평가 금액 (KRW)</label>
+                                        <input
+                                            type="number"
+                                            value={newTeamGoalInput}
+                                            onChange={(e) => setNewTeamGoalInput(e.target.value)}
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl"
+                                        />
                                     </div>
-                                    <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 space-y-1">
-                                        <span className="font-bold text-amber-900 text-sm block">3단계: 프롬프트 매매일지 작성</span>
-                                        <p className="text-slate-600">`$삼성전자 100만원 매수`처럼 자연어로 일지를 작성하면 AI 수급 분석과 함께 저장됩니다.</p>
-                                    </div>
-                                    <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200 space-y-1">
-                                        <span className="font-bold text-emerald-900 text-sm block">4단계: 1클릭 카피 트레이딩 & 포춘시티</span>
-                                        <p className="text-slate-600">검증된 고수의 전략을 1클릭으로 복사하고, 매매할 때마다 나만의 포춘시티 건물이 자라납니다!</p>
-                                    </div>
-                                </div>
-
-                                <button onClick={() => setShowGuideModal(false)} className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                    확인하고 시작하기
-                                </button>
+                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
+                                        팀 생성 및 초대 코드 발급받기
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     )}
 
-                    {/* 상세 매매 일지 작성 모달 */}
-                    {journalFormOpen && (
-                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200 max-h-[90vh] overflow-y-auto">
-                                <button onClick={() => setJournalFormOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                    {/* ========================================================================= */}
+                    {/* MODAL 2: 🔑 팀 조인하기 모달 */}
+                    {/* ========================================================================= */}
+                    {joinTeamModalOpen && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
+                                <button onClick={() => setJoinTeamModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <h3 className="text-lg font-black text-slate-900">✏️ 상세 매매 기록 양식</h3>
-                                <form onSubmit={handleManualJournalSubmit} className="space-y-3 text-xs">
+                                <h3 className="text-lg font-black text-slate-900">🔑 초대 코드로 팀 조인하기</h3>
+                                <form onSubmit={handleJoinTeamSubmit} className="space-y-3 text-xs">
                                     <div>
-                                        <label className="text-slate-600 block mb-1">종목명</label>
-                                        <input type="text" value={manualSymbol} onChange={(e) => setManualSymbol(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        <label className="text-slate-600 block mb-1">6자리 팀 초대 코드</label>
+                                        <input
+                                            type="text"
+                                            value={joinCodeInput}
+                                            onChange={(e) => setJoinCodeInput(e.target.value)}
+                                            placeholder="예: GACHI7"
+                                            required
+                                            className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl uppercase font-mono"
+                                        />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label className="text-slate-600 block mb-1">구분</label>
-                                            <select value={manualSide} onChange={(e) => setManualSide(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl">
-                                                <option value="BUY">매수 (BUY)</option>
-                                                <option value="SELL">매도 (SELL)</option>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="text-slate-600 block mb-1">손익률 (% PnL)</label>
-                                            <input type="number" step="0.1" value={manualPnl} onChange={(e) => setManualPnl(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label className="text-slate-600 block mb-1">금액 (KRW)</label>
-                                            <input type="number" value={manualAmount} onChange={(e) => setManualAmount(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                        </div>
-                                        <div>
-                                            <label className="text-slate-600 block mb-1">체결가 (KRW)</label>
-                                            <input type="number" value={manualPrice} onChange={(e) => setManualPrice(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-slate-600 block mb-1">투자 전략</label>
-                                        <input type="text" value={manualStrategy} onChange={(e) => setManualStrategy(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
-                                    </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
-                                        일지 등록 및 +200 EXP 받기
+                                    <button type="submit" className="w-full bg-indigo-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
+                                        팀에 조인하기
                                     </button>
                                 </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ========================================================================= */}
+                    {/* MODAL 3: 🔗 팀원 초대하기 모달 */}
+                    {/* ========================================================================= */}
+                    {inviteModalOpen && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center relative border border-slate-200">
+                                <button onClick={() => setInviteModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto">
+                                    <i className="fa-solid fa-user-plus"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black text-slate-900">👥 팀원 초대하기</h3>
+                                    <p className="text-xs text-slate-500">초대 코드를 공유하여 친구를 내 팀으로 조인시키세요!</p>
+                                </div>
+
+                                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                                    <span className="text-slate-400 text-xs font-bold block">팀 전용 6자리 초대 코드</span>
+                                    <div className="text-2xl font-black text-slate-900 font-mono tracking-wider">
+                                        {team.code}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <button onClick={handleCopyInviteLink} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md flex items-center justify-center gap-1.5 transition">
+                                        <i className="fa-solid fa-link"></i>
+                                        <span>{copiedNotice ? '✅ 초대 링크 복사 완료!' : '팀 초대 전용 링크 복사하기'}</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
