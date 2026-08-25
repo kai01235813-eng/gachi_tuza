@@ -1,14 +1,19 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-# SQLite database file for Gachi Tuza multi-user platform
-SQLALCHEMY_DATABASE_URL = "sqlite:///./gachi_tuza.db"
+# Supabase PostgreSQL or SQLite Database Connection
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("SUPABASE_DB_URL")
 
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
+if not DATABASE_URL:
+    DATABASE_URL = "sqlite:///./gachi_tuza.db"
 
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+
+engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
