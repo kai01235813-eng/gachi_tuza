@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>같이투자 3D 포근한 동물마을 소셜 트레이딩 게임</title>
+    <title>같이투자 (Gachi Tuza) 3D 소셜 트레이딩 게임</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Three.js (r128) 3D Graphics Engine -->
@@ -16,45 +16,47 @@
         @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;600;800&display=swap');
         body { font-family: 'Pretendard', sans-serif; }
         .font-jua { font-family: 'Jua', sans-serif; }
-        .cozy-card { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 2px solid rgba(167, 243, 208, 0.3); }
-        .cozy-shadow { box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.3); }
-        .soft-glow-emerald { box-shadow: 0 0 20px rgba(52, 211, 153, 0.35); }
-        .soft-glow-amber { box-shadow: 0 0 20px rgba(251, 191, 36, 0.35); }
+        .bouncy-card { background: rgba(30, 41, 59, 0.88); backdrop-filter: blur(16px); border: 2px solid rgba(244, 114, 182, 0.35); }
+        .bouncy-shadow-pink { box-shadow: 0 12px 35px -8px rgba(244, 114, 182, 0.35); }
+        .bouncy-shadow-cyan { box-shadow: 0 12px 35px -8px rgba(56, 189, 248, 0.35); }
+        .bouncy-shadow-yellow { box-shadow: 0 12px 35px -8px rgba(250, 204, 21, 0.35); }
+        .soft-glow-pink { box-shadow: 0 0 20px rgba(244, 114, 182, 0.4); }
+        .soft-glow-cyan { box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen relative overflow-x-hidden pb-24 selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-900 text-slate-100 min-h-screen relative overflow-x-hidden pb-24 selection:bg-pink-500 selection:text-white">
 
-    <!-- 3D Interactive Background Canvas (Three.js Cozy Forest Island) -->
-    <div id="canvasContainer" class="fixed inset-0 pointer-events-none z-0 opacity-50">
+    <!-- 3D Interactive Background Canvas (Three.js Nintendo/Kirby Style Bouncy Star Scene) -->
+    <div id="canvasContainer" class="fixed inset-0 pointer-events-none z-0 opacity-55">
         <canvas id="threeCanvas" class="w-full h-full"></canvas>
     </div>
 
-    <!-- Header / Navbar (Cozy Village HUD) -->
-    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-emerald-500/30 px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-xl">
+    <!-- Header / Navbar (Nintendo Style Bouncy HUD) -->
+    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-pink-400/30 px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-xl">
         <div class="flex items-center space-x-3">
-            <div class="bg-emerald-500/20 p-2.5 rounded-2xl border border-emerald-500/40 soft-glow-emerald">
-                <i class="fa-solid fa-tree text-emerald-400 text-xl animate-bounce"></i>
+            <div class="bg-gradient-to-tr from-pink-500 to-rose-400 p-2.5 rounded-2xl border border-pink-300/40 soft-glow-pink shadow-md">
+                <i class="fa-solid fa-gamepad text-white text-xl animate-bounce"></i>
             </div>
             <div>
                 <div class="font-black text-xl text-white tracking-tight flex items-center gap-2 font-jua">
-                    같이투자 <span class="text-sm text-emerald-300">포근한 3D 동물마을</span>
-                    <span class="bg-amber-400 text-slate-950 text-[11px] px-2.5 py-0.5 rounded-full font-bold shadow-md">동물의 숲 🌳</span>
+                    같이투자 <span class="text-sm text-pink-300">3D 소셜 트레이딩 게임</span>
+                    <span class="bg-gradient-to-r from-amber-300 via-pink-400 to-rose-400 text-slate-950 text-[11px] px-3 py-0.5 rounded-full font-bold shadow-md">3D Game 🌟</span>
                 </div>
-                <div class="text-[11px] text-slate-400">지인들과 함께하는 마음 편한 가치투자 소셜 마을</div>
+                <div class="text-[11px] text-slate-400">지인들과 함께 즐기는 3D 가치투자 소셜 플랫폼</div>
             </div>
         </div>
         <div class="flex items-center gap-2">
             <button onclick="toggleAudio()" id="audioBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-2xl text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-music text-emerald-400" id="audioIcon"></i>
-                <span id="audioLabel" class="font-jua">따뜻한 멜로디 ON</span>
+                <i class="fa-solid fa-music text-pink-400" id="audioIcon"></i>
+                <span id="audioLabel" class="font-jua">사운드 ON</span>
             </button>
-            <button onclick="openProfileModal()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black text-xs px-3.5 py-2 rounded-2xl transition shadow-lg border border-emerald-300/40 flex items-center gap-1.5 font-jua">
-                <i class="fa-solid fa-paw"></i>
-                <span>닉네임 & 캐릭터 설정</span>
+            <button onclick="openProfileModal()" class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-black text-xs px-4 py-2 rounded-2xl transition shadow-lg border border-pink-300/50 flex items-center gap-1.5 font-jua">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>닉네임 & 프로필 설정</span>
             </button>
-            <button onclick="openLoginModal()" id="userAuthBtn" class="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black text-xs px-3.5 py-2 rounded-2xl transition shadow-lg flex items-center gap-1.5 font-jua">
-                <i class="fa-solid fa-house-chimney-user"></i>
-                <span id="userAuthLabel">마을 소셜 로그인</span>
+            <button onclick="openLoginModal()" id="userAuthBtn" class="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white font-black text-xs px-3.5 py-2 rounded-2xl transition shadow-lg flex items-center gap-1.5 font-jua">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span id="userAuthLabel">게임 로그인</span>
             </button>
         </div>
     </nav>
@@ -62,62 +64,62 @@
     <!-- Main Container -->
     <div class="max-w-4xl mx-auto px-4 py-5 space-y-5 relative z-10">
 
-        <!-- 🏡 Cozy Gamer Profile & Animal Character Banner -->
-        <div id="homeSection" class="bg-gradient-to-r from-slate-900 via-emerald-950/60 to-slate-900 p-5 rounded-3xl border border-emerald-500/40 shadow-2xl relative overflow-hidden cozy-shadow">
+        <!-- 🌟 Gamer Profile & Character Banner -->
+        <div id="homeSection" class="bg-gradient-to-r from-slate-900 via-purple-950/70 to-slate-900 p-5.5 rounded-3xl border border-pink-400/40 shadow-2xl relative overflow-hidden bouncy-shadow-pink">
             <div class="flex justify-between items-start mb-3">
-                <div class="flex items-center gap-3.5">
-                    <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-16 h-16 rounded-2xl border-2 border-emerald-400 bg-slate-800 p-1 shadow-lg">
+                <div class="flex items-center gap-4">
+                    <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-16 h-16 rounded-2xl border-2 border-pink-400 bg-slate-800 p-1 shadow-lg soft-glow-pink">
                     <div>
-                        <div class="text-xs text-amber-300 font-bold tracking-wider flex items-center gap-1.5 font-jua">
-                            <span id="userArchetype">🦊 스마트 펀더멘털 여우</span>
-                            <span class="bg-emerald-500/30 text-emerald-200 px-2 py-0.2 rounded-md text-[10px]" id="userProvider">카카오 계정</span>
+                        <div class="text-xs text-amber-300 font-bold tracking-wider flex items-center gap-2 font-jua">
+                            <span id="userArchetype" class="bg-pink-500/20 text-pink-300 px-2.5 py-0.5 rounded-lg border border-pink-400/30">💎 펀더멘털 홀더</span>
+                            <span class="bg-indigo-500/30 text-indigo-200 px-2 py-0.5 rounded-md text-[10px]" id="userProvider">카카오 계정</span>
                         </div>
-                        <h2 class="text-2xl font-black text-white flex items-center gap-2 font-jua" id="userDisplayName">김가치 (마을 이장님) 🐾</h2>
-                        <div class="text-xs text-emerald-300 font-bold mt-0.5" id="userTitle">👑 든든한 가치투자 마을 이장님 (Lv.4)</div>
+                        <h2 class="text-2xl font-black text-white flex items-center gap-2 font-jua mt-0.5" id="userDisplayName">김가치 (스쿼드 리더) 🛡️</h2>
+                        <div class="text-xs text-pink-300 font-bold mt-0.5" id="userTitle">👑 가치투자 1기 스쿼드 리더 (Lv.4)</div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs text-slate-400 font-jua">따뜻한 마을 EXP</span>
-                    <div class="text-lg font-black text-emerald-400 font-jua" id="userXpLabel">2,450 / 3,000 EXP</div>
+                    <span class="text-xs text-slate-400 font-jua">LEVEL & EXP</span>
+                    <div class="text-lg font-black text-pink-400 font-jua" id="userXpLabel">2,450 / 3,000 EXP</div>
                 </div>
             </div>
 
             <!-- Level Progress Bar -->
-            <div class="w-full bg-slate-950 h-3.5 rounded-full overflow-hidden p-0.5 border border-emerald-500/30 shadow-inner">
-                <div id="xpBar" class="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 h-full rounded-full transition-all duration-700 shadow-md" style="width: 81.6%;"></div>
+            <div class="w-full bg-slate-950 h-3.5 rounded-full overflow-hidden p-0.5 border border-pink-400/30 shadow-inner">
+                <div id="xpBar" class="bg-gradient-to-r from-pink-400 via-rose-400 to-amber-300 h-full rounded-full transition-all duration-700 shadow-md" style="width: 81.6%;"></div>
             </div>
 
-            <div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-800/80 text-xs">
-                <button onclick="openProfileModal()" class="bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 px-3 py-1.5 rounded-xl border border-emerald-500/40 flex items-center gap-1.5 font-bold transition font-jua">
-                    <i class="fa-solid fa-pen-nib"></i> 마을 닉네임 & 칭호 변경
+            <div class="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-800/80 text-xs font-jua">
+                <button onclick="openProfileModal()" class="bg-pink-500/20 text-pink-300 hover:bg-pink-500/30 px-3.5 py-1.5 rounded-xl border border-pink-400/40 flex items-center gap-1.5 font-bold transition">
+                    <i class="fa-solid fa-pen-to-square"></i> 닉네임 & 칭호 변경
                 </button>
-                <span class="bg-slate-800/90 text-amber-300 px-3 py-1.5 rounded-xl border border-amber-500/30 flex items-center gap-1 font-bold">
+                <span class="bg-slate-800/90 text-amber-300 px-3 py-1.5 rounded-xl border border-amber-400/30 flex items-center gap-1 font-bold">
                     🛡️ 레버리지 도파민 방어막
                 </span>
-                <span class="bg-slate-800/90 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 font-bold">
+                <span class="bg-slate-800/90 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-400/30 flex items-center gap-1 font-bold">
                     💎 현물/스테이킹 마스터
                 </span>
             </div>
         </div>
 
-        <!-- 🍎 Cozy Squad Co-op Harvest Quest (숲속 마을 공동 열매 수확) -->
-        <div id="raidSection" class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/40 p-5 rounded-3xl border border-amber-400/50 shadow-2xl space-y-4 soft-glow-amber relative">
+        <!-- 🚀 Co-op Squad Quest Card (스쿼드 공동 가치투자 퀘스트) -->
+        <div id="raidSection" class="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 p-5 rounded-3xl border border-sky-400/40 shadow-2xl space-y-4 bouncy-shadow-cyan relative">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
-                    <i class="fa-solid fa-apple-whole text-amber-400 text-xl animate-pulse"></i> 
-                    <span id="raidTitle">🌳 숲속 마을 공동 열매 수확 & 김프 스캘핑 퀘스트</span>
+                    <i class="fa-solid fa-rocket text-sky-400 text-xl animate-pulse"></i> 
+                    <span id="raidTitle">🚀 스쿼드 공동 가치투자 & 김프 0.04% 차익 퀘스트</span>
                 </h3>
-                <span class="text-xs bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full border border-amber-400/40 font-bold font-jua">마을 퀘스트 진행 중 🍎</span>
+                <span class="text-xs bg-sky-400/20 text-sky-300 px-3 py-1 rounded-full border border-sky-400/40 font-bold font-jua">스쿼드 퀘스트 진행 중 🌟</span>
             </div>
 
-            <!-- Raid Progress Bar -->
+            <!-- Quest Progress Bar -->
             <div class="space-y-1.5">
                 <div class="flex justify-between text-xs font-bold font-jua">
-                    <span class="text-slate-300">마을 스쿼드 목표 달성률</span>
-                    <span class="text-amber-300" id="raidPctLabel">74.5% (7,450,000원 / 10,000,000원)</span>
+                    <span class="text-slate-300">스쿼드 공동 목표 달성률</span>
+                    <span class="text-sky-300" id="raidPctLabel">74.5% (7,450,000원 / 10,000,000원)</span>
                 </div>
-                <div class="w-full bg-slate-950 h-4 rounded-full overflow-hidden p-0.5 border border-amber-400/40 shadow-inner">
-                    <div id="raidBar" class="bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-300 h-full rounded-full transition-all duration-700" style="width: 74.5%;"></div>
+                <div class="w-full bg-slate-950 h-4 rounded-full overflow-hidden p-0.5 border border-sky-400/40 shadow-inner">
+                    <div id="raidBar" class="bg-gradient-to-r from-sky-400 via-indigo-400 to-pink-400 h-full rounded-full transition-all duration-700" style="width: 74.5%;"></div>
                 </div>
             </div>
 
@@ -125,48 +127,48 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
-                        <span class="text-amber-300 font-bold font-jua">🦊 김가치</span>
-                        <span class="text-slate-400 text-[11px]">(마을 이장님)</span>
+                        <span class="text-pink-300 font-bold font-jua">👑 김가치</span>
+                        <span class="text-slate-400 text-[11px]">(스쿼드 리더)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">3,500,000원</span>
                 </div>
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
-                        <span class="text-emerald-300 font-bold font-jua">🐻 박비트</span>
-                        <span class="text-slate-400 text-[11px]">(장기 곰돌이)</span>
+                        <span class="text-sky-300 font-bold font-jua">💎 박비트</span>
+                        <span class="text-slate-400 text-[11px]">(버프 딜러)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">2,450,000원</span>
                 </div>
                 <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                     <div class="flex items-center gap-2">
-                        <span class="text-teal-300 font-bold font-jua">🐰 최솔라</span>
-                        <span class="text-slate-400 text-[11px]">(차익 토끼)</span>
+                        <span class="text-amber-300 font-bold font-jua">⚡ 최솔라</span>
+                        <span class="text-slate-400 text-[11px]">(차익 스나이퍼)</span>
                     </div>
                     <span class="text-emerald-400 font-mono font-bold">1,500,000원</span>
                 </div>
             </div>
 
-            <div class="p-3 bg-amber-400/10 rounded-2xl border border-amber-400/30 text-xs text-amber-200 font-bold flex items-center justify-between">
-                <span class="font-jua">🍎 마을 주민 전원 복기 작성 완료 시 열매 EXP 2배 버프 발동!</span>
-                <button onclick="openJournalModal()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl font-black text-xs transition shadow-md font-jua">
-                    마음 편한 복기 작성하기
+            <div class="p-3 bg-sky-400/10 rounded-2xl border border-sky-400/30 text-xs text-sky-200 font-bold flex items-center justify-between font-jua">
+                <span>⚡ 스쿼드 멤버 전원 복기 작성 시 EXP 2배 버프 발동!</span>
+                <button onclick="openJournalModal()" class="bg-gradient-to-r from-sky-400 to-indigo-500 hover:from-sky-500 hover:to-indigo-600 text-white px-3.5 py-1.5 rounded-xl font-black text-xs transition shadow-md">
+                    복기 작성하기
                 </button>
             </div>
         </div>
 
-        <!-- 📖 Cozy Village Journal Feed (마음 편한 복기 노트) -->
-        <div id="feedSection" class="bg-slate-900/90 p-5 rounded-3xl border border-emerald-500/40 shadow-2xl space-y-4">
+        <!-- 📖 Social Feed & Trade Journal Cards (가치투자 복기 피드) -->
+        <div id="feedSection" class="bg-slate-900/90 p-5 rounded-3xl border border-pink-400/30 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
-                    <i class="fa-solid fa-seedling text-emerald-400 text-lg"></i> 마을 주민 실시간 마음 편한 복기 피드
+                    <i class="fa-solid fa-comments text-pink-400 text-lg"></i> 스쿼드 실시간 가치투자 복기 피드
                 </h3>
-                <button onclick="openJournalModal()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1 shadow-md font-jua">
+                <button onclick="openJournalModal()" class="bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-xl transition flex items-center gap-1 shadow-md font-jua">
                     <i class="fa-solid fa-plus"></i> 새 복기 작성
                 </button>
             </div>
 
             <div class="space-y-3" id="feedContainer">
-                <div class="text-center py-6 text-slate-400 text-xs font-mono">⚡ 숲속 마을 소셜 피드 불러오는 중...</div>
+                <div class="text-center py-6 text-slate-400 text-xs font-mono">⚡ 3D 소셜 피드 불러오는 중...</div>
             </div>
         </div>
 
@@ -174,7 +176,7 @@
         <div id="squadSection" class="bg-slate-900/90 p-5 rounded-3xl border border-amber-400/30 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2 font-jua">
-                    <i class="fa-solid fa-trophy text-amber-400 text-xl"></i> 숲속 마을 실전 가치투자 랭킹전
+                    <i class="fa-solid fa-trophy text-amber-300 text-xl"></i> 스쿼드 실전 가치투자 랭킹전
                 </h3>
                 <span class="text-xs bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full border border-amber-400/30 font-medium font-jua">Supabase DB Sync</span>
             </div>
@@ -184,8 +186,8 @@
                     <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800 font-jua">
                         <tr>
                             <th class="py-3 px-3">순위</th>
-                            <th class="py-3 px-3">마을 주민 닉네임</th>
-                            <th class="py-3 px-3">동물 투자 성향</th>
+                            <th class="py-3 px-3">게이머 닉네임</th>
+                            <th class="py-3 px-3">투자 성향 (Archetype)</th>
                             <th class="py-3 px-3">실전 수익률</th>
                             <th class="py-3 px-3">획득 EXP</th>
                         </tr>
@@ -201,77 +203,77 @@
 
     </div>
 
-    <!-- 🐾 Gamer Profile Customization Modal (마을 닉네임 & 캐릭터 설정) -->
+    <!-- 🎮 Gamer Profile Customization Modal (닉네임 & 프로필 설정) -->
     <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
-        <div class="bg-slate-900 border border-emerald-500/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative soft-glow-emerald">
+        <div class="bg-slate-900 border border-pink-400/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative soft-glow-pink">
             <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
 
-            <div class="space-y-1 text-center">
-                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex justify-center items-center mx-auto border border-emerald-500/40 text-xl font-jua">
-                    <i class="fa-solid fa-paw"></i>
+            <div class="space-y-1 text-center font-jua">
+                <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-2xl flex justify-center items-center mx-auto border border-pink-400/40 text-xl">
+                    <i class="fa-solid fa-user-pen"></i>
                 </div>
-                <h3 class="text-xl font-black text-white font-jua">마을 닉네임 & 동물 캐릭터 설정</h3>
-                <p class="text-xs text-slate-400">포근한 소셜 트레이딩 마을 프로필을 변경하고 Supabase DB에 저장합니다</p>
+                <h3 class="text-xl font-black text-white">게이머 닉네임 & 프로필 설정</h3>
+                <p class="text-xs text-slate-400">소셜 트레이딩 게임 프로필을 변경하고 Supabase DB에 저장합니다</p>
             </div>
 
             <form onsubmit="submitProfileUpdate(event)" class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">🎮 마을 닉네임</label>
-                    <input type="text" id="pNickname" placeholder="예: 김가치 (마을 이장님)" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">🎮 게이머 닉네임</label>
+                    <input type="text" id="pNickname" placeholder="예: 김가치 (스쿼드 리더)" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">🐾 동물 투자 성향 (Archetype)</label>
-                    <select id="pArchetype" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
-                        <option value="🦊 스마트 펀더멘털 여우">🦊 스마트 펀더멘털 여우 (GitHub 분석)</option>
-                        <option value="🐻 듬직한 장기 가치 곰돌이">🐻 듬직한 장기 가치 곰돌이 (무지성 현물 홀딩)</option>
-                        <option value="🐰 재빠른 차익 스캔 토끼">🐰 재빠른 차익 스캔 토끼 (김프/라우팅 스캘핑)</option>
-                        <option value="🐱 느긋한 현물 집사 고양이">🐱 느긋한 현물 집사 고양이 (안정 이격 매수)</option>
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">💎 투자 성향 (Archetype)</label>
+                    <select id="pArchetype" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
+                        <option value="💎 펀더멘털 홀더">💎 펀더멘털 홀더 (장기 가치 분석가)</option>
+                        <option value="⚡ 차익거래 스캘퍼">⚡ 차익거래 스캘퍼 (김프/최저가 라우팅)</option>
+                        <option value="🛡️ 리스크 가드">🛡️ 리스크 가드 (FOMO 방어 수호자)</option>
+                        <option value="🔮 퀀트 지표 분석가">🔮 퀀트 지표 분석가 (정량 알고리즘형)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">📜 마을 칭호 (Title)</label>
-                    <select id="pTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
-                        <option value="👑 든든한 가치투자 마을 이장님 (Lv.4)">👑 든든한 가치투자 마을 이장님 (Lv.4)</option>
-                        <option value="🛡️ 포근한 현물 마스터 곰돌이 (Lv.3)">🛡️ 포근한 현물 마스터 곰돌이 (Lv.3)</option>
-                        <option value="🥕 당근모으기 차익 스캘퍼 (Lv.2)">🥕 당근모으기 차익 스캘퍼 (Lv.2)</option>
-                        <option value="🌱 숲속 마을 초보 가치탐험가 (Lv.3)">🌱 숲속 마을 초보 가치탐험가 (Lv.3)</option>
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">👑 투자자 칭호 (Title)</label>
+                    <select id="pTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
+                        <option value="👑 가치투자 1기 스쿼드 리더 (Lv.4)">👑 가치투자 1기 스쿼드 리더 (Lv.4)</option>
+                        <option value="🛡️ 버핏급 펀더멘털 마스터 (Lv.3)">🛡️ 버핏급 펀더멘털 마스터 (Lv.3)</option>
+                        <option value="⚖️ 최저가 라우터 스캘퍼 (Lv.2)">⚖️ 최저가 라우터 스캘퍼 (Lv.2)</option>
+                        <option value="💎 가치 탐험가 (Lv.3)">💎 가치 탐험가 (Lv.3)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-slate-300 font-bold mb-1 font-jua">🤖 귀여운 아바타 시드 (DiceBear Avatar)</label>
-                    <input type="text" id="pAvatarSeed" placeholder="예: KimGachi, ParkBit, Bear, Rabbit, Fox, Cat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-300 font-bold mb-1 font-jua">🤖 아바타 시드 (DiceBear Avatar)</label>
+                    <input type="text" id="pAvatarSeed" placeholder="예: KimGachi, ParkBit, Dragon, Star" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-pink-500">
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black py-3 rounded-xl transition shadow-lg font-jua text-sm">
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-black py-3 rounded-xl transition shadow-lg font-jua text-sm">
                     Supabase DB에 프로필 저장하기
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Create Journal Modal (Cozy Leaf Journaling) -->
+    <!-- Create Journal Modal (Trade Journaling) -->
     <div id="journalModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
-        <div class="bg-slate-900 border border-emerald-500/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative">
+        <div class="bg-slate-900 border border-pink-400/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative">
             <button onclick="closeJournalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <h3 class="text-base font-black text-white flex items-center gap-2 font-jua">
-                <i class="fa-solid fa-seedling text-emerald-400"></i> 마음 편한 복기 노트 작성 (+150 EXP)
+                <i class="fa-solid fa-pen-to-square text-pink-400"></i> 가치투자 복기 노트 작성 (+150 EXP)
             </h3>
             <form onsubmit="submitJournal(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-slate-400 mb-1 font-jua">종목코드 (Symbol)</label>
-                        <input type="text" id="jSymbol" placeholder="예: BTC, ETH, SAND" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                        <input type="text" id="jSymbol" placeholder="예: BTC, ETH, SAND" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1 font-jua">매매 구분</label>
-                        <select id="jSide" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-jua">
+                        <select id="jSide" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500 font-jua">
                             <option value="BUY">BUY (매수)</option>
                             <option value="SELL">SELL (매도)</option>
                         </select>
@@ -280,27 +282,27 @@
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-slate-400 mb-1 font-jua">체결 금액 (KRW)</label>
-                        <input type="number" id="jAmount" placeholder="10000" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                        <input type="number" id="jAmount" placeholder="10000" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1 font-jua">체결 단가 (원)</label>
-                        <input type="number" step="0.1" id="jPrice" placeholder="50" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                        <input type="number" step="0.1" id="jPrice" placeholder="50" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                     </div>
                 </div>
                 <div>
                     <label class="block text-slate-400 mb-1 font-jua">🧠 AI 매수 근거 & 정량 분석</label>
-                    <textarea id="jReasoning" rows="2" placeholder="최저가 라우팅 확인, GitHub 커밋 점수 85점..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500"></textarea>
+                    <textarea id="jReasoning" rows="2" placeholder="최저가 라우팅 확인, GitHub 커밋 점수 85점..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-jua">🛡️ 마음 편한 리스크 점검</label>
-                    <input type="text" id="jRisk" placeholder="입출금 정지 유의 공지 확인 완료" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-400 mb-1 font-jua">🛡️ 리스크 점검</label>
+                    <input type="text" id="jRisk" placeholder="입출금 정지 유의 공지 확인 완료" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-jua">💡 포근한 가치투자 레슨</label>
-                    <input type="text" id="jLesson" placeholder="유의 해제 전까지 추가 매수 금지" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-400 mb-1 font-jua">💡 가치투자 레슨</label>
+                    <input type="text" id="jLesson" placeholder="유의 해제 전까지 추가 매수 금지" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-pink-500">
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-950 font-black py-2.5 rounded-xl transition shadow-lg font-jua text-sm">
-                    마음 편한 복기 완료 (+150 EXP)
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 hover:from-pink-600 hover:to-amber-500 text-slate-950 font-black py-2.5 rounded-xl transition shadow-lg font-jua text-sm">
+                    복기 작성 완료 (+150 EXP)
                 </button>
             </form>
         </div>
@@ -313,10 +315,10 @@
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             <div class="space-y-2">
-                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-2xl flex justify-center items-center mx-auto border border-emerald-500/30 text-xl font-jua">
-                    <i class="fa-solid fa-house-chimney-user"></i>
+                <div class="w-12 h-12 bg-pink-500/20 text-pink-400 rounded-2xl flex justify-center items-center mx-auto border border-pink-400/30 text-xl font-jua">
+                    <i class="fa-solid fa-gamepad"></i>
                 </div>
-                <h3 class="text-lg font-black text-white font-jua">마을 주민 1초 로그인</h3>
+                <h3 class="text-lg font-black text-white font-jua">같이투자 1초 소셜 로그인</h3>
                 <p class="text-xs text-slate-400">Supabase Auth 연동 완료</p>
             </div>
             <div class="space-y-2.5 pt-2 font-jua">
@@ -338,91 +340,73 @@
 
     <!-- Fixed Bottom Navigation Bar -->
     <div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-6 py-2.5 flex justify-around items-center z-40">
-        <button onclick="scrollToSection('homeSection')" class="flex flex-col items-center text-emerald-400 text-[11px] font-medium transition">
-            <i class="fa-solid fa-tree text-base"></i>
-            <span class="mt-1 font-jua">3D 숲속마을</span>
+        <button onclick="scrollToSection('homeSection')" class="flex flex-col items-center text-pink-400 text-[11px] font-medium transition">
+            <i class="fa-solid fa-gamepad text-base"></i>
+            <span class="mt-1 font-jua">3D 아레나</span>
         </button>
-        <button onclick="scrollToSection('raidSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-300 transition">
-            <i class="fa-solid fa-apple-whole text-base"></i>
-            <span class="mt-1 font-jua">열매 퀘스트</span>
+        <button onclick="scrollToSection('raidSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-sky-300 transition">
+            <i class="fa-solid fa-rocket text-base"></i>
+            <span class="mt-1 font-jua">스쿼드 퀘스트</span>
         </button>
-        <button onclick="scrollToSection('feedSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-emerald-400 transition">
-            <i class="fa-solid fa-seedling text-base"></i>
-            <span class="mt-1 font-jua">마음편한 피드</span>
+        <button onclick="scrollToSection('feedSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-pink-400 transition">
+            <i class="fa-solid fa-comments text-base"></i>
+            <span class="mt-1 font-jua">소셜 피드</span>
         </button>
         <button onclick="scrollToSection('squadSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-300 transition">
             <i class="fa-solid fa-trophy text-base"></i>
-            <span class="mt-1 font-jua">마을 랭킹</span>
+            <span class="mt-1 font-jua">스쿼드 랭킹</span>
         </button>
     </div>
 
     <script>
-        // --- 1. Three.js 3D Cozy Forest Island Engine ---
-        let scene, camera, renderer, forestGroup, dandelions = [];
+        // --- 1. Three.js 3D Nintendo/Kirby Style Bouncy Star & Gem Scene ---
+        let scene, camera, renderer, starCore, floatingOrbs = [], starParticles = [];
         let mouseX = 0, mouseY = 0;
 
         function initThreeJS() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 8, 22);
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 5, 24);
 
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threeCanvas'), alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Soft Ambient Lighting & Directional Sunlight
-            const ambientLight = new THREE.AmbientLight(0xfffbeb, 1.2);
+            // Warm Soft Ambient Lighting
+            const ambientLight = new THREE.AmbientLight(0xfffbeb, 1.3);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xfde047, 0.8);
-            sunLight.position.set(10, 20, 10);
+            const sunLight = new THREE.DirectionalLight(0xf472b6, 0.9);
+            sunLight.position.set(10, 15, 10);
             scene.add(sunLight);
 
-            forestGroup = new THREE.Group();
+            // Bouncy Pastel Core Gem (Soft Pink / Kirby Star Core)
+            const coreGeo = new THREE.DodecahedronGeometry(6, 1);
+            const coreMat = new THREE.MeshLambertMaterial({ color: 0xf472b6, wireframe: true, transparent: true, opacity: 0.45 });
+            starCore = new THREE.Mesh(coreGeo, coreMat);
+            scene.add(starCore);
 
-            // Central Low-Poly Floating Meadow Island (Soft Emerald/Pastel)
-            const islandGeo = new THREE.CylinderGeometry(8, 6, 2.5, 8);
-            const islandMat = new THREE.MeshLambertMaterial({ color: 0x34d399, flatShading: true });
-            const island = new THREE.Mesh(islandGeo, islandMat);
-            island.position.y = -2;
-            forestGroup.add(island);
-
-            // Low-Poly Trees on Island
-            const treeColors = [0x10b981, 0x059669, 0x34d399, 0xfbbf24];
-            for(let i = 0; i < 6; i++) {
-                const trunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 1.8, 5);
-                const trunkMat = new THREE.MeshLambertMaterial({ color: 0x78350f, flatShading: true });
-                const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-
-                const foliageGeo = new THREE.ConeGeometry(1.5, 3, 5);
-                const foliageMat = new THREE.MeshLambertMaterial({ color: treeColors[i % 4], flatShading: true });
-                const foliage = new THREE.Mesh(foliageGeo, foliageMat);
-                foliage.position.y = 2;
-
-                const tree = new THREE.Group();
-                tree.add(trunk);
-                tree.add(foliage);
-
-                const angle = (i / 6) * Math.PI * 2;
-                tree.position.x = Math.cos(angle) * 5;
-                tree.position.z = Math.sin(angle) * 5;
-                tree.position.y = -0.5;
-                forestGroup.add(tree);
+            // Floating Star Orbs (Pastel Cyan, Amber, Mint, Purple)
+            const orbColors = [0x38bdf8, 0xfacc15, 0x34d399, 0xc084fc];
+            for(let i = 0; i < 5; i++) {
+                const orbGeo = new THREE.OctahedronGeometry(1.4, 0);
+                const orbMat = new THREE.MeshBasicMaterial({ color: orbColors[i % 4], wireframe: true });
+                const orb = new THREE.Mesh(orbGeo, orbMat);
+                scene.add(orb);
+                floatingOrbs.push({ mesh: orb, angle: (i * Math.PI * 2 / 5), radius: 11 + (i * 2), speed: 0.009 + i * 0.002 });
             }
 
-            scene.add(forestGroup);
-
-            // Floating Warm Dandelion / Light Particles
+            // Floating Pastel Star Particles
             const particleGeo = new THREE.BufferGeometry();
-            const count = 250;
+            const count = 300;
             const posArray = new Float32Array(count * 3);
             for(let i = 0; i < count * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 50;
+                posArray[i] = (Math.random() - 0.5) * 60;
             }
             particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particleMat = new THREE.PointsMaterial({ size: 0.35, color: 0xfde047, transparent: true, opacity: 0.75 });
-            dandelions = new THREE.Points(particleGeo, particleMat);
-            scene.add(dandelions);
+            const particleMat = new THREE.PointsMaterial({ size: 0.35, color: 0xfacc15, transparent: true, opacity: 0.7 });
+            starParticles = new THREE.Points(particleGeo, particleMat);
+            scene.add(starParticles);
 
             window.addEventListener('resize', onWindowResize);
             document.addEventListener('mousemove', onMouseMove);
@@ -431,17 +415,27 @@
 
         function animateThreeJS() {
             requestAnimationFrame(animateThreeJS);
-            if (forestGroup) {
-                forestGroup.rotation.y += 0.002;
+            if (starCore) {
+                starCore.rotation.x += 0.004;
+                starCore.rotation.y += 0.006;
             }
-            if (dandelions) {
-                dandelions.rotation.y += 0.0005;
-                dandelions.position.y += Math.sin(Date.now() * 0.001) * 0.005;
+            if (starParticles) {
+                starParticles.rotation.y += 0.001;
+                starParticles.position.y += Math.sin(Date.now() * 0.001) * 0.004;
             }
 
-            // Smooth Camera Sway
+            floatingOrbs.forEach(item => {
+                item.angle += item.speed;
+                item.mesh.position.x = Math.cos(item.angle) * item.radius;
+                item.mesh.position.z = Math.sin(item.angle) * item.radius;
+                item.mesh.position.y = Math.sin(item.angle * 2) * 2.5;
+                item.mesh.rotation.x += 0.02;
+                item.mesh.rotation.y += 0.02;
+            });
+
+            // Smooth Camera Tilt
             camera.position.x += (mouseX * 4 - camera.position.x) * 0.04;
-            camera.position.y += (-mouseY * 2 + 8 - camera.position.y) * 0.04;
+            camera.position.y += (-mouseY * 3 + 5 - camera.position.y) * 0.04;
             camera.lookAt(0, 0, 0);
 
             renderer.render(scene, camera);
@@ -458,11 +452,11 @@
             mouseY = (event.clientY / window.innerHeight) * 2 - 1;
         }
 
-        // --- 2. Acoustic Gentle Chime Engine ---
+        // --- 2. Bouncy Sound Engine ---
         let audioContext = null;
         let soundEnabled = true;
 
-        function playChime(freq = 523.25, duration = 0.25, type = 'sine') {
+        function playBouncySound(freq = 523.25, duration = 0.2, type = 'sine') {
             if (!soundEnabled) return;
             try {
                 if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -470,7 +464,7 @@
                 const gain = audioContext.createGain();
                 osc.type = type;
                 osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.08, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
@@ -481,23 +475,23 @@
 
         function toggleAudio() {
             soundEnabled = !soundEnabled;
-            document.getElementById('audioLabel').innerText = soundEnabled ? "따뜻한 멜로디 ON" : "멜로디 OFF";
-            document.getElementById('audioIcon').className = soundEnabled ? "fa-solid fa-music text-emerald-400" : "fa-solid fa-volume-xmark text-slate-500";
-            if (soundEnabled) playChime(659.25, 0.3, 'triangle');
+            document.getElementById('audioLabel').innerText = soundEnabled ? "사운드 ON" : "사운드 OFF";
+            document.getElementById('audioIcon').className = soundEnabled ? "fa-solid fa-music text-pink-400" : "fa-solid fa-volume-xmark text-slate-500";
+            if (soundEnabled) playBouncySound(659.25, 0.25, 'triangle');
         }
 
         // --- 3. UI Navigation & Modals ---
         function scrollToSection(sectionId) {
-            playChime(587.33, 0.15);
+            playBouncySound(587.33, 0.12);
             const section = document.getElementById(sectionId);
             if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function openLoginModal() { playChime(523.25, 0.15); document.getElementById('loginModal').classList.remove('hidden'); }
+        function openLoginModal() { playBouncySound(523.25, 0.12); document.getElementById('loginModal').classList.remove('hidden'); }
         function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-        function openJournalModal() { playChime(659.25, 0.2); document.getElementById('journalModal').classList.remove('hidden'); }
+        function openJournalModal() { playBouncySound(659.25, 0.18); document.getElementById('journalModal').classList.remove('hidden'); }
         function closeJournalModal() { document.getElementById('journalModal').classList.add('hidden'); }
-        function openProfileModal() { playChime(698.46, 0.2); document.getElementById('profileModal').classList.remove('hidden'); }
+        function openProfileModal() { playBouncySound(698.46, 0.18); document.getElementById('profileModal').classList.remove('hidden'); }
         function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
 
         // --- 4. API Integration (Supabase DB Sync) ---
@@ -510,8 +504,8 @@
                     if (user && user.nickname) {
                         currentUserId = user.id;
                         document.getElementById('userDisplayName').innerText = user.nickname;
-                        document.getElementById('userArchetype').innerText = user.archetype || '🦊 스마트 펀더멘털 여우';
-                        document.getElementById('userTitle').innerText = user.title || '👑 든든한 가치투자 마을 이장님 (Lv.4)';
+                        document.getElementById('userArchetype').innerText = user.archetype || '💎 펀더멘털 홀더';
+                        document.getElementById('userTitle').innerText = user.title || '👑 가치투자 1기 스쿼드 리더 (Lv.4)';
                         document.getElementById('userXpLabel').innerText = `${user.xp.toLocaleString()} / 3,000 EXP`;
                         const pct = Math.min((user.xp / 3000) * 100, 100);
                         document.getElementById('xpBar').style.width = `${pct}%`;
@@ -519,8 +513,8 @@
 
                         // Pre-fill profile modal
                         document.getElementById('pNickname').value = user.nickname;
-                        document.getElementById('pArchetype').value = user.archetype || '🦊 스마트 펀더멘털 여우';
-                        document.getElementById('pTitle').value = user.title || '👑 든든한 가치투자 마을 이장님 (Lv.4)';
+                        document.getElementById('pArchetype').value = user.archetype || '💎 펀더멘털 홀더';
+                        document.getElementById('pTitle').value = user.title || '👑 가치투자 1기 스쿼드 리더 (Lv.4)';
                     }
                 });
         }
@@ -531,18 +525,18 @@
                 .then(data => {
                     const container = document.getElementById('feedContainer');
                     if (!data || data.length === 0) {
-                        container.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs">작성된 마음 편한 복기 노트가 없습니다.</div>`;
+                        container.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs font-jua">작성된 가치투자 복기 피드가 없습니다.</div>`;
                         return;
                     }
                     container.innerHTML = data.map(item => `
-                        <div class="p-4 bg-slate-950/90 rounded-2xl border border-emerald-500/20 space-y-3 shadow-lg hover:border-emerald-500/50 transition">
+                        <div class="p-4 bg-slate-950/90 rounded-2xl border border-pink-400/20 space-y-3 shadow-lg hover:border-pink-400/50 transition">
                             <div class="flex justify-between items-center text-xs">
                                 <div class="flex items-center gap-2.5">
-                                    <img src="${item.avatar}" class="w-9 h-9 rounded-xl border border-emerald-400 bg-slate-800">
+                                    <img src="${item.avatar}" class="w-9 h-9 rounded-xl border border-pink-400 bg-slate-800">
                                     <div>
                                         <div class="font-bold text-white flex items-center gap-1.5 font-jua">
                                             <span>${item.author}</span>
-                                            <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-md font-mono">${item.archetype}</span>
+                                            <span class="bg-pink-500/20 text-pink-300 text-[10px] px-2 py-0.5 rounded-md font-mono">${item.archetype}</span>
                                         </div>
                                         <div class="text-[10px] text-slate-400 font-jua">${item.title}</div>
                                     </div>
@@ -550,16 +544,16 @@
                                 <span class="text-slate-500 font-mono text-[11px]">${item.time}</span>
                             </div>
                             <div class="text-xs space-y-2 text-slate-300">
-                                <div class="font-bold text-emerald-400 font-jua text-sm">🌱 마을 복기: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)</div>
+                                <div class="font-bold text-pink-300 font-jua text-sm">🚀 체결: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)</div>
                                 <p class="leading-relaxed"><strong class="text-white font-bold">🧠 AI 근거:</strong> ${item.ai_reasoning}</p>
-                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>마음 편한 리스크 체크:</strong> ${item.risk_review}</div>` : ''}
-                                ${item.lesson ? `<div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-emerald-300 font-medium">💡 <strong>포근한 가치 레슨:</strong> ${item.lesson}</div>` : ''}
+                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>리스크 점검:</strong> ${item.risk_review}</div>` : ''}
+                                ${item.lesson ? `<div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-emerald-300 font-medium">💡 <strong>가치 레슨:</strong> ${item.lesson}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-3 pt-2 border-t border-slate-900 text-xs font-jua">
                                 <button onclick="likeFeed(${item.id})" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-bold">
                                     <i class="fa-solid fa-heart"></i> <span id="like-count-${item.id}">${item.likes}</span>
                                 </button>
-                                <span class="text-emerald-300 text-[11px] ml-auto">+150 Warmth EXP 선물받음</span>
+                                <span class="text-pink-300 text-[11px] ml-auto">+150 EXP 획득됨</span>
                             </div>
                         </div>
                     `).join('');
@@ -576,13 +570,13 @@
                         <tr class="${item.rank === 1 ? 'bg-amber-500/10' : ''}">
                             <td class="py-3 px-3 font-black font-jua ${item.rank === 1 ? 'text-amber-300 text-sm' : 'text-slate-400'}">${item.rank === 1 ? '🥇 1위' : item.rank === 2 ? '🥈 2위' : item.rank === 3 ? '🥉 3위' : item.rank + '위'}</td>
                             <td class="py-3 px-3 font-bold text-white flex items-center gap-2">
-                                <img src="${item.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + item.name}" class="w-7 h-7 rounded-full bg-slate-800 border border-emerald-400">
+                                <img src="${item.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + item.name}" class="w-7 h-7 rounded-full bg-slate-800 border border-pink-400">
                                 <div>
                                     <div class="font-jua text-sm">${item.name}</div>
                                     <div class="text-[10px] text-slate-400 font-normal font-jua">${item.title}</div>
                                 </div>
                             </td>
-                            <td class="py-3 px-3 text-emerald-300 font-bold font-jua">${item.archetype}</td>
+                            <td class="py-3 px-3 text-pink-300 font-bold font-jua">${item.archetype}</td>
                             <td class="py-3 px-3 font-bold text-emerald-400">+${item.return_pct}%</td>
                             <td class="py-3 px-3 font-bold font-mono text-amber-300">${item.xp.toLocaleString()} EXP</td>
                         </tr>
@@ -604,7 +598,7 @@
 
         function submitProfileUpdate(e) {
             e.preventDefault();
-            playChime(783.99, 0.3, 'sine');
+            playBouncySound(783.99, 0.25, 'sine');
             const nickname = document.getElementById('pNickname').value;
             const archetype = document.getElementById('pArchetype').value;
             const title = document.getElementById('pTitle').value;
@@ -636,7 +630,7 @@
 
         function submitJournal(e) {
             e.preventDefault();
-            playChime(880.00, 0.35, 'triangle');
+            playBouncySound(880.00, 0.3, 'triangle');
             const body = {
                 symbol: document.getElementById('jSymbol').value,
                 side: document.getElementById('jSide').value,
@@ -663,7 +657,7 @@
         }
 
         function loginWithProvider(provider) {
-            playChime(659.25, 0.2);
+            playBouncySound(659.25, 0.15);
             fetch(`/api/auth/login/${provider}`, { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
@@ -674,7 +668,7 @@
         }
 
         function likeFeed(feedId) {
-            playChime(698.46, 0.1);
+            playBouncySound(698.46, 0.1);
             const el = document.getElementById(`like-count-${feedId}`);
             if (el) {
                 let current = parseInt(el.innerText);

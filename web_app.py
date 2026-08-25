@@ -21,9 +21,9 @@ from analyzers import (
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="같이투자 (Gachi Tuza) 3D 포근한 동물마을 소셜 트레이딩 게임",
-    description="지인들과 함께 포근한 3D 동물마을에서 가치에 투자하고 마을 퀘스트를 달성하는 100% 오픈소스 소셜 게임",
-    version="3.0.0"
+    title="같이투자 (Gachi Tuza) 3D 소셜 트레이딩 게임 플랫폼",
+    description="지인들과 함께 3D 아레나에서 가치에 투자하고 스쿼드 퀘스트를 달성하는 100% 오픈소스 소셜 게임",
+    version="3.1.0"
 )
 
 # Pydantic Schemas
@@ -40,8 +40,8 @@ class JournalCreate(BaseModel):
 class ProfileUpdate(BaseModel):
     user_id: Optional[int] = 1
     nickname: str
-    archetype: Optional[str] = "🐻 듬직한 장기 가치 곰돌이"
-    title: Optional[str] = "🌱 숲속 마을 초보 가치탐험가 (Lv.3)"
+    archetype: Optional[str] = "💎 펀더멘털 홀더"
+    title: Optional[str] = "💎 가치 탐험가 (Lv.3)"
     profile_img: Optional[str] = None
 
 # Seed initial DB data helper
@@ -49,31 +49,31 @@ def seed_initial_data(db: Session):
     if db.query(models.User).count() == 0:
         u1 = models.User(
             email="gachi_leader@gachituza.com",
-            nickname="김가치 (마을 이장님)",
+            nickname="김가치 (스쿼드 리더)",
             provider="kakao",
             profile_img="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi",
-            archetype="🦊 스마트 펀더멘털 여우",
-            title="👑 든든한 가치투자 마을 이장님 (Lv.4)",
+            archetype="💎 펀더멘털 홀더",
+            title="👑 가치투자 1기 스쿼드 리더 (Lv.4)",
             level=4,
             xp=2450
         )
         u2 = models.User(
             email="park_bit@gachituza.com",
-            nickname="박비트 (곰돌이 가치투자가)",
+            nickname="박비트 (가치투자가)",
             provider="naver",
             profile_img="https://api.dicebear.com/7.x/bottts/svg?seed=ParkBit",
-            archetype="🐻 듬직한 장기 가치 곰돌이",
-            title="🛡️ 포근한 현물 마스터 곰돌이 (Lv.3)",
+            archetype="🛡️ 리스크 가드",
+            title="🛡️ 버핏급 펀더멘털 마스터 (Lv.3)",
             level=3,
             xp=1980
         )
         u3 = models.User(
             email="choi_sola@gachituza.com",
-            nickname="최솔라 (차익 토끼)",
+            nickname="최솔라 (스쿼드 멤버)",
             provider="google",
             profile_img="https://api.dicebear.com/7.x/bottts/svg?seed=ChoiSola",
-            archetype="🐰 재빠른 차익 스캔 토끼",
-            title="🥕 당근모으기 차익 스캘퍼 (Lv.2)",
+            archetype="⚡ 차익거래 스캘퍼",
+            title="⚖️ 최저가 라우터 스캘퍼 (Lv.2)",
             level=2,
             xp=1620
         )
@@ -87,8 +87,8 @@ def seed_initial_data(db: Session):
             amount_krw=10000,
             price=49.4,
             ai_reasoning="업비트 실질가 49.4원으로 빗썸 대비 5.35% 저렴한 최저가 라우팅 확인. GitHub 개발 커밋 점수 81점.",
-            risk_review="거래소 입출금 중단 유의 공지 확인됨. 마음 편하게 추가 매수 금지 수칙 준수.",
-            lesson="💡 소액 테스트 매수 완료. 숲속 마을 수칙에 따라 유의 해제 전까지 안전 자산 보호.",
+            risk_review="거래소 입출금 중단 유의 공지 확인됨. 추가 매수 금지 리스크 수칙 준수.",
+            lesson="💡 소액 테스트 매수 완료. 유의 공지 해제 전까지 추가 매수를 금지하여 자산 보호.",
             likes_count=12
         )
         j2 = models.TradeJournal(
@@ -99,17 +99,17 @@ def seed_initial_data(db: Session):
             price=245000,
             ai_reasoning="김치 프리미엄 +2.21% 안정이격 구간. 개발 커밋 92점으로 극상급 펀더멘털.",
             risk_review="솔라나 메인넷 검증인 스테이킹(Staking) 연 6.5% 이자 중복 창출 시작.",
-            lesson="💎 현물 저점 매수 후 스테이킹 열매 복리 이자 모으기 완수.",
+            lesson="💎 현물 저점 매수 후 스테이킹 복리 이자 모으기 완수.",
             likes_count=19
         )
         db.add_all([j1, j2])
         db.commit()
 
         s1 = models.Squad(
-            name="포근한 가치투자 숲속 마을 스쿼드",
+            name="가치투자 1기 스쿼드",
             code="GACHI001",
             created_by=u1.id,
-            raid_title="🌳 숲속 마을 공동 열매 수확 & 김프 스캘핑 퀘스트",
+            raid_title="🚀 스쿼드 공동 가치투자 & 김프 0.04% 차익 퀘스트",
             raid_goal=10000000.0,
             raid_progress=7450000.0
         )
@@ -125,7 +125,7 @@ def read_root():
         return FileResponse(root_html)
     elif os.path.exists(template_html):
         return FileResponse(template_html)
-    return JSONResponse({"message": "같이투자 포근한 3D 동물마을 백엔드가 정상 동작 중입니다."})
+    return JSONResponse({"message": "같이투자 3D 소셜 트레이딩 게임 백엔드가 정상 동작 중입니다."})
 
 # 1. 3대 1초 소셜 로그인 API
 @app.post("/api/auth/login/{provider}")
@@ -138,8 +138,8 @@ def social_login(provider: str, db: Session = Depends(get_db)):
             nickname=auth_res["nickname"],
             provider=auth_res["provider"],
             profile_img=auth_res["profile_img"],
-            archetype="🐻 듬직한 장기 가치 곰돌이",
-            title="🌱 숲속 마을 초보 가치탐험가 (Lv.3)",
+            archetype="💎 펀더멘털 홀더",
+            title="💎 가치 탐험가 (Lv.3)",
             level=3,
             xp=1500
         )
@@ -175,7 +175,7 @@ def update_user_profile(profile: ProfileUpdate, db: Session = Depends(get_db)):
         db.refresh(user)
         return {
             "status": "success",
-            "message": f"🎉 숲속 마을 닉네임이 '{user.nickname}'(으)로 변경되어 Supabase DB에 저장되었습니다!",
+            "message": f"🎉 닉네임이 '{user.nickname}'(으)로 변경되어 Supabase DB에 저장되었습니다!",
             "user": {
                 "id": user.id,
                 "nickname": user.nickname,
@@ -199,8 +199,8 @@ def get_current_user(db: Session = Depends(get_db)):
             "nickname": user.nickname,
             "provider": user.provider,
             "profile_img": user.profile_img,
-            "archetype": user.archetype or "🐻 듬직한 장기 가치 곰돌이",
-            "title": user.title or "🌱 숲속 마을 초보 가치탐험가 (Lv.3)",
+            "archetype": user.archetype or "💎 펀더멘털 홀더",
+            "title": user.title or "💎 가치 탐험가 (Lv.3)",
             "level": user.level,
             "xp": user.xp
         }
@@ -213,10 +213,10 @@ def get_social_feed(db: Session = Depends(get_db)):
     journals = db.query(models.TradeJournal).order_by(models.TradeJournal.id.desc()).all()
     results = []
     for j in journals:
-        author_name = j.author.nickname if j.author else "익명 마을 주민"
+        author_name = j.author.nickname if j.author else "익명 게이머"
         avatar = j.author.profile_img if j.author and j.author.profile_img else "https://api.dicebear.com/7.x/bottts/svg?seed=Gachi"
-        archetype = j.author.archetype if j.author else "🐻 듬직한 장기 가치 곰돌이"
-        title = j.author.title if j.author else "🌱 숲속 마을 탐험가"
+        archetype = j.author.archetype if j.author else "💎 펀더멘털 홀더"
+        title = j.author.title if j.author else "가치 탐험가"
         results.append({
             "id": j.id,
             "author": author_name,
@@ -235,7 +235,7 @@ def get_social_feed(db: Session = Depends(get_db)):
         })
     return results
 
-# 5. 새로운 복기 노트 작성 API (마음 편한 복기 + XP 획득)
+# 5. 새로운 복기 노트 작성 API (스킬 캐스팅 + EXP 증동)
 @app.post("/api/journal")
 def create_journal(item: JournalCreate, db: Session = Depends(get_db)):
     user = db.query(models.User).first()
@@ -244,7 +244,7 @@ def create_journal(item: JournalCreate, db: Session = Depends(get_db)):
         user.xp += 150  # 획득 EXP +150
         if user.xp >= 3000 and user.level < 5:
             user.level += 1
-            user.title = "👑 포근한 수호신 가치 이장님 (Lv.5)"
+            user.title = "👑 마스터 가치투자가 (Lv.5)"
         db.commit()
 
     new_j = models.TradeJournal(
@@ -264,7 +264,7 @@ def create_journal(item: JournalCreate, db: Session = Depends(get_db)):
     return {
         "status": "success",
         "id": new_j.id,
-        "message": "🌱 마음 편한 복기 작성 완료! +150 따뜻한 EXP를 선물 받았습니다!",
+        "message": "⚡ 복기 작성 완료! +150 EXP를 획득했습니다!",
         "new_xp": user.xp if user else 1600
     }
 
@@ -274,13 +274,13 @@ def get_squad_rankings(db: Session = Depends(get_db)):
     seed_initial_data(db)
     users = db.query(models.User).order_by(models.User.xp.desc()).all()
     rankings = []
-    badges = ["🐾 몽글몽글 뱃지", "🌿 숲속 평화 수칙", "⚖️ 최저가 당근 라우터", "🦊 펀더멘털 여우"]
+    badges = ["💎 다이아몬드 핸드", "🛡️ FOMO 방어막", "⚖️ 최저가 라우터", "🚀 퀀트 분석가"]
     for idx, u in enumerate(users):
         rankings.append({
             "rank": idx + 1,
             "name": u.nickname,
-            "archetype": u.archetype or "🐻 곰돌이형",
-            "title": u.title or "마을 탐험가",
+            "archetype": u.archetype or "💎 펀더멘털 홀더",
+            "title": u.title or "가치 탐험가",
             "return_pct": round(14.8 - (idx * 3.6), 1),
             "badge": badges[idx % len(badges)],
             "xp": u.xp,
@@ -294,16 +294,16 @@ def get_squad_raids(db: Session = Depends(get_db)):
     seed_initial_data(db)
     squad = db.query(models.Squad).first()
     return {
-        "squad_name": squad.name if squad else "포근한 가치투자 숲속 마을 스쿼드",
-        "raid_title": squad.raid_title if squad else "🌳 숲속 마을 공동 열매 수확 & 김프 스캘핑 퀘스트",
+        "squad_name": squad.name if squad else "가치투자 1기 스쿼드",
+        "raid_title": squad.raid_title if squad else "🚀 스쿼드 공동 가치투자 & 김프 0.04% 차익 퀘스트",
         "raid_goal_krw": squad.raid_goal if squad else 10000000.0,
         "raid_progress_krw": squad.raid_progress if squad else 7450000.0,
         "progress_pct": round(((squad.raid_progress / squad.raid_goal) * 100) if squad else 74.5, 1),
-        "buff": "🍎 마을 주민 전원 복기 작성 시 열매 EXP 2배 버프 발동 중!",
+        "buff": "⚡ 스쿼드 멤버 전원 복기 작성 시 EXP 2배 버프 발동 중!",
         "participants": [
-            {"name": "🦊 김가치", "contribution": "3,500,000원", "role": "👑 마을 이장"},
-            {"name": "🐻 박비트", "contribution": "2,450,000원", "role": "🐻 장기 투자 곰"},
-            {"name": "🐰 최솔라", "contribution": "1,500,000원", "role": "🐰 차익 스피드 토끼"}
+            {"name": "김가치", "contribution": "3,500,000원", "role": "👑 스쿼드 리더"},
+            {"name": "박비트", "contribution": "2,450,000원", "role": "💎 버프 딜러"},
+            {"name": "최솔라", "contribution": "1,500,000원", "role": "⚡ 차익 스나이퍼"}
         ]
     }
 
