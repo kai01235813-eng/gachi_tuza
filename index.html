@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>같이투자 - 대화형 숲속 정원 (Zero UI)</title>
+    <title>같이투자 - 따스한 햇살 정원 소셜 트레이딩</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase JS Client -->
@@ -11,64 +11,65 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;500;600;700&display=swap');
         body { font-family: 'Pretendard', sans-serif; }
         .font-jua { font-family: 'Jua', sans-serif; }
-        .cozy-card { background: rgba(13, 51, 34, 0.75); backdrop-filter: blur(20px); border: 1.5px solid rgba(52, 211, 153, 0.3); }
-        .cozy-shadow { box-shadow: 0 16px 45px -10px rgba(16, 185, 129, 0.3); }
-        .soft-glow-green { box-shadow: 0 0 30px rgba(52, 211, 153, 0.25); }
-        .ambient-garden-bg {
-            background: radial-gradient(circle at 50% 20%, #144733 0%, #09261a 60%, #04120c 100%);
-        }
+        .cozy-card-light { background: #ffffff; border: 1.5px solid #e2f1e7; box-shadow: 0 10px 30px -5px rgba(16, 185, 129, 0.08); }
+        .prompt-shadow { box-shadow: 0 12px 35px -8px rgba(16, 185, 129, 0.12); }
     </style>
 </head>
-<body class="ambient-garden-bg text-slate-100 min-h-screen relative overflow-x-hidden pb-20 selection:bg-emerald-500 selection:text-white">
+<body class="bg-gradient-to-b from-[#f3f9f4] via-[#f7f6f0] to-[#eef7f0] text-slate-800 min-h-screen relative overflow-x-hidden pb-20 selection:bg-emerald-200 selection:text-emerald-900">
 
-    <!-- Ambient Floating Leaf Particles (CSS Pure Cozy Effect) -->
-    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
-        <div class="absolute top-10 left-10 text-emerald-400 text-xl animate-bounce duration-1000">🍃</div>
-        <div class="absolute top-1/3 right-12 text-lime-300 text-lg animate-pulse">🌿</div>
-        <div class="absolute bottom-20 left-1/4 text-emerald-300 text-sm animate-pulse">🌱</div>
-        <div class="absolute top-2/3 right-1/4 text-amber-200 text-xs animate-bounce">✨</div>
+    <!-- Cozy Garden Ambient Background Accents -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
+        <div class="absolute -top-10 -left-10 w-96 h-96 bg-emerald-200/50 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/3 -right-10 w-80 h-80 bg-amber-100/60 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 left-1/3 w-96 h-96 bg-teal-100/50 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Minimal Header (Navbar) -->
-    <nav class="bg-emerald-950/70 backdrop-blur-md border-b border-emerald-500/20 px-6 py-4 sticky top-0 z-50 flex justify-between items-center">
-        <div class="flex items-center space-x-3">
-            <div class="bg-gradient-to-tr from-emerald-500 to-lime-400 p-2 rounded-2xl soft-glow-green">
-                <i class="fa-solid fa-leaf text-slate-950 text-base"></i>
+    <!-- Minimal Warm Light Header -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-emerald-100 px-6 py-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-2.5">
+            <div class="bg-emerald-100 text-emerald-700 p-2 rounded-2xl">
+                <i class="fa-solid fa-seedling text-lg"></i>
             </div>
-            <span class="font-black text-xl text-white font-jua tracking-tight">같이투자 <span class="text-xs text-emerald-300 font-normal">Zero UI</span></span>
+            <span class="font-black text-xl text-slate-800 font-jua tracking-tight">같이투자 <span class="text-xs text-emerald-600 font-normal">🌱 따스한 햇살 정원</span></span>
         </div>
-        <div class="flex items-center gap-3 font-jua">
-            <button onclick="openProfileModal()" class="bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 px-3.5 py-1.5 rounded-xl text-xs font-bold border border-emerald-500/30 flex items-center gap-1.5 transition">
-                <i class="fa-solid fa-user-gear text-emerald-400"></i>
+        <div class="flex items-center gap-2.5 font-jua">
+            <button onclick="openProfileModal()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3.5 py-1.5 rounded-2xl text-xs font-bold border border-emerald-200 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-user-gear text-emerald-600"></i>
                 <span id="navNickname">김가치 (가치 모임장)</span>
             </button>
-            <div class="text-xs text-emerald-300 font-bold bg-emerald-950 px-3 py-1.5 rounded-xl border border-emerald-500/30" id="navXp">
-                2,450 EXP
+            <div class="text-xs text-amber-800 font-bold bg-amber-50 px-3 py-1.5 rounded-2xl border border-amber-200" id="navXp">
+                ✨ 2,450 EXP
             </div>
         </div>
     </nav>
 
-    <!-- Main Zero UI Container -->
-    <div class="max-w-2xl mx-auto px-4 pt-10 pb-6 space-y-8 relative z-10">
+    <!-- Main Container -->
+    <div class="max-w-2xl mx-auto px-4 pt-8 pb-6 space-y-7 relative z-10">
 
-        <!-- Cozy Welcome & Zero UI Centerpiece (단 하나의 프롬프트 창) -->
-        <div class="text-center space-y-3">
-            <div class="inline-flex items-center gap-2 bg-emerald-900/60 text-emerald-300 px-4 py-1.5 rounded-full text-xs font-bold border border-emerald-500/30 font-jua">
-                <span>🌱 포근한 숲속 정원 투자 대화</span>
+        <!-- Cute Garden Illustration & Welcome Hero Header -->
+        <div class="cozy-card-light p-6 rounded-3xl text-center space-y-4 relative overflow-hidden">
+            <!-- Cute SVG Garden Illustration Asset -->
+            <div class="w-20 h-20 mx-auto bg-gradient-to-tr from-emerald-100 via-teal-50 to-amber-100 rounded-full flex justify-center items-center text-4xl shadow-inner border border-emerald-200/60">
+                🏡
             </div>
-            <h1 class="text-3xl font-black text-white font-jua leading-tight">
-                무엇이든 자연스럽게 말해보세요
-            </h1>
-            <p class="text-xs text-emerald-200/80 font-jua">
-                복잡한 메뉴 없이 단 하나의 입력창에서 매매 복기 작성, 가치 분석, 모임 순위를 간편하게 처리합니다.
-            </p>
+            <div class="space-y-1.5">
+                <div class="inline-flex items-center gap-1.5 bg-emerald-100/80 text-emerald-800 px-3.5 py-1 rounded-full text-xs font-bold font-jua">
+                    <span>☀️ 따스하고 포근한 대화형 정원</span>
+                </div>
+                <h1 class="text-2xl font-black text-slate-800 font-jua">
+                    오늘 어떤 가치 매매를 하셨나요?
+                </h1>
+                <p class="text-xs text-slate-500 font-jua leading-relaxed">
+                    복잡한 메뉴 없이 편안하게 이야기하듯 적어보세요. 인공지능이 복기를 남기고 경험치를 드립니다.
+                </p>
+            </div>
         </div>
 
-        <!-- 💬 ZERO UI SINGLE PROMPT INPUT BAR (핵심 대화형 프롬프트) -->
-        <div class="cozy-card p-3 rounded-3xl cozy-shadow soft-glow-green border-2 border-emerald-400/40 relative">
+        <!-- 💬 PROMPT-CENTRIC ZERO UI SINGLE INPUT BAR (Clean Light Warm Style) -->
+        <div class="cozy-card-light p-3.5 rounded-3xl prompt-shadow relative border-2 border-emerald-200">
             <form onsubmit="submitPrompt(event)" class="flex items-center gap-2">
                 <input 
                     type="text" 
@@ -76,67 +77,67 @@
                     placeholder="예: '오늘 솔라나 10만원 매수했어' 또는 '우리 모임 순위 보여줘'..." 
                     required 
                     autocomplete="off"
-                    class="w-full bg-slate-950/90 text-white placeholder-emerald-300/50 text-sm px-5 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 border border-emerald-500/30 font-jua shadow-inner"
+                    class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 text-sm px-5 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400 border border-emerald-200 font-jua"
                 >
-                <button type="submit" class="bg-gradient-to-r from-emerald-400 via-teal-400 to-lime-300 hover:from-emerald-500 hover:to-lime-400 text-slate-950 font-black px-5 py-3.5 rounded-2xl transition font-jua text-sm flex items-center gap-1.5 shrink-0 shadow-lg active:scale-95">
-                    <span>🌿</span>
-                    <span>전송</span>
+                <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-3.5 rounded-2xl transition font-jua text-sm flex items-center gap-1.5 shrink-0 shadow-md active:scale-95">
+                    <span>🌱</span>
+                    <span>기록</span>
                 </button>
             </form>
 
-            <!-- 💡 Nudge Quick Chips (추천 넛지 문구) -->
+            <!-- 💡 Cute Nudge Prompt Chips -->
             <div class="flex flex-wrap gap-2 mt-3 px-1 text-xs font-jua">
-                <span class="text-slate-400 text-[11px] flex items-center">💡 추천 입력:</span>
-                <button onclick="fillPrompt('오늘 비트코인 5만원 매수했어')" class="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 px-3 py-1 rounded-xl border border-emerald-500/30 text-[11px] transition">
+                <span class="text-slate-400 text-[11px] flex items-center">💡 이렇게 말해보세요:</span>
+                <button onclick="fillPrompt('오늘 비트코인 5만원 매수했어')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-3 py-1 rounded-xl border border-emerald-200 text-[11px] transition">
                     🌱 "오늘 비트코인 5만원 매수했어"
                 </button>
-                <button onclick="fillPrompt('우리 모임 순위 보여줘')" class="bg-emerald-950/80 hover:bg-emerald-900 text-amber-300 px-3 py-1 rounded-xl border border-emerald-500/30 text-[11px] transition">
+                <button onclick="fillPrompt('우리 모임 순위 보여줘')" class="bg-amber-50 hover:bg-amber-100 text-amber-900 px-3 py-1 rounded-xl border border-amber-200 text-[11px] transition">
                     🏆 "우리 모임 순위 보여줘"
                 </button>
-                <button onclick="fillPrompt('우리 모임 목표 알려줘')" class="bg-emerald-950/80 hover:bg-emerald-900 text-sky-300 px-3 py-1 rounded-xl border border-emerald-500/30 text-[11px] transition">
+                <button onclick="fillPrompt('우리 모임 목표 알려줘')" class="bg-sky-50 hover:bg-sky-100 text-sky-900 px-3 py-1 rounded-xl border border-sky-200 text-[11px] transition">
                     🚀 "우리 모임 목표 알려줘"
                 </button>
             </div>
         </div>
 
-        <!-- 💬 Chat Stream / Response Cards (대화 응답 및 복기 피드) -->
-        <div class="space-y-4" id="chatStream">
+        <!-- 💬 Conversation Stream Cards -->
+        <div class="space-y-3.5" id="chatStream">
             
             <!-- Default Welcome AI Response Card -->
-            <div class="cozy-card p-5 rounded-3xl space-y-2 border border-emerald-500/30 shadow-lg">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-300 flex justify-center items-center font-bold text-sm border border-emerald-400/40">🌱</div>
-                    <span class="font-bold text-white text-xs font-jua">숲속 정원 AI 도우미</span>
+            <div class="cozy-card-light p-5 rounded-3xl space-y-2 border border-emerald-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex justify-center items-center font-bold text-sm">🌱</div>
+                    <span class="font-bold text-slate-800 text-xs font-jua">햇살 정원 도우미</span>
                 </div>
-                <p class="text-xs text-emerald-100 leading-relaxed font-jua">
-                    반가워요, <strong>김가치</strong>님! 오늘 어떤 가치 매매를 하셨나요? 위 입력창에 **'오늘 SOL 10만원 매수했어'**처럼 말씀해 주시면, 정원에 복기를 남기고 **+150 경험치**를 챙겨드릴게요!
+                <p class="text-xs text-slate-600 leading-relaxed font-jua">
+                    안녕하세요, <strong>김가치</strong>님! 오늘 진행하신 매매 이야기를 편안하게 남겨보세요. 위 입력창에 **'오늘 SOL 10만원 매수했어'**처럼 적으시면 바로 복기가 기록되고 **+150 경험치**를 드려요!
                 </p>
             </div>
 
         </div>
 
-        <!-- 📖 Social Feed & Ranking Tabs (단순하고 깔끔한 보조 뷰) -->
-        <div class="cozy-card p-5 rounded-3xl space-y-4 border border-emerald-500/30 shadow-xl">
-            <div class="flex justify-between items-center border-b border-emerald-500/20 pb-3 font-jua">
+        <!-- 📖 Clean Auxiliary Feed & Rankings View -->
+        <div class="cozy-card-light p-5 rounded-3xl space-y-4 border border-emerald-200">
+            <div class="flex justify-between items-center border-b border-emerald-100 pb-3 font-jua">
                 <div class="flex items-center gap-4 text-xs font-bold">
-                    <button onclick="switchTab('feed')" id="tabFeedBtn" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">
+                    <button onclick="switchTab('feed')" id="tabFeedBtn" class="text-emerald-700 border-b-2 border-emerald-600 pb-1">
                         📖 모임 식구 복기 피드
                     </button>
-                    <button onclick="switchTab('rank')" id="tabRankBtn" class="text-slate-400 hover:text-white pb-1">
+                    <button onclick="switchTab('rank')" id="tabRankBtn" class="text-slate-400 hover:text-slate-700 pb-1">
                         🏆 모임 수익률 순위전
                     </button>
                 </div>
             </div>
 
-            <!-- Tab 1: Feed Container -->
+            <!-- Feed Container -->
             <div id="tabFeedContent" class="space-y-3">
                 <div class="text-center py-4 text-slate-400 text-xs font-jua">⚡ 복기 데이터를 불러오는 중...</div>
             </div>
 
-            <!-- Tab 2: Rankings Table (Hidden by default) -->
+            <!-- Rankings Container -->
             <div id="tabRankContent" class="hidden space-y-3">
                 <table class="w-full text-xs text-left">
-                    <thead class="bg-emerald-950/80 text-emerald-300 border-b border-emerald-500/30 font-jua">
+                    <thead class="bg-emerald-50/80 text-emerald-900 border-b border-emerald-200 font-jua">
                         <tr>
                             <th class="py-2.5 px-3">순위</th>
                             <th class="py-2.5 px-3">투자자</th>
@@ -145,7 +146,7 @@
                             <th class="py-2.5 px-3">경험치</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800 text-slate-200 font-mono" id="rankingsTableBody">
+                    <tbody class="divide-y divide-emerald-100 text-slate-700 font-mono" id="rankingsTableBody">
                         <tr><td colspan="5" class="py-4 text-center text-slate-400 font-jua">⚡ 랭킹 데이터 로딩 중...</td></tr>
                     </tbody>
                 </table>
@@ -155,30 +156,30 @@
     </div>
 
     <!-- 🎮 Profile Modal -->
-    <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden font-jua">
-        <div class="cozy-card w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative border border-emerald-500/40">
-            <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-center items-center p-4 hidden font-jua">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative border border-emerald-200">
+            <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             <div class="text-center space-y-1">
-                <h3 class="text-lg font-black text-white">투자자 닉네임 & 프로필 설정</h3>
-                <p class="text-xs text-emerald-200">DB에 실시간으로 저장됩니다</p>
+                <h3 class="text-lg font-black text-slate-800">투자자 닉네임 & 프로필 설정</h3>
+                <p class="text-xs text-slate-500">DB에 실시간으로 저장됩니다</p>
             </div>
             <form onsubmit="submitProfile(event)" class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-200 mb-1">🎮 닉네임</label>
-                    <input type="text" id="pNickname" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-700 mb-1">🎮 닉네임</label>
+                    <input type="text" id="pNickname" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-slate-200 mb-1">💎 투자 스타일</label>
-                    <select id="pArchetype" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                    <label class="block text-slate-700 mb-1">💎 투자 스타일</label>
+                    <select id="pArchetype" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:border-emerald-500">
                         <option value="💎 기업 실질가치 투자자">💎 기업 실질가치 투자자</option>
                         <option value="⚡ 가격차이 차익 투자자">⚡ 가격차이 차익 투자자</option>
                         <option value="🛡️ 위험 방어 수호자">🛡️ 위험 방어 수호자</option>
                         <option value="🔮 정량 지표 분석가">🔮 정량 지표 분석가</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-emerald-400 via-teal-400 to-lime-300 text-slate-950 font-black py-3 rounded-xl shadow-lg text-sm">
+                <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-xl shadow-md text-sm">
                     저장하기
                 </button>
             </form>
@@ -199,21 +200,19 @@
             const promptText = inputEl.value.trim();
             if (!promptText) return;
 
-            // Render user query card
             const stream = document.getElementById('chatStream');
             const userCard = document.createElement('div');
-            userCard.className = "cozy-card p-4 rounded-3xl space-y-1 border border-emerald-400/50 shadow-md ml-8 bg-emerald-900/40";
+            userCard.className = "cozy-card-light p-4 rounded-3xl space-y-1 border border-emerald-300 shadow-sm ml-8 bg-emerald-50/60";
             userCard.innerHTML = `
                 <div class="flex justify-between items-center text-xs font-jua">
-                    <span class="text-emerald-300 font-bold">👤 김가치</span>
+                    <span class="text-emerald-800 font-bold">👤 김가치</span>
                     <span class="text-slate-400 text-[10px]">방금 전</span>
                 </div>
-                <p class="text-sm font-bold text-white font-jua">${promptText}</p>
+                <p class="text-sm font-bold text-slate-800 font-jua">${promptText}</p>
             `;
             stream.prepend(userCard);
             inputEl.value = '';
 
-            // Call Zero UI Chat API
             fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -222,18 +221,18 @@
             .then(res => res.json())
             .then(data => {
                 const aiCard = document.createElement('div');
-                aiCard.className = "cozy-card p-5 rounded-3xl space-y-2 border border-emerald-500/40 shadow-lg bg-emerald-950/80";
+                aiCard.className = "cozy-card-light p-5 rounded-3xl space-y-2 border border-emerald-200";
                 aiCard.innerHTML = `
                     <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-300 flex justify-center items-center font-bold text-xs">🌱</div>
-                        <span class="font-bold text-white text-xs font-jua">숲속 정원 AI</span>
+                        <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex justify-center items-center font-bold text-xs">🌱</div>
+                        <span class="font-bold text-slate-800 text-xs font-jua">햇살 정원 AI</span>
                     </div>
-                    <div class="text-xs text-emerald-100 leading-relaxed font-jua whitespace-pre-line">${data.reply}</div>
+                    <div class="text-xs text-slate-700 leading-relaxed font-jua whitespace-pre-line">${data.reply}</div>
                 `;
                 stream.prepend(aiCard);
 
                 if (data.new_xp) {
-                    document.getElementById('navXp').innerText = `${data.new_xp.toLocaleString()} EXP`;
+                    document.getElementById('navXp').innerText = `✨ ${data.new_xp.toLocaleString()} EXP`;
                 }
                 loadSocialFeed();
                 loadSquadRankings();
@@ -247,13 +246,13 @@
             const rankContent = document.getElementById('tabRankContent');
 
             if (tab === 'feed') {
-                feedBtn.className = "text-emerald-400 border-b-2 border-emerald-400 pb-1";
-                rankBtn.className = "text-slate-400 hover:text-white pb-1";
+                feedBtn.className = "text-emerald-700 border-b-2 border-emerald-600 pb-1";
+                rankBtn.className = "text-slate-400 hover:text-slate-700 pb-1";
                 feedContent.classList.remove('hidden');
                 rankContent.classList.add('hidden');
             } else {
-                rankBtn.className = "text-emerald-400 border-b-2 border-emerald-400 pb-1";
-                feedBtn.className = "text-slate-400 hover:text-white pb-1";
+                rankBtn.className = "text-emerald-700 border-b-2 border-emerald-600 pb-1";
+                feedBtn.className = "text-slate-400 hover:text-slate-700 pb-1";
                 rankContent.classList.remove('hidden');
                 feedContent.classList.add('hidden');
             }
@@ -269,7 +268,7 @@
                     if (user && user.nickname) {
                         currentUserId = user.id;
                         document.getElementById('navNickname').innerText = user.nickname;
-                        document.getElementById('navXp').innerText = `${user.xp.toLocaleString()} EXP`;
+                        document.getElementById('navXp').innerText = `✨ ${user.xp.toLocaleString()} EXP`;
                         document.getElementById('pNickname').value = user.nickname;
                         document.getElementById('pArchetype').value = user.archetype || '💎 기업 실질가치 투자자';
                     }
@@ -286,18 +285,18 @@
                         return;
                     }
                     container.innerHTML = data.map(item => `
-                        <div class="p-3.5 bg-slate-950/80 rounded-2xl border border-emerald-500/20 space-y-2 text-xs">
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-emerald-100 space-y-1.5 text-xs">
                             <div class="flex justify-between items-center font-jua">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-bold text-white">${item.author}</span>
-                                    <span class="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-md font-mono">${item.archetype}</span>
+                                    <span class="font-bold text-slate-800">${item.author}</span>
+                                    <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-md font-mono">${item.archetype}</span>
                                 </div>
                                 <span class="text-slate-400 text-[10px] font-mono">${item.time}</span>
                             </div>
-                            <div class="text-emerald-200 font-jua">
+                            <div class="text-emerald-900 font-jua">
                                 🚀 <strong>${item.symbol}</strong> ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)
                             </div>
-                            <div class="text-slate-300 text-[11px] font-jua">${item.ai_reasoning}</div>
+                            <div class="text-slate-600 text-[11px] font-jua">${item.ai_reasoning}</div>
                         </div>
                     `).join('');
                 });
@@ -311,11 +310,11 @@
                     if (!data || data.length === 0) return;
                     tbody.innerHTML = data.map(item => `
                         <tr>
-                            <td class="py-2 px-3 font-bold text-amber-300 font-jua">${item.rank}위</td>
-                            <td class="py-2 px-3 font-bold text-white font-jua">${item.name}</td>
-                            <td class="py-2 px-3 text-emerald-300 font-jua">${item.archetype}</td>
-                            <td class="py-2 px-3 text-emerald-400 font-mono">+${item.return_pct}%</td>
-                            <td class="py-2 px-3 text-amber-300 font-mono">${item.xp.toLocaleString()} EXP</td>
+                            <td class="py-2 px-3 font-bold text-amber-700 font-jua">${item.rank}위</td>
+                            <td class="py-2 px-3 font-bold text-slate-800 font-jua">${item.name}</td>
+                            <td class="py-2 px-3 text-emerald-800 font-jua">${item.archetype}</td>
+                            <td class="py-2 px-3 text-emerald-600 font-mono">+${item.return_pct}%</td>
+                            <td class="py-2 px-3 text-amber-700 font-mono">${item.xp.toLocaleString()} EXP</td>
                         </tr>
                     `).join('');
                 });
