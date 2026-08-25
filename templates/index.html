@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Fortune City - 포춘시티 가치 투자 도시 게임</title>
+    <title>같이투자 (Gachi Tuza) - 소셜 트레이딩 게임 플랫폼</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React 18 & ReactDOM -->
@@ -17,52 +17,16 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@700;800;900&family=Pretendard:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; background-color: #e0f2fe; color: #0f172a; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #0f172a; }
         .font-jua { font-family: 'Jua', sans-serif; }
-        .font-nunito { font-family: 'Nunito', sans-serif; }
-
-        /* Official Fortune City Soft Sky & Grass Pastel Aesthetics */
-        .fortune-header {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.25);
-        }
-
-        .city-metropolis-map {
-            background: radial-gradient(circle, #e0f2fe 0%, #bae6fd 60%, #7dd3fc 100%);
-            border: 4px solid #38bdf8;
-            box-shadow: inset 0 0 30px rgba(2, 132, 199, 0.15);
-        }
-
-        .building-card {
-            background: #ffffff;
-            border: 2px solid #bae6fd;
-            box-shadow: 0 8px 20px -4px rgba(2, 132, 199, 0.12);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .building-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 14px 28px -6px rgba(2, 132, 199, 0.2);
-            border-color: #0284c7;
-        }
-
-        .building-pop {
-            animation: fortunePop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes fortunePop {
-            0% { transform: scale(0.4) translateY(30px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .fab-button {
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.9);
-        }
+        .white-card { background: #ffffff; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); }
+        .prompt-shadow { box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.15); }
+        .ticker-badge { background: #e0e7ff; color: #3730a3; font-weight: 700; padding: 2px 8px; border-radius: 8px; }
+        .building-tile { background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%); border: 2px solid #bae6fd; }
     </style>
 </head>
-<body class="min-h-screen pb-28 selection:bg-sky-900 selection:text-white">
+<body class="bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] min-h-screen pb-24 selection:bg-indigo-900 selection:text-white">
 
     <!-- React App Root Container -->
     <div id="root"></div>
@@ -70,168 +34,501 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- Official Fortune City Game Simulation Platform ---
+        // --- Complete Social Trading Platform + Fortune City Gamification ---
         function App() {
-            // Mayor & Fortune City Financial Stats
-            const [mayor, setMayor] = useState({
-                name: '스마트개미 시장님',
+            // User Auth & Trading Profile State
+            const [user, setUser] = useState({
+                isLoggedIn: true,
+                provider: 'kakao',
+                nickname: '스마트개미',
                 avatar: '🎩',
-                cityLevel: 6,
-                population: 1850,
-                gold: 1250000,
-                gems: 340,
-                streak: 7
+                archetype: '💎 기업 실질가치 장기투자자',
+                totalCapitalKrw: 15000000,
+                returnPct: 18.5,
+                xp: 2450,
+                streak: 5
             });
 
-            // 100+ Styles Fortune City Buildings Database
-            const [buildings, setBuildings] = useState([
-                { id: 1, name: '🏢 삼성 주식 타워', symbol: '$삼성전자', type: '주식', level: 3, pnl: 8.5, icon: '🏢', cfo: '🐱 냥이 CFO', cfoStatus: '근무 중', bg: 'bg-sky-50 border-sky-200' },
-                { id: 2, name: '🪙 비트코인 뱅크', symbol: '$BTC', type: '코인', level: 2, pnl: 12.4, icon: '🪙', cfo: '🦊 여우 분석가', cfoStatus: '근무 중', bg: 'bg-amber-50 border-amber-200' },
-                { id: 3, name: '🏰 가치 중앙 시청', symbol: '시티본부', type: '시청', level: 5, pnl: 18.5, icon: '🏰', cfo: '🎩 스마트개미', cfoStatus: '총괄 중', bg: 'bg-emerald-50 border-emerald-200' },
-                { id: 4, name: '⚡ 엔비디아 AI 랩', symbol: '$NVDA', type: '주식', level: 2, pnl: 15.2, icon: '⚡', cfo: '🐶 멍멍 매니저', cfoStatus: '근무 중', bg: 'bg-indigo-50 border-indigo-200' },
-                { id: 5, name: '🌳 수익 공원', symbol: '$TSLA', type: '정원', level: 1, pnl: 4.2, icon: '🌳', cfo: '🐰 토끼 매니저', cfoStatus: '휴식 중', bg: 'bg-green-50 border-green-200' }
-            ]);
+            // Social Trading Group / Squad State
+            const [group, setGroup] = useState({
+                name: '같이투자 1기 챔피언 모임',
+                code: 'GACHI7',
+                membersCount: 8,
+                totalReturnPct: 14.8,
+                targetAmountKrw: 50000000,
+                currentAmountKrw: 37000000
+            });
 
-            // Citizens / CFO Character Roster
-            const [citizens, setCitizens] = useState([
-                { id: 1, name: '🐱 냥이 CFO', job: '🏢 삼성 주식 타워', efficiency: '수익률 +2.5% 보너스', level: 3 },
-                { id: 2, name: '🦊 여우 분석가', job: '🪙 비트코인 뱅크', efficiency: '코인 김프 감지 보너스', level: 2 },
-                { id: 3, name: '🐶 멍멍 매니저', job: '⚡ 엔비디아 AI 랩', efficiency: 'AI 기술주 분석 보너스', level: 2 },
-                { id: 4, name: '🐰 토끼 매니저', job: '미배치', efficiency: '일일 골드 +10,000원 생성', level: 1 }
-            ]);
-
-            const [activeTab, setActiveTab] = useState('city'); // 'city', 'citizens', 'analytics', 'friends'
-            const [constructModalOpen, setConstructModalOpen] = useState(false);
-            const [selectedBuilding, setSelectedBuilding] = useState(null);
-            const [profileModalOpen, setProfileModalOpen] = useState(false);
-
-            // Natural Language Construction Input
+            // Assets & Trades Database
+            const [selectedAsset, setSelectedAsset] = useState('📈 주식');
+            const [sentiment, setSentiment] = useState('BULLISH');
             const [promptText, setPromptText] = useState('');
-            const [selectedCategory, setSelectedCategory] = useState('📈 주식');
 
-            // Handle Record & Construct Fortune City Building
-            const handleConstructBuilding = (e) => {
+            // Fortune City Virtual Buildings
+            const [buildings, setBuildings] = useState([
+                { id: 1, name: '🏢 삼성 주식 타워', symbol: '$삼성전자', level: 3, pnl: 8.5, icon: '🏢' },
+                { id: 2, name: '🪙 비트코인 뱅크', symbol: '$BTC', level: 2, pnl: 12.4, icon: '🪙' },
+                { id: 3, name: '🏰 가치 시청 (본부)', symbol: '시청', level: 5, pnl: 18.5, icon: '🏰' },
+                { id: 4, name: '⚡ 솔라나 센터', symbol: '$SOL', level: 1, pnl: -4.2, icon: '⚡' }
+            ]);
+
+            // Real Social Trading Feed (StockTwits & eToro Style)
+            const [feed, setFeed] = useState([
+                {
+                    id: 101,
+                    author: '스마트개미 (모임장)',
+                    providerBadge: '카카오 1초 인증',
+                    asset_type: '📈 주식',
+                    symbol: '$삼성전자',
+                    side: 'BUY',
+                    sentiment: 'BULLISH',
+                    amount_krw: 1000000,
+                    price: 72000,
+                    pnl_rate: 8.5,
+                    strategy: '💎 실적 개선 펀더멘털 저점 매수',
+                    ai_reasoning: '영업이익 반등 기대감 및 외국인 순매수 지속 수급 분석 완료.',
+                    buildingConstructed: '🏢 삼성 주식 타워 Lv.3',
+                    likes: 14,
+                    commentsCount: 3,
+                    copiedCount: 5,
+                    time: '10분 전'
+                },
+                {
+                    id: 102,
+                    author: '박비트 (가치투자가)',
+                    providerBadge: '네이버 1초 인증',
+                    asset_type: '🪙 코인',
+                    symbol: '$BTC',
+                    side: 'BUY',
+                    sentiment: 'BULLISH',
+                    amount_krw: 500000,
+                    price: 135000000,
+                    pnl_rate: 12.4,
+                    strategy: '⚡ 김프 0.04% 스캘핑 차익',
+                    ai_reasoning: '업비트 프리미엄 2.1% 회복 및 현물 ETF 유입세 확인.',
+                    buildingConstructed: '🪙 비트코인 뱅크 Lv.2',
+                    likes: 9,
+                    commentsCount: 1,
+                    copiedCount: 2,
+                    time: '25분 전'
+                },
+                {
+                    id: 103,
+                    author: '최솔라 (차익전문가)',
+                    providerBadge: '구글 1초 인증',
+                    asset_type: '🪙 코인',
+                    symbol: '$SOL',
+                    side: 'SELL',
+                    sentiment: 'BEARISH',
+                    amount_krw: 300000,
+                    price: 240000,
+                    pnl_rate: -4.2,
+                    strategy: '🛡️ 단기 고점 익절 및 위험 방어',
+                    ai_reasoning: '주요 저항선 도달에 따른 일부 차익 실현 추천.',
+                    buildingConstructed: '⚡ 솔라나 센터 Lv.1',
+                    likes: 21,
+                    commentsCount: 5,
+                    copiedCount: 8,
+                    time: '1시간 전'
+                }
+            ]);
+
+            // Real Social Trading Leaderboard (eToro Style Verified PnL %)
+            const [rankings, setRankings] = useState([
+                { rank: 1, name: '스마트개미', provider: '카카오', archetype: '💎 기업 실질가치 장기투자자', return_pct: 18.5, capital_krw: 15000000, xp: 2450, streak: 5 },
+                { rank: 2, name: '박비트', provider: '네이버', archetype: '🛡️ 위험 방어 수호자', return_pct: 12.4, capital_krw: 8500000, xp: 1980, streak: 3 },
+                { rank: 3, name: '최솔라', provider: '구글', archetype: '⚡ 가격차이 차익 투자자', return_pct: 9.6, capital_krw: 5200000, xp: 1620, streak: 7 }
+            ]);
+
+            const [activeTab, setActiveTab] = useState('feed'); // 'feed', 'ranking', 'city'
+            const [loginModalOpen, setLoginModalOpen] = useState(false);
+            const [createGroupOpen, setCreateGroupOpen] = useState(false);
+            const [joinGroupOpen, setJoinGroupOpen] = useState(false);
+            const [journalFormOpen, setJournalFormOpen] = useState(false);
+
+            // Detailed Trade Form Inputs
+            const [manualSymbol, setManualSymbol] = useState('삼성전자');
+            const [manualSide, setManualSide] = useState('BUY');
+            const [manualAmount, setManualAmount] = useState('1000000');
+            const [manualPrice, setManualPrice] = useState('72000');
+            const [manualPnl, setManualPnl] = useState('8.5');
+            const [manualStrategy, setManualStrategy] = useState('💎 기업 실질가치 장기분석');
+
+            // Modals Form Inputs
+            const [groupNameInput, setGroupNameInput] = useState('');
+            const [joinCodeInput, setJoinCodeInput] = useState('');
+
+            // Social Auth Login Handler
+            const handleSocialLogin = (providerName) => {
+                setUser({
+                    isLoggedIn: true,
+                    provider: providerName,
+                    nickname: `${providerName.toUpperCase()} 트레이더`,
+                    avatar: providerName === 'kakao' ? '🟡' : providerName === 'naver' ? '🟢' : '🔵',
+                    archetype: '💎 기업 실질가치 장기투자자',
+                    totalCapitalKrw: 10000000,
+                    returnPct: 15.0,
+                    xp: 1500,
+                    streak: 1
+                });
+                setLoginModalOpen(false);
+                alert(`🎉 ${providerName.toUpperCase()} 1초 소셜 로그인 성공! 계정이 연동되었습니다.`);
+            };
+
+            // Zero UI Prompt Trading Submission
+            const handleSendPrompt = (e) => {
                 e.preventDefault();
                 if (!promptText.trim()) return;
 
                 const text = promptText.trim();
+                const isBuy = text.includes('매수') || text.includes('샀') || sentiment === 'BULLISH';
+                const side = isBuy ? 'BUY' : 'SELL';
                 const detectedSymbol = text.includes('삼성') ? '$삼성전자' : text.includes('비트') ? '$BTC' : text.includes('솔라') ? '$SOL' : '$NVDA';
-                const buildingName = detectedSymbol === '$삼성전자' ? '🏢 삼성 주식 타워' : detectedSymbol === '$BTC' ? '🪙 비트코인 뱅크' : '⚡ 엔비디아 AI 랩';
 
-                const newBuilding = {
+                const newXp = user.xp + 150;
+                const newStreak = user.streak + 1;
+                setUser(prev => ({ ...prev, xp: newXp, streak: newStreak }));
+
+                const buildingName = detectedSymbol === '$삼성전자' ? '🏢 삼성 주식 타워' : detectedSymbol === '$BTC' ? '🪙 비트코인 뱅크' : '⚡ 엔비디아 센터';
+                
+                // Add building to Fortune City
+                setBuildings(prev => [{ id: Date.now(), name: `${buildingName} Lv.1`, symbol: detectedSymbol, level: 1, pnl: 6.8, icon: '🏢' }, ...prev]);
+
+                // Add to Social Feed
+                const newFeedItem = {
                     id: Date.now(),
-                    name: `${buildingName} Lv.1`,
+                    author: `${user.nickname}`,
+                    providerBadge: `${user.provider.toUpperCase()} 소셜 인증`,
+                    asset_type: selectedAsset,
                     symbol: detectedSymbol,
-                    type: selectedCategory === '📈 주식' ? '주식' : '코인',
-                    level: 1,
-                    pnl: 7.2,
-                    icon: selectedCategory === '📈 주식' ? '🏢' : '🪙',
-                    cfo: '🐰 토끼 매니저',
-                    cfoStatus: '근무 중',
-                    bg: selectedCategory === '📈 주식' ? 'bg-sky-50 border-sky-200' : 'bg-amber-50 border-amber-200'
+                    side: side,
+                    sentiment: sentiment,
+                    amount_krw: 1000000,
+                    price: 72000,
+                    pnl_rate: 6.8,
+                    strategy: '💎 대화형 프롬프트 실시간 등록',
+                    ai_reasoning: `자연어 '${text}' 감지 및 AI 시세 수급 분석 완료.`,
+                    buildingConstructed: `${buildingName} Lv.1`,
+                    likes: 1,
+                    commentsCount: 0,
+                    copiedCount: 0,
+                    time: '방금 전'
                 };
 
-                setBuildings(prev => [newBuilding, ...prev]);
-                setMayor(prev => ({
-                    ...prev,
-                    population: prev.population + 120,
-                    gold: prev.gold + 100000,
-                    streak: prev.streak + 1
-                }));
-
+                setFeed(prev => [newFeedItem, ...prev]);
                 setPromptText('');
-                setConstructModalOpen(false);
+                alert(`🎉 [${selectedAsset}] ${detectedSymbol} ${side} 기록이 소셜 트레이딩 피드에 등록되었습니다! (+150 EXP)`);
             };
 
-            const handleMergeBuildings = (bId) => {
-                setBuildings(prev => prev.map(b => b.id === bId ? { ...b, level: b.level + 1, name: b.name.replace(/Lv\.\d+/, `Lv.${b.level + 1}`) } : b));
-                setSelectedBuilding(null);
-                alert('🎉 건물 합성 성공! 건물 레벨이 증축되었습니다!');
+            // 1-Click Copy Trading Handler (eToro Style)
+            const handleCopyTrade = (item) => {
+                setUser(prev => ({ ...prev, xp: prev.xp + 100 }));
+                setFeed(prev => prev.map(f => f.id === item.id ? { ...f, copiedCount: f.copiedCount + 1 } : f));
+                alert(`🚀 ${item.author}님의 [${item.symbol} ${item.strategy}] 매매 전략을 1클릭 카피 트레이딩했습니다! (+100 EXP)`);
+            };
+
+            const handleCreateGroup = (e) => {
+                e.preventDefault();
+                if (!groupNameInput.trim()) return;
+                const randomCode = 'GACHI' + Math.floor(100 + Math.random() * 900);
+                setGroup({
+                    name: groupNameInput.trim(),
+                    code: randomCode,
+                    membersCount: 1,
+                    totalReturnPct: 0.0,
+                    targetAmountKrw: 50000000,
+                    currentAmountKrw: 10000000
+                });
+                setGroupNameInput('');
+                setCreateGroupOpen(false);
+                alert(`🎉 새로운 소셜 트레이딩 모임 '${groupNameInput.trim()}'이 생성되었습니다! (초대코드: ${randomCode})`);
+            };
+
+            const handleJoinGroup = (e) => {
+                e.preventDefault();
+                if (!joinCodeInput.trim()) return;
+                setGroup(prev => ({
+                    ...prev,
+                    code: joinCodeInput.trim().toUpperCase(),
+                    membersCount: prev.membersCount + 1
+                }));
+                setJoinCodeInput('');
+                setJoinGroupOpen(false);
+                alert(`🎉 초대코드 '${joinCodeInput.toUpperCase()}' 모임 가입 성공!`);
+            };
+
+            const handleManualJournalSubmit = (e) => {
+                e.preventDefault();
+                const newXp = user.xp + 200;
+                setUser(prev => ({ ...prev, xp: newXp }));
+
+                const buildingName = `🏢 ${manualSymbol} 타워 Lv.1`;
+                setBuildings(prev => [{ id: Date.now(), name: buildingName, symbol: `$${manualSymbol}`, level: 1, pnl: Number(manualPnl), icon: '🏢' }, ...prev]);
+
+                const newFeedItem = {
+                    id: Date.now(),
+                    author: user.nickname,
+                    providerBadge: `${user.provider.toUpperCase()} 소셜 인증`,
+                    asset_type: selectedAsset,
+                    symbol: `$${manualSymbol}`,
+                    side: manualSide,
+                    sentiment: manualSide === 'BUY' ? 'BULLISH' : 'BEARISH',
+                    amount_krw: Number(manualAmount),
+                    price: Number(manualPrice),
+                    pnl_rate: Number(manualPnl),
+                    strategy: manualStrategy,
+                    ai_reasoning: `상세 매매 일지 기록 완료 (+200 EXP).`,
+                    buildingConstructed: buildingName,
+                    likes: 0,
+                    commentsCount: 0,
+                    copiedCount: 0,
+                    time: '방금 전'
+                };
+                setFeed(prev => [newFeedItem, ...prev]);
+                setJournalFormOpen(false);
+                alert(`🎉 상세 트레이딩 일지가 등록되었습니다! (+200 EXP)`);
+            };
+
+            const toggleLike = (id) => {
+                setFeed(prev => prev.map(item => item.id === id ? { ...item, likes: item.likes + 1 } : item));
             };
 
             return (
                 <div className="min-h-screen">
-                    {/* Top Fortune City Dashboard Navigation */}
-                    <header className="fortune-header text-white px-4 md:px-8 py-3.5 sticky top-0 z-50 font-jua flex justify-between items-center">
+                    {/* Top Clean Deep Navy Header with 1-Second Social Auth */}
+                    <header className="bg-slate-900 text-white px-4 md:px-8 py-3.5 sticky top-0 z-50 shadow-md border-b border-slate-800 flex justify-between items-center font-jua">
                         <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex justify-center items-center font-bold text-xl shadow-inner">
-                                🏛️
+                            <div className="bg-gradient-to-tr from-indigo-500 to-sky-400 p-2 rounded-2xl shadow-sm">
+                                <i className="fa-solid fa-chart-line text-white text-base"></i>
                             </div>
                             <div>
-                                <span className="font-black text-xl tracking-tight">Fortune City <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">포춘시티</span></span>
+                                <span className="font-black text-xl tracking-tight text-white">같이투자 <span className="text-xs text-sky-300 font-normal">소셜 트레이딩</span></span>
                             </div>
                         </div>
 
-                        {/* City Financial Stats Meters */}
-                        <div className="flex items-center gap-2.5 text-xs">
-                            <div className="flex items-center gap-1 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-amber-300 font-mono">
-                                <span>🪙</span>
-                                <span className="font-bold">{mayor.gold.toLocaleString()}원</span>
-                            </div>
-                            <div className="hidden sm:flex items-center gap-1 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-sky-200 font-mono">
-                                <span>💎</span>
-                                <span className="font-bold">{mayor.gems}</span>
-                            </div>
-                            <div className="flex items-center gap-1 bg-amber-400 text-slate-900 px-3 py-1.5 rounded-xl font-bold">
-                                <span>🔥 {mayor.streak}일</span>
-                            </div>
-                            <button onClick={() => setProfileModalOpen(true)} className="bg-white text-slate-900 font-bold px-3 py-1.5 rounded-xl shadow-md hover:bg-slate-100 transition flex items-center gap-1">
-                                <span className="text-sm">{mayor.avatar}</span>
-                                <span className="hidden md:inline">{mayor.name}</span>
-                            </button>
+                        {/* Social Auth Login Controls */}
+                        <div className="flex items-center gap-2 text-xs">
+                            {user.isLoggedIn ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="hidden sm:flex items-center gap-1.5 bg-indigo-950 text-sky-200 px-3 py-1.5 rounded-xl border border-indigo-700/60 font-mono">
+                                        <span className="text-emerald-400 font-bold">+{user.returnPct}% PnL</span>
+                                        <span>·</span>
+                                        <span className="text-amber-400">{user.xp.toLocaleString()} EXP</span>
+                                    </div>
+                                    <button onClick={() => setLoginModalOpen(true)} className="bg-slate-800 hover:bg-slate-700 text-white font-bold px-3.5 py-1.5 rounded-xl border border-slate-700 transition flex items-center gap-1.5">
+                                        <span>{user.avatar}</span>
+                                        <span>{user.nickname}</span>
+                                        <span className="bg-emerald-600 text-white text-[10px] px-1.5 py-0.5 rounded">{user.provider.toUpperCase()}</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-1.5">
+                                    <button onClick={() => handleSocialLogin('kakao')} className="bg-[#FEE500] text-[#191919] font-bold px-3 py-1.5 rounded-xl shadow-sm">카카오 1초 로그인</button>
+                                    <button onClick={() => handleSocialLogin('naver')} className="bg-[#03C75A] text-white font-bold px-3 py-1.5 rounded-xl shadow-sm">네이버 1초 로그인</button>
+                                    <button onClick={() => handleSocialLogin('google')} className="bg-white text-slate-900 font-bold px-3 py-1.5 rounded-xl border border-slate-200 shadow-sm">구글 1초 로그인</button>
+                                </div>
+                            )}
                         </div>
                     </header>
 
-                    {/* Main Content Area */}
-                    <main className="max-w-3xl mx-auto px-4 pt-5 space-y-5 font-jua">
+                    {/* Main Social Trading Platform Container */}
+                    <main className="max-w-2xl mx-auto px-4 pt-6 pb-12 space-y-6 font-jua">
 
-                        {/* Top View Selector Tabs */}
-                        <div className="flex justify-center text-sm">
-                            <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-sky-200 flex gap-2">
-                                <button onClick={() => setActiveTab('city')} className={activeTab === 'city' ? 'bg-sky-600 text-white px-4 py-2 rounded-xl font-bold transition shadow-sm' : 'text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-xl font-bold transition'}>
-                                    🏙️ 도시 전경 ({buildings.length})
+                        {/* Social Trading Group & Squad Banner */}
+                        <div className="white-card p-5 rounded-3xl space-y-3 border border-slate-200">
+                            <div className="flex justify-between items-center text-xs">
+                                <div className="flex items-center gap-2">
+                                    <span className="bg-slate-900 text-white px-3 py-1 rounded-full font-bold">👥 {group.name}</span>
+                                    <span className="bg-indigo-50 text-indigo-900 px-3 py-1 rounded-full font-bold border border-indigo-200">초대코드: {group.code}</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs">
+                                    <button onClick={() => setCreateGroupOpen(true)} className="bg-indigo-950 hover:bg-indigo-900 text-indigo-200 px-3 py-1 rounded-xl font-bold border border-indigo-700/60 transition">
+                                        + 모임 만들기
+                                    </button>
+                                    <button onClick={() => setJoinGroupOpen(true)} className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl font-bold border border-slate-700 transition">
+                                        🔑 코드 참여
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-end pt-1">
+                                <div className="space-y-1">
+                                    <h1 className="text-xl font-black text-slate-900">주식 & 코인 소셜 트레이딩 게임 플랫폼</h1>
+                                    <p className="text-xs text-slate-500">모임원들과 함께 매매 일지를 공유하고 실전 손익률(% PnL)을 실시간 검증하세요.</p>
+                                </div>
+                                <div className="text-right">
+                                    <span className="text-[10px] text-slate-400 block font-bold">모임 평균 손익률</span>
+                                    <span className="text-xl font-black text-emerald-600 font-mono">+{group.totalReturnPct}% PnL</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ZERO UI Prompt-Centric Trading Bar */}
+                        <div className="white-card p-4 rounded-3xl prompt-shadow border-2 border-indigo-200 space-y-3">
+                            <div className="flex items-center justify-between text-xs border-b border-slate-100 pb-2.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-slate-400 font-bold">🎯 자산군:</span>
+                                    <button type="button" onClick={() => setSelectedAsset('📈 주식')} className={selectedAsset === '📈 주식' ? 'bg-slate-900 text-white px-3 py-1 rounded-xl font-bold transition' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1 rounded-xl font-bold transition'}>
+                                        📈 주식 (국장/해외)
+                                    </button>
+                                    <button type="button" onClick={() => setSelectedAsset('🪙 코인')} className={selectedAsset === '🪙 코인' ? 'bg-slate-900 text-white px-3 py-1 rounded-xl font-bold transition' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1 rounded-xl font-bold transition'}>
+                                        🪙 코인 (가상자산)
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button type="button" onClick={() => setSentiment('BULLISH')} className={sentiment === 'BULLISH' ? 'bg-emerald-600 text-white px-2.5 py-1 rounded-xl font-bold transition text-[11px]' : 'bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl font-bold transition text-[11px]'}>
+                                        🐂 매수 (Bull)
+                                    </button>
+                                    <button type="button" onClick={() => setSentiment('BEARISH')} className={sentiment === 'BEARISH' ? 'bg-rose-600 text-white px-2.5 py-1 rounded-xl font-bold transition text-[11px]' : 'bg-slate-100 text-slate-600 px-2.5 py-1 rounded-xl font-bold transition text-[11px]'}>
+                                        🐻 매도 (Bear)
+                                    </button>
+                                    <button onClick={() => setJournalFormOpen(true)} className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1 rounded-xl font-bold transition text-[11px]">
+                                        ✏️ 상세 매매 일지
+                                    </button>
+                                </div>
+                            </div>
+
+                            <form onSubmit={handleSendPrompt} className="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    value={promptText}
+                                    onChange={(e) => setPromptText(e.target.value)}
+                                    placeholder="예: '$삼성전자 100만원 매수' 또는 '$BTC 50만원 매수'..."
+                                    required
+                                    className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm px-5 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-200"
+                                />
+                                <button type="submit" className="bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 hover:from-slate-800 hover:to-indigo-800 text-white font-black px-6 py-3.5 rounded-2xl transition text-sm flex items-center gap-1.5 shrink-0 shadow-md active:scale-95">
+                                    <span>기록</span>
+                                    <i className="fa-solid fa-paper-plane text-xs"></i>
                                 </button>
-                                <button onClick={() => setActiveTab('citizens')} className={activeTab === 'citizens' ? 'bg-sky-600 text-white px-4 py-2 rounded-xl font-bold transition shadow-sm' : 'text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-xl font-bold transition'}>
-                                    👥 CFO 시민 관리 ({citizens.length})
+                            </form>
+
+                            <div className="flex flex-wrap gap-2 px-1 text-xs">
+                                <span className="text-slate-400 text-[11px] flex items-center">💡 빠른 매매 입력:</span>
+                                <button type="button" onClick={() => setPromptText('$삼성전자 100만원 매수했어')} className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1 rounded-xl border border-slate-200 text-[11px] transition">
+                                    📈 "$삼성전자 100만원 매수했어"
                                 </button>
-                                <button onClick={() => setActiveTab('friends')} className={activeTab === 'friends' ? 'bg-sky-600 text-white px-4 py-2 rounded-xl font-bold transition shadow-sm' : 'text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-xl font-bold transition'}>
-                                    🏆 친구 도시 랭킹
+                                <button type="button" onClick={() => setPromptText('$BTC 50만원 매수했어')} className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1 rounded-xl border border-slate-200 text-[11px] transition">
+                                    🪙 "$BTC 50만원 매수했어"
                                 </button>
                             </div>
                         </div>
 
-                        {/* TAB 1: Authentic Fortune City Metropolis Building Grid */}
-                        {activeTab === 'city' && (
-                            <div className="city-metropolis-map p-6 rounded-3xl space-y-4">
-                                <div className="flex justify-between items-center text-xs">
-                                    <div className="flex items-center gap-2">
-                                        <span className="bg-slate-900 text-sky-300 px-3.5 py-1 rounded-full font-bold">🌳 {mayor.name}의 가치 대도시</span>
-                                        <span className="text-sky-900 font-bold">시티 레벨: Lv.{mayor.cityLevel}</span>
-                                    </div>
-                                    <span className="text-sky-900 font-bold">시민 수: {mayor.population.toLocaleString()}명</span>
+                        {/* Social Feed & Leaderboard Views */}
+                        <div className="white-card p-5 rounded-3xl space-y-4 border border-slate-200">
+                            <div className="flex justify-between items-center border-b border-slate-100 pb-3 text-xs font-bold">
+                                <div className="flex items-center gap-4">
+                                    <button onClick={() => setActiveTab('feed')} className={activeTab === 'feed' ? 'text-indigo-900 border-b-2 border-indigo-900 pb-1.5' : 'text-slate-400 hover:text-slate-700 pb-1.5'}>
+                                        📖 실시간 소셜 트레이딩 피드 ({feed.length})
+                                    </button>
+                                    <button onClick={() => setActiveTab('ranking')} className={activeTab === 'ranking' ? 'text-indigo-900 border-b-2 border-indigo-900 pb-1.5' : 'text-slate-400 hover:text-slate-700 pb-1.5'}>
+                                        🏆 트레이딩 리더보드 랭킹
+                                    </button>
+                                    <button onClick={() => setActiveTab('city')} className={activeTab === 'city' ? 'text-indigo-900 border-b-2 border-indigo-900 pb-1.5' : 'text-slate-400 hover:text-slate-700 pb-1.5'}>
+                                        🏙️ 내 포춘시티 건물 ({buildings.length})
+                                    </button>
                                 </div>
+                            </div>
 
-                                {/* Building Cards Grid */}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+                            {/* TAB 1: StockTwits + eToro Social Feed */}
+                            {activeTab === 'feed' && (
+                                <div className="space-y-4 text-xs">
+                                    {feed.map(item => (
+                                        <div key={item.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5">
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="bg-slate-900 text-white text-[10px] px-2.5 py-0.5 rounded-full font-bold">{item.providerBadge}</span>
+                                                    <span className="font-bold text-slate-900 text-sm">{item.author}</span>
+                                                    <span className={item.sentiment === 'BULLISH' ? 'bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-md text-[10px]' : 'bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-md text-[10px]'}>
+                                                        {item.sentiment === 'BULLISH' ? '🐂 BULL' : '🐻 BEAR'}
+                                                    </span>
+                                                </div>
+                                                <span className="text-slate-400 text-[10px] font-mono">{item.time}</span>
+                                            </div>
+
+                                            <div className="flex justify-between items-center">
+                                                <div className="text-slate-900 font-bold text-sm">
+                                                    <span className="ticker-badge mr-2">{item.symbol}</span>
+                                                    <span>{item.amount_krw.toLocaleString()}원 {item.side === 'BUY' ? '매수' : '매도'} ({item.price.toLocaleString()}원)</span>
+                                                </div>
+                                                <div className="text-emerald-600 font-black font-mono text-sm bg-emerald-50 px-3 py-1 rounded-xl border border-emerald-200">
+                                                    +{item.pnl_rate}% PnL
+                                                </div>
+                                            </div>
+
+                                            <div className="text-slate-700 text-xs bg-white p-3 rounded-xl border border-slate-200/80 space-y-1">
+                                                <div>💡 <strong>투자 전략:</strong> {item.strategy}</div>
+                                                <div className="text-slate-500 text-[11px]">{item.ai_reasoning}</div>
+                                                <div className="text-indigo-900 text-[11px] font-bold">🏙️ 건축 건물: {item.buildingConstructed}</div>
+                                            </div>
+
+                                            {/* Social Action Buttons */}
+                                            <div className="flex items-center justify-between pt-1 text-slate-600">
+                                                <button onClick={() => toggleLike(item.id)} className="flex items-center gap-1 hover:text-indigo-900 transition">
+                                                    <i className="fa-regular fa-thumbs-up"></i>
+                                                    <span>좋아요 {item.likes}</span>
+                                                </button>
+                                                <button className="flex items-center gap-1 hover:text-indigo-900 transition">
+                                                    <i className="fa-regular fa-comment"></i>
+                                                    <span>댓글 {item.commentsCount}</span>
+                                                </button>
+                                                <button onClick={() => handleCopyTrade(item)} className="bg-gradient-to-r from-indigo-900 to-slate-900 text-white px-3 py-1 rounded-xl font-bold hover:brightness-125 transition flex items-center gap-1 shadow-sm">
+                                                    <i className="fa-solid fa-retweet text-sky-400"></i>
+                                                    <span>1클릭 카피 트레이딩 ({item.copiedCount})</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* TAB 2: Verified PnL Leaderboard */}
+                            {activeTab === 'ranking' && (
+                                <div className="space-y-3 text-xs">
+                                    <table className="w-full text-left">
+                                        <thead className="bg-slate-100 text-slate-800 border-b border-slate-200">
+                                            <tr>
+                                                <th className="py-2.5 px-3">순위</th>
+                                                <th className="py-2.5 px-3">트레이더</th>
+                                                <th className="py-2.5 px-3">투자 스타일</th>
+                                                <th className="py-2.5 px-3">실전 손익률</th>
+                                                <th className="py-2.5 px-3">경험치</th>
+                                                <th className="py-2.5 px-3">연속 작성</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 font-mono">
+                                            {rankings.map(item => (
+                                                <tr key={item.rank} className="hover:bg-slate-50">
+                                                    <td className="py-2.5 px-3 font-bold text-amber-700 font-jua">{item.rank}위</td>
+                                                    <td className="py-2.5 px-3 font-bold text-slate-900 font-jua">
+                                                        <span>{item.name} </span>
+                                                        <span className="text-[10px] text-slate-400 font-normal">({item.provider})</span>
+                                                    </td>
+                                                    <td className="py-2.5 px-3 text-indigo-900 font-jua">{item.archetype}</td>
+                                                    <td className="py-2.5 px-3 text-emerald-600 font-mono font-bold">+{item.return_pct}%</td>
+                                                    <td className="py-2.5 px-3 text-amber-700 font-mono">{item.xp.toLocaleString()} EXP</td>
+                                                    <td className="py-2.5 px-3 text-rose-600 font-bold font-jua">🔥 {item.streak}일</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+
+                            {/* TAB 3: Fortune City Buildings Grid */}
+                            {activeTab === 'city' && (
+                                <div className="grid grid-cols-2 gap-3 text-xs">
                                     {buildings.map(b => (
-                                        <div
-                                            key={b.id}
-                                            onClick={() => setSelectedBuilding(b)}
-                                            className={`building-card ${b.bg} p-4 rounded-3xl cursor-pointer building-pop space-y-2 relative overflow-hidden`}
-                                        >
-                                            <div className="flex justify-between items-start">
-                                                <span className="text-3xl filter drop-shadow-md">{b.icon}</span>
+                                        <div key={b.id} className="building-tile p-4 rounded-2xl space-y-2 relative overflow-hidden">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-2xl">{b.icon}</span>
                                                 <span className="bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Lv.{b.level}</span>
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-slate-900 text-sm">{b.name}</h3>
-                                                <span className="text-sky-800 text-[11px] font-bold">{b.symbol} · {b.type}</span>
+                                                <h4 className="font-bold text-slate-900 text-sm">{b.name}</h4>
+                                                <span className="text-sky-800 text-[11px] font-bold">{b.symbol}</span>
                                             </div>
-                                            <div className="text-[11px] text-slate-600 bg-white/70 px-2 py-1 rounded-lg border border-slate-200">
-                                                <span>CFO: </span>
-                                                <span className="font-bold text-slate-900">{b.cfo}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center pt-1 border-t border-slate-200 text-xs">
+                                            <div className="flex justify-between items-center pt-1 border-t border-slate-200/60">
                                                 <span className="text-slate-400 text-[10px]">수익률</span>
                                                 <span className={b.pnl >= 0 ? 'text-emerald-600 font-black font-mono' : 'text-rose-600 font-black font-mono'}>
                                                     {b.pnl >= 0 ? `+${b.pnl}%` : `${b.pnl}%`}
@@ -239,190 +536,125 @@
                                             </div>
                                         </div>
                                     ))}
-
-                                    {/* Empty Tile to Construct */}
-                                    <div
-                                        onClick={() => setConstructModalOpen(true)}
-                                        className="building-card bg-white/50 border-2 border-dashed border-sky-400 p-4 rounded-3xl cursor-pointer flex flex-col justify-center items-center text-center space-y-1 py-8 hover:bg-white transition"
-                                    >
-                                        <div className="w-10 h-10 rounded-full bg-sky-500 text-white flex justify-center items-center text-lg font-bold shadow-md">
-                                            <i className="fa-solid fa-plus"></i>
-                                        </div>
-                                        <span className="text-xs font-bold text-sky-900">새 건물 건축</span>
-                                    </div>
                                 </div>
-                            </div>
-                        )}
-
-                        {/* TAB 2: Citizens & CFO Job Assignment Roster */}
-                        {activeTab === 'citizens' && (
-                            <div className="bg-white p-5 rounded-3xl border border-slate-200 space-y-4 text-xs">
-                                <h3 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2">👥 CFO 시민 채용 & 건물 배치 관리</h3>
-                                <div className="space-y-3">
-                                    {citizens.map(c => (
-                                        <div key={c.id} className="p-3.5 bg-sky-50 rounded-2xl border border-sky-200 flex justify-between items-center">
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-2xl">{c.name.split(' ')[0]}</span>
-                                                <div>
-                                                    <span className="font-bold text-slate-900 text-sm block">{c.name}</span>
-                                                    <span className="text-sky-800 text-[11px]">배치 건물: {c.job}</span>
-                                                </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <span className="bg-emerald-600 text-white px-2.5 py-1 rounded-full font-bold text-[10px]">{c.efficiency}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* TAB 3: Friends Metropolis Ranking */}
-                        {activeTab === 'friends' && (
-                            <div className="bg-white p-5 rounded-3xl border border-slate-200 space-y-3 text-xs">
-                                <h3 className="font-bold text-slate-900 text-sm border-b border-slate-100 pb-2">🏆 친구 포춘 대도시 랭킹</h3>
-                                <div className="space-y-3">
-                                    <div className="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-black text-amber-700 text-base">1위</span>
-                                            <span className="text-2xl">🎩</span>
-                                            <div>
-                                                <span className="font-bold text-slate-900 text-sm">{mayor.name}</span>
-                                                <span className="text-slate-500 text-[11px] block">🏢 건물 {buildings.length}개 · 👥 인구 {mayor.population.toLocaleString()}명</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-emerald-600 font-mono font-black text-sm">+18.5%</span>
-                                    </div>
-                                    <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex justify-between items-center">
-                                        <div className="flex items-center gap-3">
-                                            <span className="font-black text-slate-500 text-base">2위</span>
-                                            <span className="text-2xl">🐱</span>
-                                            <div>
-                                                <span className="font-bold text-slate-900 text-sm">박비트 시장님</span>
-                                                <span className="text-slate-500 text-[11px] block">🪙 건물 4개 · 👥 인구 1,200명</span>
-                                            </div>
-                                        </div>
-                                        <span className="text-emerald-600 font-mono font-black text-sm">+12.4%</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </main>
 
-                    {/* Floating Bottom Action Bar (Official Fortune City FAB) */}
-                    <div className="fixed bottom-5 left-0 right-0 z-40 flex justify-center items-center px-4 font-jua">
-                        <div className="bg-slate-900/95 backdrop-blur-md text-white px-6 py-3 rounded-full shadow-2xl border border-slate-800 flex items-center gap-6">
-                            <button onClick={() => setActiveTab('city')} className={activeTab === 'city' ? 'text-sky-300 font-bold flex flex-col items-center text-xs' : 'text-slate-400 hover:text-white flex flex-col items-center text-xs'}>
-                                <i className="fa-solid fa-city text-base"></i>
-                                <span className="mt-0.5">도시 전경</span>
-                            </button>
-
-                            {/* Main Construction FAB Button */}
-                            <button
-                                onClick={() => setConstructModalOpen(true)}
-                                className="fab-button text-white font-black px-6 py-3 rounded-2xl text-sm flex items-center gap-2 hover:scale-105 active:scale-95 transition"
-                            >
-                                <i className="fa-solid fa-hammer text-base"></i>
-                                <span>기록하고 건축하기</span>
-                            </button>
-
-                            <button onClick={() => setActiveTab('citizens')} className={activeTab === 'citizens' ? 'text-sky-300 font-bold flex flex-col items-center text-xs' : 'text-slate-400 hover:text-white flex flex-col items-center text-xs'}>
-                                <i className="fa-solid fa-users text-base"></i>
-                                <span className="mt-0.5">CFO 시민</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Construction Modal */}
-                    {constructModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setConstructModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                    {/* 1초 소셜 로그인 모달 */}
+                    {loginModalOpen && (
+                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 text-center relative border border-slate-200">
+                                <button onClick={() => setLoginModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <div>
-                                    <h3 className="text-lg font-black text-slate-900">🔨 기록하고 건물 건축하기</h3>
-                                    <p className="text-xs text-slate-500">매매를 작성하면 포춘시티 대도시 타일에 건물이 건축됩니다.</p>
+                                <div className="space-y-1">
+                                    <h3 className="text-lg font-black text-slate-900">1초 간편 소셜 로그인</h3>
+                                    <p className="text-xs text-slate-500">소셜 계정을 연동하여 손익률과 트레이딩 피드를 보존하세요</p>
                                 </div>
-
-                                <div className="flex gap-2 text-xs">
-                                    <button type="button" onClick={() => setSelectedCategory('📈 주식')} className={selectedCategory === '📈 주식' ? 'bg-sky-600 text-white px-3 py-1.5 rounded-xl font-bold' : 'bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold'}>
-                                        📈 주식 타워
-                                    </button>
-                                    <button type="button" onClick={() => setSelectedCategory('🪙 코인')} className={selectedCategory === '🪙 코인' ? 'bg-sky-600 text-white px-3 py-1.5 rounded-xl font-bold' : 'bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl font-bold'}>
-                                        🪙 코인 뱅크
-                                    </button>
+                                <div className="space-y-2.5 pt-2">
+                                    <button onClick={() => handleSocialLogin('kakao')} className="w-full bg-[#FEE500] text-[#191919] font-bold text-xs py-3 rounded-2xl shadow-sm">카카오 1초 로그인</button>
+                                    <button onClick={() => handleSocialLogin('naver')} className="w-full bg-[#03C75A] text-white font-bold text-xs py-3 rounded-2xl shadow-sm">네이버 1초 로그인</button>
+                                    <button onClick={() => handleSocialLogin('google')} className="w-full bg-slate-100 text-slate-900 font-bold text-xs py-3 rounded-2xl border border-slate-200">구글 1초 로그인</button>
                                 </div>
+                            </div>
+                        </div>
+                    )}
 
-                                <form onSubmit={handleConstructBuilding} className="space-y-3">
+                    {/* 모임 생성 모달 */}
+                    {createGroupOpen && (
+                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
+                                <button onClick={() => setCreateGroupOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                                    <i className="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                                <h3 className="text-lg font-black text-slate-900">👥 새로운 트레이딩 모임 생성</h3>
+                                <form onSubmit={handleCreateGroup} className="space-y-3">
+                                    <label className="text-xs text-slate-600 block">모임 이름</label>
                                     <input
                                         type="text"
-                                        value={promptText}
-                                        onChange={(e) => setPromptText(e.target.value)}
-                                        placeholder="예: '$삼성전자 100만원 매수' 또는 '$BTC 50만원 매수'..."
+                                        value={groupNameInput}
+                                        onChange={(e) => setGroupNameInput(e.target.value)}
+                                        placeholder="예: 같이투자 1기 챔피언 모임"
                                         required
-                                        className="w-full bg-slate-50 text-slate-900 placeholder-slate-400 text-sm px-4 py-3.5 rounded-2xl focus:outline-none focus:ring-2 focus:ring-sky-500 border border-slate-200"
+                                        className="w-full bg-slate-50 border border-slate-200 text-sm px-4 py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     />
-
-                                    <div className="flex gap-2 text-xs">
-                                        <button type="button" onClick={() => setPromptText('$삼성전자 100만원 매수했어')} className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-[11px]">
-                                            📈 "$삼성전자 100만원 매수"
-                                        </button>
-                                        <button type="button" onClick={() => setPromptText('$BTC 50만원 매수했어')} className="bg-slate-100 hover:bg-slate-200 text-slate-800 px-3 py-1.5 rounded-xl text-[11px]">
-                                            🪙 "$BTC 50만원 매수"
-                                        </button>
-                                    </div>
-
-                                    <button type="submit" className="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-3.5 rounded-2xl shadow-md text-xs transition">
-                                        도시 타일에 건축 완료하기
+                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold text-xs py-3.5 rounded-2xl shadow-md">
+                                        모임 생성하기
                                     </button>
                                 </form>
                             </div>
                         </div>
                     )}
 
-                    {/* Building Merge / Level Up Inspector Modal */}
-                    {selectedBuilding && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center relative border border-slate-200">
-                                <button onClick={() => setSelectedBuilding(null)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                    {/* 코드 참여 모달 */}
+                    {joinGroupOpen && (
+                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
+                                <button onClick={() => setJoinGroupOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <div className="text-4xl py-2">{selectedBuilding.icon}</div>
-                                <div>
-                                    <h3 className="text-lg font-black text-slate-900">{selectedBuilding.name}</h3>
-                                    <span className="text-xs text-slate-500 font-bold">{selectedBuilding.symbol} · 레벨 Lv.{selectedBuilding.level}</span>
-                                </div>
-                                <div className="p-3 bg-sky-50 text-sky-900 rounded-2xl text-xs font-bold border border-sky-200">
-                                    담당 CFO: <span className="text-slate-900">{selectedBuilding.cfo}</span> ({selectedBuilding.cfoStatus})
-                                </div>
-                                <div className="flex gap-2">
-                                    <button onClick={() => handleMergeBuildings(selectedBuilding.id)} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-2xl text-xs shadow-md">
-                                        ⬆️ 건물 합성 & 증축 (레벨업)
+                                <h3 className="text-lg font-black text-slate-900">🔑 초대코드 입력하여 참여</h3>
+                                <form onSubmit={handleJoinGroup} className="space-y-3">
+                                    <label className="text-xs text-slate-600 block">6자리 초대 코드</label>
+                                    <input
+                                        type="text"
+                                        value={joinCodeInput}
+                                        onChange={(e) => setJoinCodeInput(e.target.value)}
+                                        placeholder="예: GACHI7"
+                                        required
+                                        className="w-full bg-slate-50 border border-slate-200 text-sm px-4 py-3 rounded-2xl uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                    <button type="submit" className="w-full bg-indigo-900 text-white font-bold text-xs py-3.5 rounded-2xl shadow-md">
+                                        모임 가입하기
                                     </button>
-                                    <button onClick={() => setSelectedBuilding(null)} className="w-full bg-slate-900 text-white font-bold py-3 rounded-2xl text-xs">
-                                        닫기
-                                    </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     )}
 
-                    {/* Mayor Profile Modal */}
-                    {profileModalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
-                            <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200">
-                                <button onClick={() => setProfileModalOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
+                    {/* 상세 매매 일지 모달 */}
+                    {journalFormOpen && (
+                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4 font-jua">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 text-left relative border border-slate-200 max-h-[90vh] overflow-y-auto">
+                                <button onClick={() => setJournalFormOpen(false)} className="absolute top-4 right-4 text-slate-400 hover:text-slate-700">
                                     <i className="fa-solid fa-xmark text-lg"></i>
                                 </button>
-                                <h3 className="text-lg font-black text-slate-900">👤 시장님 프로필 설정</h3>
-                                <form onSubmit={(e) => { e.preventDefault(); setProfileModalOpen(false); }} className="space-y-3 text-xs">
+                                <h3 className="text-lg font-black text-slate-900">✏️ 상세 매매 기록 양식</h3>
+                                <form onSubmit={handleManualJournalSubmit} className="space-y-3 text-xs">
                                     <div>
-                                        <label className="text-slate-600 block mb-1 font-bold">시장 닉네임</label>
-                                        <input type="text" value={mayor.name} onChange={(e) => setMayor(prev => ({ ...prev, name: e.target.value }))} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        <label className="text-slate-600 block mb-1">종목명</label>
+                                        <input type="text" value={manualSymbol} onChange={(e) => setManualSymbol(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
                                     </div>
-                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3 rounded-2xl text-xs">
-                                        저장하기
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label className="text-slate-600 block mb-1">구분</label>
+                                            <select value={manualSide} onChange={(e) => setManualSide(e.target.value)} className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl">
+                                                <option value="BUY">매수 (BUY)</option>
+                                                <option value="SELL">매도 (SELL)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-600 block mb-1">손익률 (% PnL)</label>
+                                            <input type="number" step="0.1" value={manualPnl} onChange={(e) => setManualPnl(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label className="text-slate-600 block mb-1">금액 (KRW)</label>
+                                            <input type="number" value={manualAmount} onChange={(e) => setManualAmount(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        </div>
+                                        <div>
+                                            <label className="text-slate-600 block mb-1">체결가 (KRW)</label>
+                                            <input type="number" value={manualPrice} onChange={(e) => setManualPrice(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-slate-600 block mb-1">투자 전략</label>
+                                        <input type="text" value={manualStrategy} onChange={(e) => setManualStrategy(e.target.value)} required className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl" />
+                                    </div>
+                                    <button type="submit" className="w-full bg-slate-900 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md">
+                                        일지 등록 및 +200 EXP 받기
                                     </button>
                                 </form>
                             </div>
