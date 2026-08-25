@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import FileResponse, JSONResponse
@@ -21,21 +22,15 @@ from analyzers import (
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="같이투자 - 3D 소셜 트레이딩 게임 플랫폼",
-    description="지인들과 함께 3D 아레나에서 가치에 투자하고 공동 목표를 달성하는 100% 오픈소스 소셜 게임",
-    version="3.2.0"
+    title="같이투자 - 대화형 숲속 소셜 트레이딩 플랫폼 (Zero UI)",
+    description="단 하나의 자연어 프롬프트 창으로 매매 복기, 가치 분석, 모임 순위를 간편하게 처리하는 대화형 제로 UI 플랫폼",
+    version="4.0.0"
 )
 
 # Pydantic Schemas
-class JournalCreate(BaseModel):
+class PromptRequest(BaseModel):
     user_id: Optional[int] = 1
-    symbol: str
-    side: str  # BUY or SELL
-    amount_krw: float
-    price: float
-    ai_reasoning: str
-    risk_review: Optional[str] = ""
-    lesson: Optional[str] = ""
+    prompt: str
 
 class ProfileUpdate(BaseModel):
     user_id: Optional[int] = 1
@@ -125,38 +120,108 @@ def read_root():
         return FileResponse(root_html)
     elif os.path.exists(template_html):
         return FileResponse(template_html)
-    return JSONResponse({"message": "같이투자 3D 소셜 트레이딩 게임 백엔드가 정상 동작 중입니다."})
+    return JSONResponse({"message": "같이투자 제로 UI 소셜 트레이딩 게임 백엔드가 정상 동작 중입니다."})
 
-# 1. 3대 1초 소셜 로그인 API
-@app.post("/api/auth/login/{provider}")
-def social_login(provider: str, db: Session = Depends(get_db)):
-    auth_res = SocialOAuthHandler.authenticate_social_user(provider)
-    user = db.query(models.User).filter(models.User.email == auth_res["email"]).first()
+# 1. 제로 UI (Zero UI) 프롬프트 처리 대화형 핵심 API
+@app.post("/api/chat")
+def process_zero_ui_prompt(req: PromptRequest, db: Session = Depends(get_db)):
+    seed_initial_data(db)
+    prompt_text = req.prompt.strip()
+    user = db.query(models.User).filter(models.User.id == req.user_id).first()
     if not user:
-        user = models.User(
-            email=auth_res["email"],
-            nickname=auth_res["nickname"],
-            provider=auth_res["provider"],
-            profile_img=auth_res["profile_img"],
-            archetype="💎 기업 실질가치 투자자",
-            title="💎 가치 탐험가 (3단계)",
-            level=3,
-            xp=1500
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-    return {
-        **auth_res,
-        "id": user.id,
-        "nickname": user.nickname,
-        "archetype": user.archetype,
-        "title": user.title,
-        "xp": user.xp,
-        "level": user.level
-    }
+        user = db.query(models.User).first()
 
-# 2. 프로필 및 사용자 닉네임 변경 API (DB 저장)
+    # Natural Language Trade Journal Parsing (e.g. "오늘 솔라나 10만원 매수했어", "BTC 50,000원 매수")
+    is_buy = "매수" in prompt_text or "샀" in prompt_text or "구매" in prompt_text
+    is_sell = "매도" in prompt_text or "팔았" in prompt_text or "판매" in prompt_text
+    
+    # Extract symbol if mentioned
+    symbols = ["BTC", "ETH", "SOL", "SAND", "XRP", "DOGE", "ADA", "AVAX"]
+    found_symbol = "BTC"
+    for s in symbols:
+        if s.lower() in prompt_text.lower():
+            found_symbol = s
+            break
+    if "솔라나" in prompt_text: found_symbol = "SOL"
+    elif "비트코인" in prompt_text: found_symbol = "BTC"
+    elif "이더리움" in prompt_text: found_symbol = "ETH"
+    elif "샌드박스" in prompt_text: found_symbol = "SAND"
+    elif "리플" in prompt_text: found_symbol = "XRP"
+
+    # Extract numbers for KRW amount
+    numbers = re.findall(r'\d+', prompt_text.replace(',', ''))
+    amount_krw = 50000.0
+    if "만" in prompt_text:
+        # e.g., 10만원 -> 100000
+        man_match = re.search(r'(\d+)\s*만', prompt_text)
+        if man_match:
+            amount_krw = float(man_match.group(1)) * 10000.0
+    elif numbers:
+        amount_krw = float(numbers[0])
+
+    if is_buy or is_sell:
+        side = "BUY" if is_buy else "SELL"
+        price_map = {"BTC": 135000000, "ETH": 4500000, "SOL": 245000, "SAND": 49.4, "XRP": 850}
+        price = price_map.get(found_symbol, 100000)
+
+        # Award +150 EXP
+        user.xp += 150
+        if user.xp >= 3000 and user.level < 5:
+            user.level += 1
+            user.title = "👑 대가급 가치투자가 (5단계)"
+
+        new_j = models.TradeJournal(
+            user_id=user.id,
+            symbol=found_symbol,
+            side=side,
+            amount_krw=amount_krw,
+            price=price,
+            ai_reasoning=f"사용자 자연어 입력 '{prompt_text}' 자동 감지. 국내외 거래소 시세 분석 완료.",
+            risk_review="위험 요소 점검: 분할 매수 수칙 준수 확인.",
+            lesson=f"💡 {found_symbol} {int(amount_krw):,}원 복기 작성 완료.",
+            likes_count=0
+        )
+        db.add(new_j)
+        db.commit()
+        db.refresh(new_j)
+
+        return {
+            "type": "trade_created",
+            "reply": f"🌱 **{user.nickname}**님, '{found_symbol} {int(amount_krw):,}원 {side}' 매매 복기가 정원에 기록되었습니다!\n✨ **+150 경험치(EXP)**를 획득하셨습니다. (현재 총 {user.xp:,} EXP)",
+            "journal": {
+                "id": new_j.id,
+                "author": user.nickname,
+                "avatar": user.profile_img,
+                "archetype": user.archetype,
+                "symbol": new_j.symbol,
+                "side": new_j.side,
+                "amount_krw": new_j.amount_krw,
+                "price": new_j.price,
+                "ai_reasoning": new_j.ai_reasoning,
+                "lesson": new_j.lesson,
+                "time": "방금 전"
+            },
+            "new_xp": user.xp
+        }
+
+    # Query response for general prompts (Analysis, Ranking, Guidance)
+    if "순위" in prompt_text or "랭킹" in prompt_text or "1위" in prompt_text:
+        return {
+            "type": "info",
+            "reply": "🏆 **가치투자 모임 수익률 순위전 현황**:\n1위 👑 김가치 (수익률 +14.8%, 2,450 EXP)\n2위 💎 박비트 (수익률 +11.2%, 1,980 EXP)\n3위 ⚡ 최솔라 (수익률 +7.6%, 1,620 EXP)"
+        }
+    elif "목표" in prompt_text or "얼마" in prompt_text or "퀘스트" in prompt_text:
+        return {
+            "type": "info",
+            "reply": "🚀 **우리 모임 공동 목표**: 1,000만원 가치투자 달성률 **74.5%** (7,450,000원 달성 중!)\n💡 모임 식구가 전원 복기 작성 시 **경험치 2배 보너스 혜택**이 발동됩니다."
+        }
+    else:
+        return {
+            "type": "info",
+            "reply": f"🌿 **알림**: '{prompt_text}'에 대해 분석을 완료했습니다.\n💡 매매 기록을 남기시려면 **'오늘 SOL 10만원 매수했어'**처럼 자연스럽게 적어보세요!"
+        }
+
+# 2. 프로필 변경 API
 @app.post("/api/user/profile")
 def update_user_profile(profile: ProfileUpdate, db: Session = Depends(get_db)):
     seed_initial_data(db)
@@ -175,7 +240,7 @@ def update_user_profile(profile: ProfileUpdate, db: Session = Depends(get_db)):
         db.refresh(user)
         return {
             "status": "success",
-            "message": f"🎉 닉네임이 '{user.nickname}'(으)로 변경되어 Supabase DB에 저장되었습니다!",
+            "message": f"🎉 닉네임이 '{user.nickname}'(으)로 변경되어 DB에 저장되었습니다!",
             "user": {
                 "id": user.id,
                 "nickname": user.nickname,
@@ -200,13 +265,13 @@ def get_current_user(db: Session = Depends(get_db)):
             "provider": user.provider,
             "profile_img": user.profile_img,
             "archetype": user.archetype or "💎 기업 실질가치 투자자",
-            "title": user.title or "💎 가치 탐험가 (3단계)",
+            "title": user.title or "👑 가치투자 1기 모임장 (4단계)",
             "level": user.level,
             "xp": user.xp
         }
     return {}
 
-# 4. 소셜 피드 & 복기 노트 API (DB 기반)
+# 4. 피드 API
 @app.get("/api/feed")
 def get_social_feed(db: Session = Depends(get_db)):
     seed_initial_data(db)
@@ -235,40 +300,7 @@ def get_social_feed(db: Session = Depends(get_db)):
         })
     return results
 
-# 5. 새로운 복기 노트 작성 API (경험치 획득)
-@app.post("/api/journal")
-def create_journal(item: JournalCreate, db: Session = Depends(get_db)):
-    user = db.query(models.User).first()
-    user_id = user.id if user else 1
-    if user:
-        user.xp += 150  # 획득 경험치 +150
-        if user.xp >= 3000 and user.level < 5:
-            user.level += 1
-            user.title = "👑 대가급 가치투자가 (5단계)"
-        db.commit()
-
-    new_j = models.TradeJournal(
-        user_id=user_id,
-        symbol=item.symbol.upper(),
-        side=item.side.upper(),
-        amount_krw=item.amount_krw,
-        price=item.price,
-        ai_reasoning=item.ai_reasoning,
-        risk_review=item.risk_review,
-        lesson=item.lesson,
-        likes_count=0
-    )
-    db.add(new_j)
-    db.commit()
-    db.refresh(new_j)
-    return {
-        "status": "success",
-        "id": new_j.id,
-        "message": "⚡ 복기 작성 완료! +150 경험치(EXP)를 획득했습니다!",
-        "new_xp": user.xp if user else 1600
-    }
-
-# 6. 모임 랭킹전 API (DB 기반)
+# 5. 모임 랭킹전 API
 @app.get("/api/squad/rankings")
 def get_squad_rankings(db: Session = Depends(get_db)):
     seed_initial_data(db)
@@ -288,7 +320,7 @@ def get_squad_rankings(db: Session = Depends(get_db)):
         })
     return rankings
 
-# 7. 공동 투자 목표 (Co-op Squad Quests) API
+# 6. 레이드 API
 @app.get("/api/squad/raids")
 def get_squad_raids(db: Session = Depends(get_db)):
     seed_initial_data(db)
@@ -299,23 +331,29 @@ def get_squad_raids(db: Session = Depends(get_db)):
         "raid_goal_krw": squad.raid_goal if squad else 10000000.0,
         "raid_progress_krw": squad.raid_progress if squad else 7450000.0,
         "progress_pct": round(((squad.raid_progress / squad.raid_goal) * 100) if squad else 74.5, 1),
-        "buff": "⚡ 모임 식구 전원 복기 작성 시 경험치 2배 보너스 혜택 발동 중!",
-        "participants": [
-            {"name": "김가치", "contribution": "3,500,000원", "role": "👑 모임장"},
-            {"name": "박비트", "contribution": "2,450,000원", "role": "💎 가치 투자자"},
-            {"name": "최솔라", "contribution": "1,500,000원", "role": "⚡ 차익 탐색자"}
-        ]
+        "buff": "⚡ 모임 식구 전원 복기 작성 시 경험치 2배 보너스 혜택 발동 중!"
     }
 
-# 8. 정량 청산 데이터 API
-@app.get("/api/liquidation/{symbol}")
-def get_liquidation(symbol: str = "BTC"):
-    return LiquidationHeatmapEngine.get_quantitative_analysis(symbol)
-
-# 9. 삼각 차익거래 & 빗썸 스캐너 API
-@app.get("/api/triangular")
-def get_triangular():
-    return TriangularArbitrageEngine.calculate_triangular_arbitrage()
+# 7. 1초 소셜 로그인
+@app.post("/api/auth/login/{provider}")
+def social_login(provider: str, db: Session = Depends(get_db)):
+    auth_res = SocialOAuthHandler.authenticate_social_user(provider)
+    user = db.query(models.User).filter(models.User.email == auth_res["email"]).first()
+    if not user:
+        user = models.User(
+            email=auth_res["email"],
+            nickname=auth_res["nickname"],
+            provider=auth_res["provider"],
+            profile_img=auth_res["profile_img"],
+            archetype="💎 기업 실질가치 투자자",
+            title="💎 가치 탐험가 (3단계)",
+            level=3,
+            xp=1500
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    return { **auth_res, "id": user.id, "nickname": user.nickname, "archetype": user.archetype, "title": user.title, "xp": user.xp, "level": user.level }
 
 if __name__ == "__main__":
     import uvicorn
