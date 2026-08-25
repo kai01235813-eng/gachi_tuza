@@ -11,7 +11,7 @@ class User(Base):
     nickname = Column(String, nullable=False)
     provider = Column(String, default="kakao")  # kakao, naver, google
     profile_img = Column(String, nullable=True)
-    archetype = Column(String, default="🛡️ 방어형 투자자")  # 🛡️ 방어형, ⚡ 스나이퍼형, 💎 홀더형, 🔮 퀀트형
+    archetype = Column(String, default="💎 기업 실질가치 투자자")
     title = Column(String, default="💎 가치 탐험가 Level 3")
     level = Column(Integer, default=3)
     xp = Column(Integer, default=1450)
@@ -27,7 +27,7 @@ class Squad(Base):
     name = Column(String, nullable=False)
     code = Column(String, unique=True, index=True, nullable=False)
     created_by = Column(Integer, ForeignKey("users.id"))
-    raid_title = Column(String, default="🔥 비트코인 1억 구간 김프 스캘핑 보스 레이드")
+    raid_title = Column(String, default="🚀 모임 공동 목표: 1,000만원 가치투자 달성")
     raid_goal = Column(Float, default=10000000.0)
     raid_progress = Column(Float, default=7450000.0)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -50,10 +50,14 @@ class TradeJournal(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
+    asset_type = Column(String, default="🪙 코인")  # 📈 주식 or 🪙 코인
     symbol = Column(String, nullable=False)
     side = Column(String, nullable=False)  # BUY or SELL
     amount_krw = Column(Float, nullable=False)
     price = Column(Float, nullable=False)
+    target_price = Column(Float, nullable=True, default=0.0)
+    pnl_rate = Column(Float, default=0.0)  # 수익 손익률 %
+    strategy = Column(String, default="💎 가치분석 기반 분할매수 전략")  # 투자 전략
     ai_reasoning = Column(Text, nullable=False)
     risk_review = Column(Text, nullable=True)
     lesson = Column(Text, nullable=True)
