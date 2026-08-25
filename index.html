@@ -14,8 +14,8 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for React JSX -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FontAwesome Icons (Free 6.4.0) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Jua&family=Pretendard:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Pretendard', sans-serif; margin: 0; padding: 0; background-color: #f8fafc; color: #0f172a; }
@@ -23,7 +23,8 @@
         .white-card { background: #ffffff; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); }
         .prompt-shadow { box-shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.15); }
         .ticker-badge { background: #e0e7ff; color: #3730a3; font-weight: 700; padding: 2px 8px; border-radius: 8px; }
-        .building-tile { background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%); border: 2px solid #bae6fd; }
+        .building-tile { background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%); border: 2px solid #bae6fd; transition: all 0.2s ease; }
+        .building-tile:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.15); }
     </style>
 </head>
 <body class="bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] min-h-screen pb-24 selection:bg-indigo-900 selection:text-white">
@@ -64,12 +65,13 @@
             const [sentiment, setSentiment] = useState('BULLISH');
             const [promptText, setPromptText] = useState('');
 
-            // Fortune City Virtual Buildings
+            // Fortune City Virtual Buildings with FontAwesome Icons (No broken images)
             const [buildings, setBuildings] = useState([
-                { id: 1, name: '🏢 삼성 주식 타워', symbol: '$삼성전자', level: 3, pnl: 8.5, icon: '🏢' },
-                { id: 2, name: '🪙 비트코인 뱅크', symbol: '$BTC', level: 2, pnl: 12.4, icon: '🪙' },
-                { id: 3, name: '🏰 가치 시청 (본부)', symbol: '시청', level: 5, pnl: 18.5, icon: '🏰' },
-                { id: 4, name: '⚡ 솔라나 센터', symbol: '$SOL', level: 1, pnl: -4.2, icon: '⚡' }
+                { id: 1, name: '삼성 주식 타워', symbol: '$삼성전자', level: 3, pnl: 8.5, iconClass: 'fa-solid fa-building-columns text-sky-600' },
+                { id: 2, name: '비트코인 뱅크', symbol: '$BTC', level: 2, pnl: 12.4, iconClass: 'fa-solid fa-coins text-amber-500' },
+                { id: 3, name: '가치 중앙 시청', symbol: '시청본부', level: 5, pnl: 18.5, iconClass: 'fa-solid fa-landmark text-emerald-600' },
+                { id: 4, name: '엔비디아 AI 랩', symbol: '$NVDA', level: 2, pnl: 15.2, iconClass: 'fa-solid fa-microchip text-indigo-600' },
+                { id: 5, name: '수익 공원', symbol: '$TSLA', level: 1, pnl: 4.2, iconClass: 'fa-solid fa-tree text-green-600' }
             ]);
 
             // Real Social Trading Feed (StockTwits & eToro Style)
@@ -189,10 +191,18 @@
                 const newStreak = user.streak + 1;
                 setUser(prev => ({ ...prev, xp: newXp, streak: newStreak }));
 
-                const buildingName = detectedSymbol === '$삼성전자' ? '🏢 삼성 주식 타워' : detectedSymbol === '$BTC' ? '🪙 비트코인 뱅크' : '⚡ 엔비디아 센터';
+                const buildingName = detectedSymbol === '$삼성전자' ? '삼성 주식 타워' : detectedSymbol === '$BTC' ? '비트코인 뱅크' : '엔비디아 AI 랩';
                 
-                // Add building to Fortune City
-                setBuildings(prev => [{ id: Date.now(), name: `${buildingName} Lv.1`, symbol: detectedSymbol, level: 1, pnl: 6.8, icon: '🏢' }, ...prev]);
+                // Add building to Fortune City with FontAwesome icon
+                const newBuilding = {
+                    id: Date.now(),
+                    name: `${buildingName} Lv.1`,
+                    symbol: detectedSymbol,
+                    level: 1,
+                    pnl: 6.8,
+                    iconClass: selectedAsset === '📈 주식' ? 'fa-solid fa-building-columns text-sky-600' : 'fa-solid fa-coins text-amber-500'
+                };
+                setBuildings(prev => [newBuilding, ...prev]);
 
                 // Add to Social Feed
                 const newFeedItem = {
@@ -262,8 +272,15 @@
                 const newXp = user.xp + 200;
                 setUser(prev => ({ ...prev, xp: newXp }));
 
-                const buildingName = `🏢 ${manualSymbol} 타워 Lv.1`;
-                setBuildings(prev => [{ id: Date.now(), name: buildingName, symbol: `$${manualSymbol}`, level: 1, pnl: Number(manualPnl), icon: '🏢' }, ...prev]);
+                const buildingName = `${manualSymbol} 타워 Lv.1`;
+                setBuildings(prev => [{
+                    id: Date.now(),
+                    name: buildingName,
+                    symbol: `$${manualSymbol}`,
+                    level: 1,
+                    pnl: Number(manualPnl),
+                    iconClass: 'fa-solid fa-building-columns text-sky-600'
+                }, ...prev]);
 
                 const newFeedItem = {
                     id: Date.now(),
@@ -298,8 +315,8 @@
                     {/* Top Clean Deep Navy Header with 1-Second Social Auth */}
                     <header className="bg-slate-900 text-white px-4 md:px-8 py-3.5 sticky top-0 z-50 shadow-md border-b border-slate-800 flex justify-between items-center font-jua">
                         <div className="flex items-center space-x-3">
-                            <div className="bg-gradient-to-tr from-indigo-500 to-sky-400 p-2 rounded-2xl shadow-sm">
-                                <i className="fa-solid fa-chart-line text-white text-base"></i>
+                            <div className="bg-gradient-to-tr from-indigo-500 to-sky-400 p-2.5 rounded-2xl shadow-sm flex items-center justify-center">
+                                <i className="fa-solid fa-chart-line text-white text-lg"></i>
                             </div>
                             <div>
                                 <span className="font-black text-xl tracking-tight text-white">같이투자 <span className="text-xs text-sky-300 font-normal">소셜 트레이딩</span></span>
@@ -484,8 +501,8 @@
 
                             {/* TAB 2: Verified PnL Leaderboard */}
                             {activeTab === 'ranking' && (
-                                <div className="space-y-3 text-xs">
-                                    <table className="w-full text-left">
+                                <div className="space-y-3 text-xs overflow-x-auto">
+                                    <table className="w-full text-left min-w-[500px]">
                                         <thead className="bg-slate-100 text-slate-800 border-b border-slate-200">
                                             <tr>
                                                 <th className="py-2.5 px-3">순위</th>
@@ -515,13 +532,15 @@
                                 </div>
                             )}
 
-                            {/* TAB 3: Fortune City Buildings Grid */}
+                            {/* TAB 3: Fortune City Buildings Grid (FontAwesome Icons, no image bugs) */}
                             {activeTab === 'city' && (
                                 <div className="grid grid-cols-2 gap-3 text-xs">
                                     {buildings.map(b => (
                                         <div key={b.id} className="building-tile p-4 rounded-2xl space-y-2 relative overflow-hidden">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-2xl">{b.icon}</span>
+                                                <div className="w-10 h-10 rounded-xl bg-white flex justify-center items-center shadow-sm border border-slate-100">
+                                                    <i className={`${b.iconClass} text-xl`}></i>
+                                                </div>
                                                 <span className="bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">Lv.{b.level}</span>
                                             </div>
                                             <div>
