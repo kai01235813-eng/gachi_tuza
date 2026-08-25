@@ -11,6 +11,8 @@ class User(Base):
     nickname = Column(String, nullable=False)
     provider = Column(String, default="kakao")  # kakao, naver, google
     profile_img = Column(String, nullable=True)
+    archetype = Column(String, default="🛡️ 방어형 투자자")  # 🛡️ 방어형, ⚡ 스나이퍼형, 💎 홀더형, 🔮 퀀트형
+    title = Column(String, default="💎 가치 탐험가 Level 3")
     level = Column(Integer, default=3)
     xp = Column(Integer, default=1450)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -25,6 +27,9 @@ class Squad(Base):
     name = Column(String, nullable=False)
     code = Column(String, unique=True, index=True, nullable=False)
     created_by = Column(Integer, ForeignKey("users.id"))
+    raid_title = Column(String, default="🔥 비트코인 1억 구간 김프 스캘핑 보스 레이드")
+    raid_goal = Column(Float, default=10000000.0)
+    raid_progress = Column(Float, default=7450000.0)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     members = relationship("SquadMember", back_populates="squad")

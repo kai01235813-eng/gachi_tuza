@@ -3,120 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>같이투자 (Gachi Tuza) - Vercel & Supabase 소셜 플랫폼</title>
+    <title>같이투자 (Gachi Tuza) 3D 소셜 트레이딩 게임</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Three.js (r128) 3D Graphics Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Pretendard:wght@400;600;800&display=swap');
+        body { font-family: 'Pretendard', sans-serif; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .neon-border-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2); }
+        .neon-border-amber { box-shadow: 0 0 15px rgba(245, 158, 11, 0.4), inset 0 0 15px rgba(245, 158, 11, 0.2); }
+        .neon-text-cyan { text-shadow: 0 0 8px rgba(6, 182, 212, 0.8); }
+        .neon-text-amber { text-shadow: 0 0 8px rgba(245, 158, 11, 0.8); }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 selection:bg-cyan-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen relative overflow-x-hidden pb-24 selection:bg-cyan-500 selection:text-white">
 
-    <!-- Header / Navbar -->
-    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 sticky top-0 z-50 flex justify-between items-center">
+    <!-- 3D Interactive Background Canvas (Three.js) -->
+    <div id="canvasContainer" class="fixed inset-0 pointer-events-none z-0 opacity-40">
+        <canvas id="threeCanvas" class="w-full h-full"></canvas>
+    </div>
+
+    <!-- Header / Navbar (Gaming HUD) -->
+    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-cyan-500/30 px-4 py-3 sticky top-0 z-50 flex justify-between items-center shadow-xl">
         <div class="flex items-center space-x-3">
-            <div class="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/30">
-                <i class="fa-solid fa-users-rays text-cyan-400 text-xl"></i>
+            <div class="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/40 neon-border-cyan">
+                <i class="fa-solid fa-gamepad text-cyan-400 text-xl animate-pulse"></i>
             </div>
             <div>
-                <div class="font-black text-lg text-white tracking-tight flex items-center gap-2">
-                    같이투자 <span class="text-xs text-cyan-400 font-mono font-bold">Gachi Tuza</span>
-                    <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-bold border border-indigo-500/30">Vercel + Supabase</span>
+                <div class="font-black text-lg text-white tracking-tight flex items-center gap-2 font-orbitron">
+                    같이투자 <span class="text-xs text-cyan-400 font-mono font-bold">GACHI TUZA 3D</span>
+                    <span class="bg-gradient-to-r from-amber-500 to-rose-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black tracking-widest border border-amber-300">Co-op Game</span>
                 </div>
-                <div class="text-[11px] text-slate-400">지인들과 함께 공유하고 진짜 가치에 투자한다</div>
+                <div class="text-[11px] text-slate-400">3D 소셜 트레이딩 아레나 & 공동 보스 레이드</div>
             </div>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="openJournalModal()" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold text-xs px-3 py-2 rounded-xl transition shadow-md flex items-center gap-1.5">
-                <i class="fa-solid fa-pen-to-square"></i>
-                <span>복기 작성</span>
+            <button onclick="toggleAudio()" id="audioBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-volume-high text-cyan-400" id="audioIcon"></i>
+                <span id="audioLabel">사운드 ON</span>
+            </button>
+            <button onclick="openProfileModal()" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-lg border border-cyan-400/40 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-gear"></i>
+                <span>닉네임 & 캐릭터 설정</span>
             </button>
             <button onclick="openLoginModal()" id="userAuthBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl transition shadow-lg flex items-center gap-1.5">
                 <i class="fa-solid fa-right-to-bracket"></i>
-                <span id="userAuthLabel">1초 소셜 로그인</span>
+                <span id="userAuthLabel">1초 게임 로그인</span>
             </button>
         </div>
     </nav>
 
     <!-- Main Container -->
-    <div class="max-w-4xl mx-auto px-4 py-5 space-y-5">
+    <div class="max-w-4xl mx-auto px-4 py-5 space-y-5 relative z-10">
 
-        <!-- User Profile & Level Banner -->
-        <div id="homeSection" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 rounded-2xl border border-indigo-500/30 shadow-2xl relative overflow-hidden">
+        <!-- 🕹️ Gamer Profile & Character Banner -->
+        <div id="homeSection" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 rounded-3xl border border-cyan-500/40 shadow-2xl relative overflow-hidden neon-border-cyan">
             <div class="flex justify-between items-start mb-3">
                 <div class="flex items-center gap-3">
-                    <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-12 h-12 rounded-2xl border-2 border-cyan-400 bg-slate-800 p-1">
+                    <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-14 h-14 rounded-2xl border-2 border-cyan-400 bg-slate-800 p-1 shadow-lg">
                     <div>
-                        <div class="text-xs text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                            <span>Investor Level</span>
+                        <div class="text-xs text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5 font-orbitron">
+                            <span id="userArchetype">💎 다이아몬드 홀더</span>
                             <span class="bg-indigo-500/30 text-indigo-300 px-2 py-0.2 rounded-md text-[10px]" id="userProvider">카카오 계정</span>
                         </div>
-                        <h2 class="text-lg font-black text-white" id="userDisplayName">김가치 (선한가치투자자) 🛡️</h2>
+                        <h2 class="text-xl font-black text-white flex items-center gap-2" id="userDisplayName">김가치 (스쿼드 리더) 🛡️</h2>
+                        <div class="text-xs text-cyan-300 font-bold mt-0.5" id="userTitle">⚔️ 가치투자 1기 스쿼드장 (Lv.4)</div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs text-slate-400">EXP</span>
-                    <div class="text-sm font-bold text-cyan-400" id="userXpLabel">1,450 / 2,000 XP</div>
+                    <span class="text-xs text-slate-400 font-orbitron">LEVEL & EXP</span>
+                    <div class="text-base font-black text-cyan-400 neon-text-cyan font-orbitron" id="userXpLabel">2,450 / 3,000 XP</div>
                 </div>
             </div>
 
             <!-- Level Progress Bar -->
-            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
-                <div class="bg-gradient-to-r from-cyan-500 to-indigo-500 h-full rounded-full transition-all duration-500" style="width: 72.5%;"></div>
+            <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden p-0.5 border border-cyan-500/30">
+                <div id="xpBar" class="bg-gradient-to-r from-cyan-400 via-indigo-400 to-amber-400 h-full rounded-full transition-all duration-700 shadow-md" style="width: 81.6%;"></div>
             </div>
 
-            <div class="flex gap-2 mt-3.5 pt-3 border-t border-slate-800 text-xs">
-                <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1">
+            <div class="flex flex-wrap gap-2 mt-3.5 pt-3 border-t border-slate-800/80 text-xs">
+                <button onclick="openProfileModal()" class="bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 px-3 py-1 rounded-xl border border-cyan-500/40 flex items-center gap-1.5 font-bold transition">
+                    <i class="fa-solid fa-pen"></i> 게이머 닉네임 변경
+                </button>
+                <span class="bg-slate-800/90 text-amber-300 px-2.5 py-1 rounded-xl border border-amber-500/30 flex items-center gap-1 font-bold">
                     🛡️ 레버리지 도파민 방어막
                 </span>
-                <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1">
+                <span class="bg-slate-800/90 text-emerald-300 px-2.5 py-1 rounded-lg border border-emerald-500/30 flex items-center gap-1 font-bold">
                     💎 현물/스테이킹 마스터
-                </span>
-                <span class="bg-slate-800 text-cyan-300 px-2.5 py-1 rounded-lg border border-cyan-500/30 flex items-center gap-1 font-bold">
-                    👥 스쿼드: 가치투자 1기
                 </span>
             </div>
         </div>
 
-        <!-- 👥 Social Feed Section -->
-        <div id="feedSection" class="bg-slate-900 p-5 rounded-2xl border border-indigo-500/40 shadow-lg space-y-4">
+        <!-- 🐉 Co-op Squad Boss Raid Event Card (공동 트레이딩 레이드) -->
+        <div id="raidSection" class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/60 p-5 rounded-3xl border border-amber-500/50 shadow-2xl space-y-4 neon-border-amber relative">
             <div class="flex justify-between items-center">
                 <h3 class="font-black text-white text-base flex items-center gap-2">
-                    <i class="fa-solid fa-comments text-cyan-400 text-lg"></i> 같이투자 지인 소셜 피드 & 복기 노트
+                    <i class="fa-solid fa-dragon text-amber-400 text-xl animate-bounce"></i> 
+                    <span id="raidTitle">🔥 비트코인 1억 구간 김프 스캘핑 & 스테이킹 보스 레이드</span>
                 </h3>
-                <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30 font-medium">Supabase DB Live</span>
+                <span class="text-xs bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full border border-amber-500/40 font-bold uppercase tracking-wider font-orbitron">Boss Raid Active</span>
+            </div>
+
+            <!-- Raid Progress HP Bar -->
+            <div class="space-y-1.5">
+                <div class="flex justify-between text-xs font-bold font-orbitron">
+                    <span class="text-slate-300">레이드 정복 달성률</span>
+                    <span class="text-amber-400 neon-text-amber" id="raidPctLabel">74.5% (7,450,000원 / 10,000,000원)</span>
+                </div>
+                <div class="w-full bg-slate-950 h-4 rounded-full overflow-hidden p-0.5 border border-amber-500/40 shadow-inner">
+                    <div id="raidBar" class="bg-gradient-to-r from-amber-500 via-rose-500 to-emerald-400 h-full rounded-full transition-all duration-700" style="width: 74.5%;"></div>
+                </div>
+            </div>
+
+            <!-- Squad Raid Party Roster -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-400 font-bold">🛡️ 김가치</span>
+                        <span class="text-slate-400 font-mono text-[11px]">(스쿼드 리더)</span>
+                    </div>
+                    <span class="text-emerald-400 font-mono font-bold">3,500,000원</span>
+                </div>
+                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="text-cyan-400 font-bold">💎 박비트</span>
+                        <span class="text-slate-400 font-mono text-[11px]">(버프 딜러)</span>
+                    </div>
+                    <span class="text-emerald-400 font-mono font-bold">2,450,000원</span>
+                </div>
+                <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="text-indigo-400 font-bold">⚡ 최솔라</span>
+                        <span class="text-slate-400 font-mono text-[11px]">(스나이퍼)</span>
+                    </div>
+                    <span class="text-emerald-400 font-mono font-bold">1,500,000원</span>
+                </div>
+            </div>
+
+            <div class="p-3 bg-amber-500/10 rounded-2xl border border-amber-500/30 text-xs text-amber-200 font-bold flex items-center justify-between">
+                <span>⚡ 스쿼드 전원 오늘 복기 작성 완료 시 전원 EXP 2배 버프 발동!</span>
+                <button onclick="openJournalModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-3 py-1.5 rounded-xl font-black text-xs transition shadow-md">
+                    스킬 캐스팅 (복기 작성)
+                </button>
+            </div>
+        </div>
+
+        <!-- 👥 3D Social Feed & Skill Cast Notes -->
+        <div id="feedSection" class="bg-slate-900/90 p-5 rounded-3xl border border-indigo-500/40 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-black text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-lg"></i> 스쿼드 실시간 3D 스킬 캐스팅 (복기 피드)
+                </h3>
+                <button onclick="openJournalModal()" class="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-plus"></i> 새 복기 캐스팅
+                </button>
             </div>
 
             <div class="space-y-3" id="feedContainer">
-                <div class="text-center py-6 text-slate-400 text-xs font-mono">⚡ Supabase DB에서 소셜 피드 불러오는 중...</div>
+                <div class="text-center py-6 text-slate-400 text-xs font-mono">⚡ 3D 아레나 소셜 피드 불러오는 중...</div>
             </div>
         </div>
 
         <!-- 🏆 Squad Leaderboard Section -->
-        <div id="squadSection" class="bg-slate-900 p-5 rounded-2xl border border-amber-500/30 shadow-lg space-y-4">
+        <div id="squadSection" class="bg-slate-900/90 p-5 rounded-3xl border border-amber-500/30 shadow-2xl space-y-4">
             <div class="flex justify-between items-center">
-                <h3 class="font-black text-white text-base flex items-center gap-2">
-                    <i class="fa-solid fa-trophy text-amber-400 text-lg"></i> 스쿼드 실전 가치투자 랭킹전
+                <h3 class="font-black text-white text-base flex items-center gap-2 font-orbitron">
+                    <i class="fa-solid fa-trophy text-amber-400 text-xl"></i> SQUAD LEADERBOARD (실전 랭킹전)
                 </h3>
-                <span class="text-xs bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/30 font-medium">Supabase DB Sync</span>
+                <span class="text-xs bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30 font-medium">Supabase DB Sync</span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-left">
-                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800 font-orbitron">
                         <tr>
-                            <th class="py-2.5 px-3">순위</th>
-                            <th class="py-2.5 px-3">가치투자가</th>
-                            <th class="py-2.5 px-3">실전 수익률</th>
-                            <th class="py-2.5 px-3">획득 뱃지</th>
+                            <th class="py-3 px-3">순위</th>
+                            <th class="py-3 px-3">게이머 / 닉네임</th>
+                            <th class="py-3 px-3">투자 성향 (Archetype)</th>
+                            <th class="py-3 px-3">실전 수익률</th>
+                            <th class="py-3 px-3">획득 EXP</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800 text-slate-200 font-mono" id="rankingsTableBody">
                         <tr>
-                            <td colspan="4" class="py-4 text-center text-slate-400">⚡ DB 랭킹 데이터 불러오는 중...</td>
+                            <td colspan="5" class="py-4 text-center text-slate-400">⚡ DB 랭킹 데이터 불러오는 중...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -125,14 +201,67 @@
 
     </div>
 
-    <!-- Create Journal Modal -->
-    <div id="journalModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative">
+    <!-- 🎮 Gamer Profile Customization Modal (닉네임 & 프로필 설정) -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
+        <div class="bg-slate-900 border border-cyan-500/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative neon-border-cyan">
+            <button onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="space-y-1 text-center">
+                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl flex justify-center items-center mx-auto border border-cyan-500/40 text-xl font-orbitron">
+                    <i class="fa-solid fa-user-pen"></i>
+                </div>
+                <h3 class="text-lg font-black text-white font-orbitron">게이머 닉네임 & 캐릭터 설정</h3>
+                <p class="text-xs text-slate-400">소셜 트레이딩 게임 프로필을 커스텀하고 Supabase DB에 저장합니다</p>
+            </div>
+
+            <form onsubmit="submitProfileUpdate(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">🎮 게이머 닉네임</label>
+                    <input type="text" id="pNickname" placeholder="예: 김가치 (스쿼드 리더)" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">🛡️ 캐릭터 투자 성향 (Archetype)</label>
+                    <select id="pArchetype" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyan-500">
+                        <option value="💎 다이아몬드 홀더">💎 다이아몬드 홀더 (장기 펀더멘털형)</option>
+                        <option value="🛡️ FOMO 방어마스터">🛡️ FOMO 방어마스터 (보수적 방어형)</option>
+                        <option value="⚡ 스나이퍼 차익거래가">⚡ 스나이퍼 차익거래가 (김프/차익 스캘퍼)</option>
+                        <option value="🔮 퀀트 청산 분석가">🔮 퀀트 청산 분석가 (정량 알고리즘형)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">⚔️ 게이머 칭호 (Title)</label>
+                    <select id="pTitle" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyan-500">
+                        <option value="⚔️ 가치투자 1기 스쿼드장 (Lv.4)">⚔️ 가치투자 1기 스쿼드장 (Lv.4)</option>
+                        <option value="🛡️ 버핏급 펀더멘털 분석가 (Lv.3)">🛡️ 버핏급 펀더멘털 분석가 (Lv.3)</option>
+                        <option value="⚖️ 최저가 스캘퍼 (Lv.2)">⚖️ 최저가 스캘퍼 (Lv.2)</option>
+                        <option value="💎 초보 가치탐험가 (Lv.3)">💎 초보 가치탐험가 (Lv.3)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-slate-300 font-bold mb-1">🤖 아바타 시드 (DiceBear Avatar)</label>
+                    <input type="text" id="pAvatarSeed" placeholder="예: KimGachi, ParkBit, Dragon" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-black py-3 rounded-xl transition shadow-lg font-orbitron">
+                    Supabase DB에 프로필 저장하기
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Journal Modal (Skill Casting) -->
+    <div id="journalModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
+        <div class="bg-slate-900 border border-cyan-500/50 w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-4 relative">
             <button onclick="closeJournalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-            <h3 class="text-base font-black text-white flex items-center gap-2">
-                <i class="fa-solid fa-pen-to-square text-cyan-400"></i> 새 가치투자 복기 노트 작성 (Supabase DB)
+            <h3 class="text-base font-black text-white flex items-center gap-2 font-orbitron">
+                <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> 스킬 캐스팅: 복기 노트 작성 (+150 EXP)
             </h3>
             <form onsubmit="submitJournal(event)" class="space-y-3 text-xs">
                 <div class="grid grid-cols-2 gap-2">
@@ -141,7 +270,7 @@
                         <input type="text" id="jSymbol" placeholder="예: BTC, ETH, SAND" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
                     </div>
                     <div>
-                        <label class="block text-slate-400 mb-1">매매 구분이</label>
+                        <label class="block text-slate-400 mb-1">매매 구분</label>
                         <select id="jSide" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
                             <option value="BUY">BUY (매수)</option>
                             <option value="SELL">SELL (매도)</option>
@@ -150,7 +279,7 @@
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <label class="block text-slate-400 mb-1">매수/매도 금액 (KRW)</label>
+                        <label class="block text-slate-400 mb-1">체결 금액 (KRW)</label>
                         <input type="number" id="jAmount" placeholder="10000" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
                     </div>
                     <div>
@@ -163,46 +292,42 @@
                     <textarea id="jReasoning" rows="2" placeholder="최저가 라우팅 확인, GitHub 커밋 점수 85점..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500"></textarea>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1">🛡️ 리스크 점검 (선택)</label>
+                    <label class="block text-slate-400 mb-1">🛡️ 리스크 점검</label>
                     <input type="text" id="jRisk" placeholder="입출금 정지 유의 공지 확인 완료" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1">💡 가치투자 교훈 (선택)</label>
+                    <label class="block text-slate-400 mb-1">💡 가치투자 레슨</label>
                     <input type="text" id="jLesson" placeholder="유의 해제 전까지 추가 매수 금지" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-cyan-500">
                 </div>
-                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold py-2.5 rounded-xl transition shadow-lg">
-                    Supabase DB에 복기 노트 저장하기
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-600 hover:to-indigo-700 text-white font-bold py-2.5 rounded-xl transition shadow-lg font-orbitron">
+                    스킬 캐스팅 완료 (+150 EXP)
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Social Login Modal -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 hidden">
+    <div id="loginModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex justify-center items-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 text-center relative">
             <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-
             <div class="space-y-2">
-                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl flex justify-center items-center mx-auto border border-cyan-500/30 text-xl">
-                    <i class="fa-solid fa-users-rays"></i>
+                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl flex justify-center items-center mx-auto border border-cyan-500/30 text-xl font-orbitron">
+                    <i class="fa-solid fa-gamepad"></i>
                 </div>
-                <h3 class="text-lg font-black text-white">같이투자 1초 소셜 로그인</h3>
-                <p class="text-xs text-slate-400">Supabase Auth 프로젝트와 연결되었습니다</p>
+                <h3 class="text-lg font-black text-white font-orbitron">같이투자 1초 소셜 로그인</h3>
+                <p class="text-xs text-slate-400">Supabase Auth 연동 완료</p>
             </div>
-
             <div class="space-y-2.5 pt-2">
                 <button onclick="loginWithProvider('kakao')" class="w-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-[#191919] font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
                     <i class="fa-solid fa-comment text-sm"></i>
                     <span>카카오 1초 로그인</span>
                 </button>
-
                 <button onclick="loginWithProvider('naver')" class="w-full bg-[#03C75A] hover:bg-[#03C75A]/90 text-white font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
                     <span class="font-black text-sm">N</span>
                     <span>네이버 1초 로그인</span>
                 </button>
-
                 <button onclick="loginWithProvider('google')" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
                     <i class="fa-brands fa-google text-sm text-red-500"></i>
                     <span>구글 1초 로그인</span>
@@ -214,34 +339,174 @@
     <!-- Fixed Bottom Navigation Bar -->
     <div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-6 py-2.5 flex justify-around items-center z-40">
         <button onclick="scrollToSection('homeSection')" class="flex flex-col items-center text-cyan-400 text-[11px] font-medium transition">
-            <i class="fa-solid fa-house text-base"></i>
-            <span class="mt-1">홈</span>
+            <i class="fa-solid fa-gamepad text-base"></i>
+            <span class="mt-1 font-orbitron">3D 아레나</span>
+        </button>
+        <button onclick="scrollToSection('raidSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-400 transition">
+            <i class="fa-solid fa-dragon text-base"></i>
+            <span class="mt-1 font-orbitron">보스 레이드</span>
         </button>
         <button onclick="scrollToSection('feedSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-cyan-400 transition">
-            <i class="fa-solid fa-comments text-base"></i>
-            <span class="mt-1">소셜 피드</span>
+            <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+            <span class="mt-1 font-orbitron">스킬 피드</span>
         </button>
         <button onclick="scrollToSection('squadSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-400 transition">
             <i class="fa-solid fa-trophy text-base"></i>
-            <span class="mt-1">스쿼드 랭킹</span>
+            <span class="mt-1 font-orbitron">스쿼드 랭킹</span>
         </button>
     </div>
 
     <script>
-        // Supabase Project Initialization
-        const SUPABASE_URL = "https://olanskglzsvskalkwzdc.supabase.co";
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sYW5za2dsemxzdnNrYWxrd3pkYyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjIwMTk2NDMyMDB9.gachi_tuza_anon_key";
-        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+        // --- 1. Three.js 3D Interactive Arena Setup ---
+        let scene, camera, renderer, coreSphere, particles, orbitNodes = [];
+        let mouseX = 0, mouseY = 0;
 
+        function initThreeJS() {
+            const container = document.getElementById('canvasContainer');
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 25;
+
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('threeCanvas'), alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Central Glowing Core Sphere (Wireframe Cyber Sphere)
+            const sphereGeo = new THREE.IcosahedronGeometry(7, 2);
+            const sphereMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, wireframe: true, transparent: true, opacity: 0.35 });
+            coreSphere = new THREE.Mesh(sphereGeo, sphereMat);
+            scene.add(coreSphere);
+
+            // Floating Starfield Particles
+            const particleGeo = new THREE.BufferGeometry();
+            const count = 400;
+            const posArray = new Float32Array(count * 3);
+            for(let i=0; i<count*3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 80;
+            }
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particleMat = new THREE.PointsMaterial({ size: 0.25, color: 0x38bdf8, transparent: true, opacity: 0.6 });
+            particles = new THREE.Points(particleGeo, particleMat);
+            scene.add(particles);
+
+            // Orbiting Asset Nodes (BTC, ETH, SOL, SAND)
+            const colors = [0xf59e0b, 0x6366f1, 0x10b981, 0xec4899];
+            for(let i=0; i<4; i++) {
+                const nodeGeo = new THREE.DodecahedronGeometry(1.2, 0);
+                const nodeMat = new THREE.MeshBasicMaterial({ color: colors[i], wireframe: true });
+                const node = new THREE.Mesh(nodeGeo, nodeMat);
+                scene.add(node);
+                orbitNodes.push({ mesh: node, angle: (i * Math.PI / 2), radius: 12 + i * 2, speed: 0.008 + i * 0.003 });
+            }
+
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            animateThreeJS();
+        }
+
+        function animateThreeJS() {
+            requestAnimationFrame(animateThreeJS);
+            if (coreSphere) {
+                coreSphere.rotation.x += 0.003;
+                coreSphere.rotation.y += 0.005;
+            }
+            if (particles) {
+                particles.rotation.y -= 0.001;
+            }
+            orbitNodes.forEach(item => {
+                item.angle += item.speed;
+                item.mesh.position.x = Math.cos(item.angle) * item.radius;
+                item.mesh.position.z = Math.sin(item.angle) * item.radius;
+                item.mesh.position.y = Math.sin(item.angle * 2) * 2;
+                item.mesh.rotation.x += 0.02;
+                item.mesh.rotation.y += 0.02;
+            });
+
+            // Smooth Mouse Tilt
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onMouseMove(event) {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = (event.clientY / window.innerHeight) * 2 - 1;
+        }
+
+        // --- 2. Web Audio Synthetic Sound Engine ---
+        let audioContext = null;
+        let soundEnabled = true;
+
+        function playBeep(freq = 440, duration = 0.1, type = 'sine') {
+            if (!soundEnabled) return;
+            try {
+                if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                osc.start();
+                osc.stop(audioContext.currentTime + duration);
+            } catch(e){}
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('audioLabel').innerText = soundEnabled ? "사운드 ON" : "사운드 OFF";
+            document.getElementById('audioIcon').className = soundEnabled ? "fa-solid fa-volume-high text-cyan-400" : "fa-solid fa-volume-xmark text-slate-500";
+            if (soundEnabled) playBeep(600, 0.15, 'triangle');
+        }
+
+        // --- 3. UI Navigation & Modals ---
         function scrollToSection(sectionId) {
+            playBeep(520, 0.08);
             const section = document.getElementById(sectionId);
             if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function openLoginModal() { document.getElementById('loginModal').classList.remove('hidden'); }
+        function openLoginModal() { playBeep(480, 0.1); document.getElementById('loginModal').classList.remove('hidden'); }
         function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-        function openJournalModal() { document.getElementById('journalModal').classList.remove('hidden'); }
+        function openJournalModal() { playBeep(580, 0.1); document.getElementById('journalModal').classList.remove('hidden'); }
         function closeJournalModal() { document.getElementById('journalModal').classList.add('hidden'); }
+        function openProfileModal() { playBeep(640, 0.1); document.getElementById('profileModal').classList.remove('hidden'); }
+        function closeProfileModal() { document.getElementById('profileModal').classList.add('hidden'); }
+
+        // --- 4. API Integration (Supabase DB Sync) ---
+        let currentUserId = 1;
+
+        function loadUserProfile() {
+            fetch('/api/user/me')
+                .then(res => res.json())
+                .then(user => {
+                    if (user && user.nickname) {
+                        currentUserId = user.id;
+                        document.getElementById('userDisplayName').innerText = user.nickname;
+                        document.getElementById('userArchetype').innerText = user.archetype || '🛡️ 방어형 투자자';
+                        document.getElementById('userTitle').innerText = user.title || '💎 가치 탐험가 Level 3';
+                        document.getElementById('userXpLabel').innerText = `${user.xp.toLocaleString()} / 3,000 XP`;
+                        const pct = Math.min((user.xp / 3000) * 100, 100);
+                        document.getElementById('xpBar').style.width = `${pct}%`;
+                        if (user.profile_img) document.getElementById('userAvatar').src = user.profile_img;
+
+                        // Pre-fill profile modal
+                        document.getElementById('pNickname').value = user.nickname;
+                        document.getElementById('pArchetype').value = user.archetype || '🛡️ 방어형 투자자';
+                        document.getElementById('pTitle').value = user.title || '⚔️ 가치투자 1기 스쿼드장 (Lv.4)';
+                    }
+                });
+        }
 
         function loadSocialFeed() {
             fetch('/api/feed')
@@ -249,33 +514,39 @@
                 .then(data => {
                     const container = document.getElementById('feedContainer');
                     if (!data || data.length === 0) {
-                        container.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs">작성된 복기 노트가 없습니다.</div>`;
+                        container.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs">작성된 스킬 복기 카드가 없습니다.</div>`;
                         return;
                     }
                     container.innerHTML = data.map(item => `
-                        <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                        <div class="p-4 bg-slate-950/90 rounded-2xl border border-cyan-500/20 space-y-3 shadow-lg hover:border-cyan-500/50 transition">
                             <div class="flex justify-between items-center text-xs">
                                 <div class="flex items-center gap-2">
-                                    <img src="${item.avatar}" class="w-7 h-7 rounded-full border border-cyan-400 bg-slate-800">
-                                    <span class="font-bold text-white">${item.author}</span>
+                                    <img src="${item.avatar}" class="w-8 h-8 rounded-xl border border-cyan-400 bg-slate-800">
+                                    <div>
+                                        <div class="font-bold text-white flex items-center gap-1.5">
+                                            <span>${item.author}</span>
+                                            <span class="bg-indigo-500/20 text-cyan-300 text-[10px] px-2 py-0.5 rounded-md font-mono">${item.archetype}</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-400">${item.title}</div>
+                                    </div>
                                 </div>
-                                <span class="text-slate-400 font-mono">${item.time}</span>
+                                <span class="text-slate-500 font-mono text-[11px]">${item.time}</span>
                             </div>
                             <div class="text-xs space-y-2 text-slate-300">
-                                <div class="font-bold text-cyan-400">🚀 체결: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)</div>
-                                <p class="leading-relaxed"><strong class="text-white font-bold">🧠 AI 매수 근거:</strong> ${item.ai_reasoning}</p>
-                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-lg border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>리스크 점검:</strong> ${item.risk_review}</div>` : ''}
-                                ${item.lesson ? `<div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-[11px] text-emerald-300 font-medium">💡 <strong>가치투자 레슨:</strong> ${item.lesson}</div>` : ''}
+                                <div class="font-bold text-cyan-400 font-orbitron">🚀 SKILL CAST: ${item.symbol} ${item.amount_krw.toLocaleString()}원 ${item.side === 'BUY' ? '매수' : '매도'} (${item.price.toLocaleString()}원)</div>
+                                <p class="leading-relaxed"><strong class="text-white font-bold">🧠 AI 근거:</strong> ${item.ai_reasoning}</p>
+                                ${item.risk_review ? `<div class="p-2 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-amber-300 font-medium">🛡️ <strong>리스크 체크:</strong> ${item.risk_review}</div>` : ''}
+                                ${item.lesson ? `<div class="p-2.5 bg-slate-900 rounded-xl border border-slate-800 text-[11px] text-emerald-300 font-medium">💡 <strong>가치 레슨:</strong> ${item.lesson}</div>` : ''}
                             </div>
                             <div class="flex items-center gap-3 pt-2 border-t border-slate-900 text-xs">
                                 <button onclick="likeFeed(${item.id})" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-bold">
                                     <i class="fa-solid fa-heart"></i> <span id="like-count-${item.id}">${item.likes}</span>
                                 </button>
+                                <span class="text-emerald-400 font-mono text-[10px] ml-auto">+150 EXP 획득됨</span>
                             </div>
                         </div>
                     `).join('');
-                })
-                .catch(err => console.error("Feed load error:", err));
+                });
         }
 
         function loadSquadRankings() {
@@ -286,18 +557,69 @@
                     if (!data || data.length === 0) return;
                     tbody.innerHTML = data.map(item => `
                         <tr class="${item.rank === 1 ? 'bg-amber-500/10' : ''}">
-                            <td class="py-2.5 px-3 font-black ${item.rank === 1 ? 'text-amber-400' : 'text-slate-400'}">${item.rank === 1 ? '🥇 1위' : item.rank === 2 ? '🥈 2위' : item.rank === 3 ? '🥉 3위' : item.rank + '위'}</td>
-                            <td class="py-2.5 px-3 font-bold text-white">${item.name}</td>
-                            <td class="py-2.5 px-3 font-bold text-emerald-400">+${item.return_pct}%</td>
-                            <td class="py-2.5 px-3 text-cyan-300 font-bold">${item.badge}</td>
+                            <td class="py-3 px-3 font-black font-orbitron ${item.rank === 1 ? 'text-amber-400' : 'text-slate-400'}">${item.rank === 1 ? '🥇 1위' : item.rank === 2 ? '🥈 2위' : item.rank === 3 ? '🥉 3위' : item.rank + '위'}</td>
+                            <td class="py-3 px-3 font-bold text-white flex items-center gap-2">
+                                <img src="${item.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + item.name}" class="w-6 h-6 rounded-full bg-slate-800 border border-cyan-400">
+                                <div>
+                                    <div>${item.name}</div>
+                                    <div class="text-[10px] text-slate-400 font-normal">${item.title}</div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-3 text-cyan-300 font-bold">${item.archetype}</td>
+                            <td class="py-3 px-3 font-bold text-emerald-400">+${item.return_pct}%</td>
+                            <td class="py-3 px-3 font-bold font-mono text-amber-300">${item.xp.toLocaleString()} XP</td>
                         </tr>
                     `).join('');
-                })
-                .catch(err => console.error("Rankings load error:", err));
+                });
+        }
+
+        function loadSquadRaids() {
+            fetch('/api/squad/raids')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.raid_title) {
+                        document.getElementById('raidTitle').innerText = data.raid_title;
+                        document.getElementById('raidPctLabel').innerText = `${data.progress_pct}% (${data.raid_progress_krw.toLocaleString()}원 / ${data.raid_goal_krw.toLocaleString()}원)`;
+                        document.getElementById('raidBar').style.width = `${data.progress_pct}%`;
+                    }
+                });
+        }
+
+        function submitProfileUpdate(e) {
+            e.preventDefault();
+            playBeep(750, 0.2, 'triangle');
+            const nickname = document.getElementById('pNickname').value;
+            const archetype = document.getElementById('pArchetype').value;
+            const title = document.getElementById('pTitle').value;
+            const seed = document.getElementById('pAvatarSeed').value || nickname;
+
+            const body = {
+                user_id: currentUserId,
+                nickname: nickname,
+                archetype: archetype,
+                title: title,
+                profile_img: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`
+            };
+
+            fetch('/api/user/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(res => {
+                alert(res.message);
+                closeProfileModal();
+                loadUserProfile();
+                loadSquadRankings();
+                loadSocialFeed();
+            })
+            .catch(err => alert("프로필 저장 실패: " + err));
         }
 
         function submitJournal(e) {
             e.preventDefault();
+            playBeep(880, 0.25, 'sine');
             const body = {
                 symbol: document.getElementById('jSymbol').value,
                 side: document.getElementById('jSide').value,
@@ -316,26 +638,26 @@
             .then(res => {
                 alert(res.message);
                 closeJournalModal();
+                loadUserProfile();
                 loadSocialFeed();
+                loadSquadRaids();
             })
             .catch(err => alert("저장 중 오류 발생: " + err));
         }
 
         function loginWithProvider(provider) {
+            playBeep(700, 0.15);
             fetch(`/api/auth/login/${provider}`, { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('userDisplayName').innerText = data.nickname;
-                    document.getElementById('userProvider').innerText = `${data.provider.toUpperCase()} (Supabase Auth)`;
-                    document.getElementById('userAvatar').src = data.profile_img;
-                    document.getElementById('userAuthLabel').innerText = "로그아웃";
                     closeLoginModal();
-                    alert(`🎉 ${data.provider.toUpperCase()} Supabase Auth 소셜 로그인 성공!`);
-                })
-                .catch(err => console.error(err));
+                    loadUserProfile();
+                    alert(`🎉 ${data.provider.toUpperCase()} Supabase Auth 게임 로그인 성공!`);
+                });
         }
 
         function likeFeed(feedId) {
+            playBeep(650, 0.08);
             const el = document.getElementById(`like-count-${feedId}`);
             if (el) {
                 let current = parseInt(el.innerText);
@@ -345,8 +667,11 @@
 
         // Initial Load
         window.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            loadUserProfile();
             loadSocialFeed();
             loadSquadRankings();
+            loadSquadRaids();
         });
     </script>
 </body>
