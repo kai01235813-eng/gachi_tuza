@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>같이투자 (Gachi Tuza) - Vercel & Supabase 소셜 플랫폼</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 selection:bg-cyan-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <nav class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3.5 sticky top-0 z-50 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <div class="bg-cyan-500/20 p-2.5 rounded-xl border border-cyan-500/30">
+                <i class="fa-solid fa-users-rays text-cyan-400 text-xl"></i>
+            </div>
+            <div>
+                <div class="font-black text-lg text-white tracking-tight flex items-center gap-2">
+                    같이투자 <span class="text-xs text-cyan-400 font-mono font-bold">Gachi Tuza</span>
+                    <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-bold border border-indigo-500/30">Vercel + Supabase</span>
+                </div>
+                <div class="text-[11px] text-slate-400">지인들과 함께 공유하고 진짜 가치에 투자한다</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button onclick="openLoginModal()" id="userAuthBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs px-3.5 py-2 rounded-xl transition shadow-lg flex items-center gap-1.5">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span id="userAuthLabel">1초 소셜 로그인</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto px-4 py-5 space-y-5">
+
+        <!-- User Profile & Level Banner -->
+        <div id="homeSection" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-5 rounded-2xl border border-indigo-500/30 shadow-2xl relative overflow-hidden">
+            <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center gap-3">
+                    <img id="userAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-12 h-12 rounded-2xl border-2 border-cyan-400 bg-slate-800 p-1">
+                    <div>
+                        <div class="text-xs text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                            <span>Investor Level</span>
+                            <span class="bg-indigo-500/30 text-indigo-300 px-2 py-0.2 rounded-md text-[10px]" id="userProvider">카카오 계정</span>
+                        </div>
+                        <h2 class="text-lg font-black text-white" id="userDisplayName">김가치 (선한가치투자자) 🛡️</h2>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400">EXP</span>
+                    <div class="text-sm font-bold text-cyan-400" id="userXpLabel">1,450 / 2,000 XP</div>
+                </div>
+            </div>
+
+            <!-- Level Progress Bar -->
+            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                <div class="bg-gradient-to-r from-cyan-500 to-indigo-500 h-full rounded-full transition-all duration-500" style="width: 72.5%;"></div>
+            </div>
+
+            <div class="flex gap-2 mt-3.5 pt-3 border-t border-slate-800 text-xs">
+                <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1">
+                    🛡️ 레버리지 도파민 방어막
+                </span>
+                <span class="bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 flex items-center gap-1">
+                    💎 현물/스테이킹 마스터
+                </span>
+                <span class="bg-slate-800 text-cyan-300 px-2.5 py-1 rounded-lg border border-cyan-500/30 flex items-center gap-1 font-bold">
+                    👥 스쿼드: 가치투자 1기
+                </span>
+            </div>
+        </div>
+
+        <!-- 👥 Social Feed Section -->
+        <div id="feedSection" class="bg-slate-900 p-5 rounded-2xl border border-indigo-500/40 shadow-lg space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-black text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-cyan-400 text-lg"></i> 같이투자 지인 소셜 피드 & 복기 노트
+                </h3>
+                <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full border border-indigo-500/30 font-medium">Supabase Realtime</span>
+            </div>
+
+            <div class="space-y-3" id="feedContainer">
+                <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-3">
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="flex items-center gap-2">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=KimGachi" class="w-7 h-7 rounded-full border border-cyan-400 bg-slate-800">
+                            <span class="font-bold text-white">김가치 (스쿼드 리더)</span>
+                        </div>
+                        <span class="text-slate-400 font-mono">10분 전</span>
+                    </div>
+
+                    <div class="text-xs space-y-2 text-slate-300">
+                        <div class="font-bold text-cyan-400">🚀 체결: 샌드박스 (SAND) 10,000원 매수</div>
+                        <p class="leading-relaxed">
+                            <strong class="text-white font-bold">🧠 AI 매수 근거:</strong> 업비트 실질 매수가 49.4원으로 빗썸 대비 <span class="text-emerald-400 font-bold">5.35% 저렴</span>한 최저가 라우팅 확인. GitHub 개발 펀더멘털 점수 81점.
+                        </p>
+                        <div class="p-2.5 bg-slate-900 rounded-lg border border-slate-800 text-[11px] text-amber-300 font-medium">
+                            💡 <strong>가치투자 레슨:</strong> 유의 공지 해제 전까지 추가 매수를 금지하여 위험을 완벽 차단.
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2 border-t border-slate-900 text-xs">
+                        <button onclick="likeFeed(1)" class="text-rose-400 hover:text-rose-300 transition flex items-center gap-1 font-bold">
+                            <i class="fa-solid fa-heart"></i> <span id="like-count-1">12</span>
+                        </button>
+                        <button class="text-slate-400 hover:text-slate-200 transition flex items-center gap-1">
+                            <i class="fa-solid fa-comment"></i> <span>댓글 3개</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🏆 Squad Leaderboard Section -->
+        <div id="squadSection" class="bg-slate-900 p-5 rounded-2xl border border-amber-500/30 shadow-lg space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-black text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400 text-lg"></i> 스쿼드 실전 가치투자 랭킹전
+                </h3>
+                <span class="text-xs bg-amber-500/20 text-amber-300 px-2.5 py-1 rounded-full border border-amber-500/30 font-medium">Read-Only API 검증</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                        <tr>
+                            <th class="py-2.5 px-3">순위</th>
+                            <th class="py-2.5 px-3">가치투자가</th>
+                            <th class="py-2.5 px-3">실전 수익률</th>
+                            <th class="py-2.5 px-3">획득 뱃지</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-200 font-mono">
+                        <tr class="bg-amber-500/10">
+                            <td class="py-2.5 px-3 font-black text-amber-400">🥇 1위</td>
+                            <td class="py-2.5 px-3 font-bold text-white">김가치 (스쿼드 리더)</td>
+                            <td class="py-2.5 px-3 font-bold text-emerald-400">+14.8%</td>
+                            <td class="py-2.5 px-3 text-cyan-300 font-bold">💎 다이아몬드 핸드</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-slate-300">🥈 2위</td>
+                            <td class="py-2.5 px-3 font-bold text-white">박비트 (가치투자자)</td>
+                            <td class="py-2.5 px-3 font-bold text-emerald-400">+11.2%</td>
+                            <td class="py-2.5 px-3 text-amber-300">🛡️ FOMO 방어막</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-slate-400">🥉 3위</td>
+                            <td class="py-2.5 px-3 font-bold text-white">최솔라 (스쿼드 멤버)</td>
+                            <td class="py-2.5 px-3 font-bold text-emerald-400">+8.5%</td>
+                            <td class="py-2.5 px-3 text-indigo-300">⚖️ 최저가 라우터</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 📊 Quantitative Liquidation Table -->
+        <div class="bg-slate-900 p-5 rounded-2xl border border-rose-500/30 shadow-lg space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-black text-white text-base flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-rose-400 text-lg"></i> 비트코인(BTC) 가격대별 정량 청산 수치
+                </h3>
+                <span class="text-xs bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-full border border-rose-500/30 font-medium">정량 수치 검증</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-slate-400 font-medium">하방 롱 총 청산 위험액</span>
+                    <div class="text-sm font-bold text-rose-400 mt-1">$2.85B (약 3조 9,900억 원)</div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-slate-400 font-medium">상방 숏 총 청산 위험액</span>
+                    <div class="text-sm font-bold text-emerald-400 mt-1">$2.10B (약 2조 9,400억 원)</div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left">
+                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
+                        <tr>
+                            <th class="py-2.5 px-3">청산 타겟 가격</th>
+                            <th class="py-2.5 px-3">방향</th>
+                            <th class="py-2.5 px-3">예상 청산 규모 ($ / 원)</th>
+                            <th class="py-2.5 px-3">위험도</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-200 font-mono">
+                        <tr>
+                            <td class="py-2.5 px-3 font-bold text-rose-400">$95,000 (13,300만 원)</td>
+                            <td class="py-2.5 px-3">LONG (하방)</td>
+                            <td class="py-2.5 px-3 font-bold text-white">$480M (6,720억 원)</td>
+                            <td class="py-2.5 px-3 text-amber-400">⚠️ 중형 청산</td>
+                        </tr>
+                        <tr class="bg-rose-500/10">
+                            <td class="py-2.5 px-3 font-extrabold text-rose-400">$93,500 (13,090만 원)</td>
+                            <td class="py-2.5 px-3 text-rose-400 font-bold">LONG (하방)</td>
+                            <td class="py-2.5 px-3 font-black text-rose-400">$1.25B (1조 7,500억 원)</td>
+                            <td class="py-2.5 px-3 font-bold text-rose-400">🔥 대규모 롱 청산 빔</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Social Login Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-5 text-center relative">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="space-y-2">
+                <div class="w-12 h-12 bg-cyan-500/20 text-cyan-400 rounded-2xl flex justify-center items-center mx-auto border border-cyan-500/30 text-xl">
+                    <i class="fa-solid fa-users-rays"></i>
+                </div>
+                <h3 class="text-lg font-black text-white">같이투자 1초 소셜 로그인</h3>
+                <p class="text-xs text-slate-400">지인들과 함께 가치투자를 공유하고 랭킹전에 참여하세요</p>
+            </div>
+
+            <div class="space-y-2.5 pt-2">
+                <button onclick="loginWithProvider('kakao')" class="w-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-[#191919] font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-comment text-sm"></i>
+                    <span>카카오 1초 로그인</span>
+                </button>
+
+                <button onclick="loginWithProvider('naver')" class="w-full bg-[#03C75A] hover:bg-[#03C75A]/90 text-white font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
+                    <span class="font-black text-sm">N</span>
+                    <span>네이버 1초 로그인</span>
+                </button>
+
+                <button onclick="loginWithProvider('google')" class="w-full bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs py-3 px-4 rounded-xl transition flex justify-center items-center gap-2 shadow-md">
+                    <i class="fa-brands fa-google text-sm text-red-500"></i>
+                    <span>구글 1초 로그인</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Bottom Navigation Bar -->
+    <div class="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-6 py-2.5 flex justify-around items-center z-40">
+        <button onclick="scrollToSection('homeSection')" class="flex flex-col items-center text-cyan-400 text-[11px] font-medium transition">
+            <i class="fa-solid fa-house text-base"></i>
+            <span class="mt-1">홈</span>
+        </button>
+        <button onclick="scrollToSection('feedSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-cyan-400 transition">
+            <i class="fa-solid fa-comments text-base"></i>
+            <span class="mt-1">소셜 피드</span>
+        </button>
+        <button onclick="scrollToSection('squadSection')" class="flex flex-col items-center text-slate-400 text-[11px] font-medium hover:text-amber-400 transition">
+            <i class="fa-solid fa-trophy text-base"></i>
+            <span class="mt-1">스쿼드 랭킹</span>
+        </button>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function loginWithProvider(provider) {
+            fetch(`/api/auth/login/${provider}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('userDisplayName').innerText = data.nickname;
+                    document.getElementById('userProvider').innerText = `${data.provider.toUpperCase()} 계정`;
+                    document.getElementById('userAvatar').src = data.profile_img;
+                    document.getElementById('userAuthLabel').innerText = "로그아웃";
+                    closeLoginModal();
+                    alert(`🎉 ${data.provider.toUpperCase()} Supabase Auth 소셜 로그인 완료! 지인 소셜 피드가 연결되었습니다.`);
+                })
+                .catch(err => console.error(err));
+        }
+
+        function likeFeed(feedId) {
+            const el = document.getElementById(`like-count-${feedId}`);
+            if (el) {
+                let current = parseInt(el.innerText);
+                el.innerText = current + 1;
+            }
+        }
+    </script>
+</body>
+</html>

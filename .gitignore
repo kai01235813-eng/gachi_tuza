@@ -1,0 +1,22 @@
+# Python / Virtual Environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Security Keys & Environment Files (절대 유출 금지)
+.env
+env.txt
+*.key
+*.pem
+*.secret
+
+# Database
+*.db
+*.sqlite3
+
+# Logs & System
+*.log
+.vscode/
+.idea/
