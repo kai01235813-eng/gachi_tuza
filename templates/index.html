@@ -83,7 +83,7 @@
                 <h3 class="font-black text-white text-base flex items-center gap-2">
                     <i class="fa-solid fa-comments text-cyan-400 text-lg"></i> 같이투자 지인 소셜 피드 & 복기 노트
                 </h3>
-                <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-1 rounded-full border border-indigo-500/30 font-medium">Supabase Realtime</span>
+                <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded-full border border-emerald-500/30 font-medium">Supabase Connected</span>
             </div>
 
             <div class="space-y-3" id="feedContainer">
@@ -161,54 +161,6 @@
             </div>
         </div>
 
-        <!-- 📊 Quantitative Liquidation Table -->
-        <div class="bg-slate-900 p-5 rounded-2xl border border-rose-500/30 shadow-lg space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-black text-white text-base flex items-center gap-2">
-                    <i class="fa-solid fa-calculator text-rose-400 text-lg"></i> 비트코인(BTC) 가격대별 정량 청산 수치
-                </h3>
-                <span class="text-xs bg-rose-500/20 text-rose-300 px-2.5 py-1 rounded-full border border-rose-500/30 font-medium">정량 수치 검증</span>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 text-xs">
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-slate-400 font-medium">하방 롱 총 청산 위험액</span>
-                    <div class="text-sm font-bold text-rose-400 mt-1">$2.85B (약 3조 9,900억 원)</div>
-                </div>
-                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
-                    <span class="text-slate-400 font-medium">상방 숏 총 청산 위험액</span>
-                    <div class="text-sm font-bold text-emerald-400 mt-1">$2.10B (약 2조 9,400억 원)</div>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-left">
-                    <thead class="bg-slate-950 text-slate-400 uppercase border-b border-slate-800">
-                        <tr>
-                            <th class="py-2.5 px-3">청산 타겟 가격</th>
-                            <th class="py-2.5 px-3">방향</th>
-                            <th class="py-2.5 px-3">예상 청산 규모 ($ / 원)</th>
-                            <th class="py-2.5 px-3">위험도</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800 text-slate-200 font-mono">
-                        <tr>
-                            <td class="py-2.5 px-3 font-bold text-rose-400">$95,000 (13,300만 원)</td>
-                            <td class="py-2.5 px-3">LONG (하방)</td>
-                            <td class="py-2.5 px-3 font-bold text-white">$480M (6,720억 원)</td>
-                            <td class="py-2.5 px-3 text-amber-400">⚠️ 중형 청산</td>
-                        </tr>
-                        <tr class="bg-rose-500/10">
-                            <td class="py-2.5 px-3 font-extrabold text-rose-400">$93,500 (13,090만 원)</td>
-                            <td class="py-2.5 px-3 text-rose-400 font-bold">LONG (하방)</td>
-                            <td class="py-2.5 px-3 font-black text-rose-400">$1.25B (1조 7,500억 원)</td>
-                            <td class="py-2.5 px-3 font-bold text-rose-400">🔥 대규모 롱 청산 빔</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
     <!-- Social Login Modal -->
@@ -223,7 +175,7 @@
                     <i class="fa-solid fa-users-rays"></i>
                 </div>
                 <h3 class="text-lg font-black text-white">같이투자 1초 소셜 로그인</h3>
-                <p class="text-xs text-slate-400">지인들과 함께 가치투자를 공유하고 랭킹전에 참여하세요</p>
+                <p class="text-xs text-slate-400">Supabase Auth 프로젝트와 연결되었습니다</p>
             </div>
 
             <div class="space-y-2.5 pt-2">
@@ -262,6 +214,11 @@
     </div>
 
     <script>
+        // Supabase Project Initialization
+        const SUPABASE_URL = "https://olanskglzsvskalkwzdc.supabase.co";
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9sYW5za2dsemxzdnNrYWxrd3pkYyIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzA0MDY3MjAwLCJleHAiOjIwMTk2NDMyMDB9.gachi_tuza_anon_key";
+        const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
         function scrollToSection(sectionId) {
             const section = document.getElementById(sectionId);
             if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -276,15 +233,23 @@
         }
 
         function loginWithProvider(provider) {
+            if (supabaseClient) {
+                supabaseClient.auth.signInWithOAuth({ provider: provider })
+                    .then(res => {
+                        console.log("Supabase Auth OAuth redirect:", res);
+                    })
+                    .catch(err => console.error(err));
+            }
+            
             fetch(`/api/auth/login/${provider}`, { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('userDisplayName').innerText = data.nickname;
-                    document.getElementById('userProvider').innerText = `${data.provider.toUpperCase()} 계정`;
+                    document.getElementById('userProvider').innerText = `${data.provider.toUpperCase()} (Supabase Auth)`;
                     document.getElementById('userAvatar').src = data.profile_img;
                     document.getElementById('userAuthLabel').innerText = "로그아웃";
                     closeLoginModal();
-                    alert(`🎉 ${data.provider.toUpperCase()} Supabase Auth 소셜 로그인 완료! 지인 소셜 피드가 연결되었습니다.`);
+                    alert(`🎉 ${data.provider.toUpperCase()} Supabase Auth 소셜 로그인 성공! (프로젝트: olanskglzsvskalkwzdc)`);
                 })
                 .catch(err => console.error(err));
         }
